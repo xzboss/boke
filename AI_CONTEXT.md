@@ -67,10 +67,49 @@ src/
 - **交互**: cursor-pointer, active:scale-95 触摸反馈
 - **注释**: 所有 props 都有完整的 JSDoc 注释
 
+## 博客系统架构
+- **分类系统**: 基于 JSON 配置的层级分类结构
+- **标签系统**: MD 文件前置元数据中的标签字段
+- **路由生成**: 根据分类 JSON 自动生成页面路由
+- **内容管理**: MD 文件存储在 `/src/content/blog/` 目录
+- **元数据格式**: 包含 title, description, createdAt, updatedAt, tags, category, featured
+
+## 分类配置
+- **配置文件**: `/src/config/categories.ts` - TypeScript 配置文件
+- **数据结构**: 数组形式，每个分类是独立的对象
+- **类型安全**: 使用 TypeScript 接口定义 Category 类型
+- **层级关系**: 通过 level、parentId、children 字段管理层级
+- **一级分类**: 前端、后端、计网、数据结构与算法、计算机操作系统、计算机组成原理、设计模式
+- **二级分类**: 每个一级分类下的具体技术栈
+- **标签匹配**: 通过 tags 字段将 MD 文件关联到对应分类
+- **工具函数**: 提供 getCategoryById、getCategoriesByLevel 等工具函数
+- **灵活调整**: 可随时修改 TypeScript 配置来调整分类结构
+
+## 示例内容
+- Vue 3 Composition API 指南 (vue, vue3, composition-api)
+- React Hooks 设计模式 (react, hooks, patterns)
+- LeetCode 两数之和 (leetcode, algorithm, hash-table)
+- HTTP 协议深度解析 (http, https, http2, http3)
+
+## 博客系统功能
+- **博客首页** (`/blog`): 展示所有文章，包含精选文章和分类导航
+- **分类页面** (`/blog/[category]`): 按分类展示文章，支持子分类过滤
+- **文章详情页** (`/blog/post/[slug]`): 文章内容展示，包含相关文章推荐
+- **标签系统**: 通过标签匹配文章到对应分类
+- **响应式设计**: 支持移动端和桌面端
+- **面包屑导航**: 清晰的页面层级导航
+
+## 路由结构
+- `/blog` - 博客首页
+- `/blog/frontend` - 前端分类
+- `/blog/frontend/vue` - Vue 子分类
+- `/blog/post/vue3-composition-api-guide` - 具体文章
+
 ## 待完善功能
 - 其他 UI 组件（Input, Card, Modal 等）
-- 博客功能模块
 - 文档系统
+- 搜索功能
+- 标签页面
 
 ## 注意事项
 - 已修复水合错误（字体配置统一）
