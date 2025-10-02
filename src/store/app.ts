@@ -6,6 +6,7 @@ import { persist } from 'zustand/middleware'
  * 每个主题只定义主色调，组件内部自行处理深浅变化
  */
 export const themePresets = {
+  black: '#000000',
   purple: '#a855f7',
   blue: '#3b82f6',
   green: '#10b981',
@@ -34,7 +35,7 @@ export const useAppStore = create<AppState>()(
   persist(
     (set, get) => ({
       // 初始状态
-      currentTheme: 'purple',
+      currentTheme: 'black',
       isDark: false,
       mounted: false,
       
@@ -82,6 +83,7 @@ export const useAppStore = create<AppState>()(
  */
 export const getThemeName = (key: ThemeKey): string => {
   const names: Record<ThemeKey, string> = {
+    black: '黑色',
     purple: '紫色',
     blue: '蓝色',
     green: '绿色',

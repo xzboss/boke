@@ -2,6 +2,7 @@
 
 import Layout from '@/components/Layout'
 import Button from '@/components/Button'
+import Icon from '@/components/Icon'
 
 export default function UIPlaygroundPage() {
   return (
@@ -76,6 +77,24 @@ export default function UIPlaygroundPage() {
                 默认禁用
               </Button>
             </div>
+          </div>
+        </section>
+
+        {/* Icon Component */}
+        <section className="mb-16">
+          <h2 className="text-2xl font-semibold text-gray-900 mb-8">Icon 图标</h2>
+          
+          {/* Iconfont Examples */}
+          <div className="mb-8">
+            <h3 className="text-lg font-medium text-gray-800 mb-4">Iconfont 图标</h3>
+            <div className="flex flex-wrap gap-4 mb-6">
+              <Icon type="icon-sun" style={{ fontSize: '24px', color: '#a855f7' }} />
+              <Icon type="icon-moon" style={{ fontSize: '24px', color: '#3b82f6' }} />
+              <Icon type="icon-github" style={{ fontSize: '24px', color: '#22c55e' }} />
+            </div>
+            <p className="text-sm text-gray-600">
+              使用方式：&lt;Icon type=&quot;icon-name&quot; /&gt;
+            </p>
           </div>
         </section>
       </div>
