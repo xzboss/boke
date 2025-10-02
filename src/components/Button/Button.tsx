@@ -1,109 +1,122 @@
 import React from 'react'
-import { cn } from '@/utils/cn'
+import { cn, colorUtils } from '@/utils/tools'
+import { useAppStore, themePresets } from '@/store/app'
 
-export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  /** 按钮变体样式 */
-  variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'text' | 'destructive'
+export interface ButtonProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onClick'> {
+  /** 按钮类型 */
+  type?: 'primary' | 'text' | 'link' | 'default'
   /** 按钮尺寸 */
-  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl'
-  /** 是否显示加载状态 */
+  size?: 'sm' | 'md' | 'lg'
+  /** 是否加载中 */
   loading?: boolean
-  /** 左侧图标 */
-  leftIcon?: React.ReactNode
-  /** 右侧图标 */
-  rightIcon?: React.ReactNode
-  /** 按钮内容 */
+  /** 点击事件 */
+  onClick?: (e: React.MouseEvent<HTMLDivElement>) => void
+  /** 子元素 */
   children: React.ReactNode
+  /** 自定义类名 */
+  className?: string
+  /** 自定义样式 */
+  style?: React.CSSProperties
 }
 
-const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
+const Button = React.forwardRef<HTMLDivElement, ButtonProps>(
   ({ 
     className, 
-    variant = 'primary', 
+    type = 'primary', 
     size = 'md', 
     loading = false,
-    leftIcon,
-    rightIcon,
-    disabled,
     children, 
+    onClick,
     ...props 
   }, ref) => {
-    const baseStyles = 'inline-flex items-center justify-center font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer'
+    const { currentTheme } = useAppStore()
+    const primaryColor = themePresets[currentTheme]
+    
+    const baseStyles = `inline-flex items-center justify-center font-medium rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer select-none`
     
     const sizeStyles = {
-      xs: 'px-2 py-1 text-xs',
       sm: 'px-3 py-1.5 text-sm',
       md: 'px-4 py-2 text-base',
-      lg: 'px-6 py-3 text-lg',
-      xl: 'px-8 py-4 text-xl'
+      lg: 'px-6 py-3 text-lg'
     }
 
-    // 颜色主题配置
-    const colorTheme = {
-      primary: {
-        text: 'text-white',
-        bg: 'bg-gradient-to-r from-purple-500 to-purple-700',
-        hover: 'hover:from-purple-600 hover:to-purple-800',
-        shadow: 'shadow-lg hover:shadow-purple-500/25',
-        border: 'border-0'
-      },
-      secondary: {
-        text: 'text-gray-700',
-        bg: 'bg-gray-100',
-        hover: 'hover:bg-gray-200 active:bg-gray-300',
-        shadow: 'shadow-sm hover:shadow-md',
-        border: 'border-0'
-      },
-      outline: {
-        text: 'text-purple-600',
-        bg: 'bg-transparent',
-        hover: 'hover:bg-purple-50 active:bg-purple-100',
-        shadow: '',
-        border: 'border-0'
-      },
-      ghost: {
-        text: 'text-purple-600',
-        bg: 'bg-transparent',
-        hover: 'hover:bg-purple-50 active:bg-purple-100',
-        shadow: '',
-        border: 'border-0'
-      },
-      text: {
-        text: 'text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-purple-700',
-        bg: 'bg-transparent',
-        hover: 'hover:from-purple-600 hover:to-purple-800 hover:bg-purple-50 active:bg-purple-100',
-        shadow: '',
-        border: 'border-0'
-      },
-      destructive: {
-        text: 'text-white',
-        bg: 'bg-gradient-to-r from-red-500 to-red-600',
-        hover: 'hover:from-red-600 hover:to-red-700',
-        shadow: 'shadow-lg hover:shadow-red-500/25',
-        border: 'border-0'
+    // 根据当前主题生成颜色变体
+    const getColorVariants = (primaryColor: string) => {
+      return {
+        primary: primaryColor,
+        light: colorUtils.adjustBrightness(primaryColor, 40),
+        dark: colorUtils.adjustBrightness(primaryColor, -40),
+        lighter: colorUtils.adjustBrightness(primaryColor, 80)
       }
     }
 
-    const variantStyles = {
-      primary: `${colorTheme.primary.text} ${colorTheme.primary.bg} ${colorTheme.primary.hover} ${colorTheme.primary.shadow} ${colorTheme.primary.border} active:scale-95`,
-      secondary: `${colorTheme.secondary.text} ${colorTheme.secondary.bg} ${colorTheme.secondary.hover} ${colorTheme.secondary.shadow} ${colorTheme.secondary.border} active:scale-95`,
-      outline: `${colorTheme.outline.text} ${colorTheme.outline.bg} ${colorTheme.outline.hover} ${colorTheme.outline.shadow} ${colorTheme.outline.border} active:scale-95`,
-      ghost: `${colorTheme.ghost.text} ${colorTheme.ghost.bg} ${colorTheme.ghost.hover} ${colorTheme.ghost.shadow} ${colorTheme.ghost.border} active:scale-95`,
-      text: `${colorTheme.text.text} ${colorTheme.text.bg} ${colorTheme.text.hover} ${colorTheme.text.shadow} ${colorTheme.text.border} active:scale-95`,
-      destructive: `${colorTheme.destructive.text} ${colorTheme.destructive.bg} ${colorTheme.destructive.hover} ${colorTheme.destructive.shadow} ${colorTheme.destructive.border} active:scale-95`
+    const colorVariants = getColorVariants(primaryColor)
+
+    // 按钮样式配置
+    const getTypeStyles = (type: string) => {
+      switch (type) {
+        case 'primary':
+          return {
+            className: 'text-white active:scale-95',
+            style: {
+              background: `linear-gradient(to right, ${colorVariants.primary}, ${colorVariants.dark})`
+            }
+          }
+        
+        case 'text':
+          return {
+            className: 'hover:bg-gray-100 dark:hover:bg-gray-800 active:scale-95',
+            style: {
+              color: colorVariants.primary
+            }
+          }
+        
+        case 'link':
+          return {
+            className: 'underline hover:no-underline active:scale-95',
+            style: {
+              color: colorVariants.primary
+            }
+          }
+        
+        case 'default':
+          return {
+            className: 'text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 active:scale-95',
+            style: {}
+          }
+        
+        default:
+          return { className: '', style: {} }
+      }
     }
 
+    const typeConfig = getTypeStyles(type)
+
     return (
-      <button
+      <div
         ref={ref}
         className={cn(
           baseStyles,
           sizeStyles[size],
-          variantStyles[variant],
+          typeConfig.className,
           className
         )}
-        disabled={disabled || loading}
-        {...props}
+        style={{
+          ...typeConfig.style,
+          ...props.style
+        }}
+        role="button"
+        tabIndex={loading ? -1 : 0}
+        aria-disabled={loading}
+        onClick={loading ? undefined : onClick}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault()
+            if (!loading && onClick) {
+              onClick(e as unknown as React.MouseEvent<HTMLDivElement>)
+            }
+          }
+        }}
       >
         {loading && (
           <svg 
@@ -127,14 +140,8 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
             />
           </svg>
         )}
-        {!loading && leftIcon && (
-          <span className="mr-2">{leftIcon}</span>
-        )}
         {children}
-        {!loading && rightIcon && (
-          <span className="ml-2">{rightIcon}</span>
-        )}
-      </button>
+      </div>
     )
   }
 )

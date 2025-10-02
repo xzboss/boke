@@ -13,11 +13,11 @@ import { categories } from '@/config/categories'
  */
 function TableOfContents() {
   return (
-    <div className="bg-gray-50 rounded-lg p-4">
-      <h3 className="text-sm font-semibold text-gray-900 mb-3">目录</h3>
+    <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 transition-colors duration-200">
+      <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3">目录</h3>
       <div className="space-y-2">
-        <div className="text-sm text-gray-500">目录内容占位</div>
-        <div className="text-xs text-gray-400">待实现</div>
+        <div className="text-sm text-gray-500 dark:text-gray-400">目录内容占位</div>
+        <div className="text-xs text-gray-400 dark:text-gray-500">待实现</div>
       </div>
     </div>
   )
@@ -337,13 +337,13 @@ export default function BlogPage() {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-800 transition-colors duration-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
             {/* 左侧分类导航区域 */}
             <div className="lg:col-span-3">
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 sticky top-8">
-                <h2 className="text-lg font-semibold text-gray-900 mb-4">分类导航</h2>
+              <div className="bg-white dark:bg-gray-900 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 sticky top-8 transition-colors duration-200">
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">分类导航</h2>
                 <RecursiveMenu 
                   data={categories} 
                   currentCategory={currentCategory || undefined}
@@ -355,16 +355,16 @@ export default function BlogPage() {
 
             {/* 中间文章内容区域 */}
             <div className="lg:col-span-6">
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
+              <div className="bg-white dark:bg-gray-900 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-8 transition-colors duration-200">
                 {currentPost ? (
                   <article>
                     {/* 文章标题区域 */}
                     <header className="mb-8">
-                      <h1 className="text-3xl font-bold text-gray-900 mb-4">{currentPost.title}</h1>
+                      <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-4">{currentPost.title}</h1>
                     </header>
                     {/* 文章正文内容 */}
-                    <div className="prose prose-lg max-w-none">
-                      <div className="whitespace-pre-wrap text-gray-800 leading-relaxed">
+                    <div className="prose prose-lg max-w-none dark:prose-invert">
+                      <div className="whitespace-pre-wrap text-gray-800 dark:text-gray-200 leading-relaxed">
                         {currentPost.content}
                       </div>
                     </div>
@@ -372,13 +372,13 @@ export default function BlogPage() {
                 ) : (
                   /* 空状态提示 */
                   <div className="text-center py-16">
-                    <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <svg className="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div className="w-16 h-16 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <svg className="w-8 h-8 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                       </svg>
                     </div>
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">选择文章</h3>
-                    <p className="text-gray-600">请从左侧分类中选择一篇文章进行阅读</p>
+                    <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">选择文章</h3>
+                    <p className="text-gray-600 dark:text-gray-400">请从左侧分类中选择一篇文章进行阅读</p>
                   </div>
                 )}
               </div>

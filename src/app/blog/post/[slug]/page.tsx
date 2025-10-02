@@ -836,8 +836,8 @@ HTTP 协议从简单的文本协议发展到现代的二进制协议，每一次
                   <h2 className="text-lg font-semibold text-gray-900 mb-4">分类导航</h2>
                   <CategoryNav 
                     categories={categories} 
-                    currentCategory={currentCategory}
-                    currentSubCategory={currentSubCategory}
+        currentCategory={currentCategory || undefined}
+        currentSubCategory={currentSubCategory || undefined}
                   />
                 </div>
               </div>
@@ -879,8 +879,8 @@ HTTP 协议从简单的文本协议发展到现代的二进制协议，每一次
                 <h2 className="text-lg font-semibold text-gray-900 mb-4">分类导航</h2>
                 <CategoryNav 
                   categories={categories} 
-                  currentCategory={currentCategory}
-                  currentSubCategory={currentSubCategory}
+        currentCategory={currentCategory || undefined}
+        currentSubCategory={currentSubCategory || undefined}
                 />
               </div>
             </div>

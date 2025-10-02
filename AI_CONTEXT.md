@@ -26,8 +26,10 @@ src/
 │   ├── Layout.tsx        # 布局组件
 │   ├── Header.tsx        # 头部组件
 │   └── Footer.tsx        # 底部组件
+├── store/                # 全局状态管理
+│   └── app.ts            # 应用状态 (Zustand)
 └── utils/
-    └── cn.ts             # 类名合并工具
+    └── tools.ts          # 工具函数集合 (cn, colorUtils)
 ```
 
 ## 开发约定
@@ -57,12 +59,24 @@ src/
 - 工具文件使用 camelCase
 - 页面文件使用 kebab-case
 
+### 5. 主题系统
+- **全局状态管理**：使用 Zustand 管理主题状态，存储在 `src/store/app.ts`
+- **主题预设**：每个主题只定义主色调，组件内部自行处理深浅变化
+- **深色模式**：使用 UnoCSS 的 `dark:` 前缀
+- **主题切换**：通过 Zustand persist 中间件持久化用户选择
+- **过渡动画**：所有主题切换都有 200ms 的过渡效果
+- **颜色处理**：组件内部使用简单的颜色工具函数处理深浅变化
+
 ## 当前状态
 - 基础布局已完成（Header, Footer, Layout）
 - Button 组件已完善，支持 6 种变体和 5 种尺寸
 - UI 演练场页面已创建并展示所有 Button 功能
 - 字体配置已统一为 Geist
 - 已修复水合错误和客户端组件问题
+- **Header 组件已完善**：支持深色/浅色主题切换，紫色色调设计
+- **主题系统已实现**：完整的深色模式支持，主题切换按钮
+- **递归菜单组件**：支持无限层级的菜单结构
+- **动态主题系统**：支持用户实时切换主色调，使用 CSS 变量和 React Context
 
 ## Button 组件功能
 - **变体**: primary, secondary, outline, ghost, text, destructive
