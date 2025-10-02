@@ -20,6 +20,9 @@ src/
 │   └── globals.css        # 全局样式
 ├── components/            # 组件库
 │   ├── Button/           # 按钮组件
+│   ├── Menu/             # 菜单组件
+│   │   ├── RecursiveMenu.tsx  # 递归菜单组件
+│   │   └── index.ts      # 菜单组件导出
 │   ├── Layout.tsx        # 布局组件
 │   ├── Header.tsx        # 头部组件
 │   └── Footer.tsx        # 底部组件
@@ -34,6 +37,8 @@ src/
 - 组件使用 TypeScript 严格类型
 - 使用 `cn` 工具函数合并类名
 - 客户端组件需要添加 `'use client'` 指令
+- **函数注释**：使用 `/** */` 格式，简洁明了
+- **HTML 分块注释**：为每个主要区块添加功能说明注释
 
 ### 2. 组件规范
 - 所有组件都支持 `className` 属性
@@ -92,18 +97,42 @@ src/
 - HTTP 协议深度解析 (http, https, http2, http3)
 
 ## 博客系统功能
-- **博客首页** (`/blog`): 展示所有文章，包含精选文章和分类导航
-- **分类页面** (`/blog/[category]`): 按分类展示文章，支持子分类过滤
+- **博客首页** (`/blog`): 三栏布局，左侧分类导航，中间内容区域，右侧目录导航
+- **URL 同步**: 通过查询参数 `?article=vue` 访问特定文章，支持直接链接访问
+- **单页面应用**: 无页面刷新切换文章，避免闪烁问题
+- **分类页面** (`/blog/[category]`): 展示一级分类下的子分类列表
+- **子分类页面** (`/blog/[category]/[subcategory]`): 展示具体子分类的文章列表
 - **文章详情页** (`/blog/post/[slug]`): 文章内容展示，包含相关文章推荐
 - **标签系统**: 通过标签匹配文章到对应分类
 - **响应式设计**: 支持移动端和桌面端
 - **面包屑导航**: 清晰的页面层级导航
+- **导航交互**: 点击父节点展开/收起，点击子节点切换文章内容
+- **状态保持**: 文章页面保持三栏布局，左侧导航自动展开对应分类
 
 ## 路由结构
 - `/blog` - 博客首页
+- `/blog?article=vue` - Vue 文章（通过查询参数）
+- `/blog?article=react` - React 文章
+- `/blog?article=algorithm` - 算法文章
+- `/blog?article=network` - 网络文章
 - `/blog/frontend` - 前端分类
 - `/blog/frontend/vue` - Vue 子分类
 - `/blog/post/vue3-composition-api-guide` - 具体文章
+
+## 组件库
+
+### Button 组件
+- 6种变体：primary, secondary, outline, ghost, text, destructive
+- 5种尺寸：xs, sm, md, lg, xl
+- 支持图标、加载状态、禁用状态
+- 完整的 TypeScript 类型定义
+
+### Menu 组件
+- **RecursiveMenu**: 递归菜单组件
+- 支持无限层级的菜单结构
+- 类似 Ant Design Menu 的效果
+- 支持展开/收起、选中状态
+- 自动根据当前选中项展开父级
 
 ## 待完善功能
 - 其他 UI 组件（Input, Card, Modal 等）

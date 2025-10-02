@@ -4,7 +4,112 @@ import Layout from '@/components/Layout'
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
-import { getCategoryById } from '@/config/categories'
+import { categories, getCategoryById } from '@/config/categories'
+
+interface CategoryNavProps {
+  categories: typeof categories
+  currentCategory?: string
+  currentSubCategory?: string
+}
+
+function CategoryNav({ categories, currentCategory, currentSubCategory }: CategoryNavProps) {
+  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set())
+
+  // 根据当前选中的子分类自动展开父分类
+  useEffect(() => {
+    if (currentCategory) {
+      setExpandedCategories(prev => new Set([...prev, currentCategory]))
+    }
+  }, [currentCategory])
+
+  const toggleCategory = (categoryId: string) => {
+    const newExpanded = new Set(expandedCategories)
+    if (newExpanded.has(categoryId)) {
+      newExpanded.delete(categoryId)
+    } else {
+      newExpanded.add(categoryId)
+    }
+    setExpandedCategories(newExpanded)
+  }
+
+  const handleCategoryClick = (categoryId: string, hasChildren: boolean) => {
+    if (hasChildren) {
+      toggleCategory(categoryId)
+    }
+    // 非叶子节点不跳转，只展开/收起
+  }
+
+  return (
+    <nav className="space-y-1">
+      {categories.map((category) => (
+        <div key={category.id}>
+          <div className="flex items-center">
+            <button
+              onClick={() => handleCategoryClick(category.id, category.children && category.children.length > 0)}
+              className={`flex-1 px-3 py-2 text-sm font-medium rounded-md transition-colors text-left ${
+                currentCategory === category.id
+                  ? 'bg-purple-100 text-purple-700'
+                  : 'text-gray-700 hover:bg-gray-100'
+              }`}
+            >
+              {category.name}
+            </button>
+            {category.children && category.children.length > 0 && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation()
+                  toggleCategory(category.id)
+                }}
+                className="ml-2 p-1 hover:bg-gray-100 rounded"
+              >
+                <svg
+                  className={`w-4 h-4 transition-transform ${
+                    expandedCategories.has(category.id) ? 'rotate-90' : ''
+                  }`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+            )}
+          </div>
+          
+          {category.children && category.children.length > 0 && expandedCategories.has(category.id) && (
+            <div className="ml-4 mt-1 space-y-1">
+              {category.children.map((subCategory) => (
+                <Link
+                  key={subCategory.id}
+                  href={`/blog/post/${subCategory.id}`}
+                  className={`block px-3 py-2 text-sm rounded-md transition-colors ${
+                    currentSubCategory === subCategory.id
+                      ? 'bg-purple-50 text-purple-700 font-medium'
+                      : 'text-gray-600 hover:bg-gray-50'
+                  }`}
+                >
+                  {subCategory.name}
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
+      ))}
+    </nav>
+  )
+}
+
+function TableOfContents() {
+  return (
+    <div className="bg-gray-50 rounded-lg p-4">
+      <h3 className="text-sm font-semibold text-gray-900 mb-3">目录</h3>
+      <div className="space-y-2">
+        <div className="text-sm text-gray-500">目录内容占位</div>
+        <div className="text-xs text-gray-400">待实现</div>
+      </div>
+    </div>
+  )
+}
 
 interface BlogPost {
   title: string
@@ -24,6 +129,8 @@ export default function BlogPostPage() {
   const [post, setPost] = useState<BlogPost | null>(null)
   const [loading, setLoading] = useState(true)
   const [relatedPosts, setRelatedPosts] = useState<BlogPost[]>([])
+  const [currentCategory, setCurrentCategory] = useState<string | null>(null)
+  const [currentSubCategory, setCurrentSubCategory] = useState<string | null>(null)
 
   useEffect(() => {
     // 模拟从文件系统读取 MD 文件
@@ -36,7 +143,7 @@ export default function BlogPostPage() {
         tags: ["vue", "vue3", "composition-api", "javascript", "frontend"],
         category: "frontend",
         featured: true,
-        slug: "vue3-composition-api-guide",
+        slug: "vue",
         content: `# Vue 3 Composition API 完全指南
 
 Vue 3 的 Composition API 是一个革命性的特性，它让我们能够更好地组织和复用组件逻辑。本文将深入探讨 Composition API 的核心概念、使用方法和最佳实践。
@@ -183,7 +290,7 @@ Composition API 为 Vue 3 带来了更灵活、更强大的组件逻辑组织方
         tags: ["react", "hooks", "javascript", "frontend", "patterns"],
         category: "frontend",
         featured: false,
-        slug: "react-hooks-patterns",
+        slug: "react",
         content: `# React Hooks 设计模式与最佳实践
 
 React Hooks 自 16.8 版本引入以来，彻底改变了我们编写 React 组件的方式。本文将深入探讨各种 Hooks 设计模式，帮助你写出更优雅、更可维护的 React 代码。
@@ -342,7 +449,7 @@ React Hooks 为我们提供了强大的工具来构建可复用、可维护的�
         tags: ["leetcode", "algorithm", "hash-table", "array", "two-pointer", "javascript", "python"],
         category: "algorithm",
         featured: true,
-        slug: "leetcode-two-sum",
+        slug: "algorithm",
         content: `# LeetCode 两数之和：从暴力到哈希表
 
 两数之和（Two Sum）是 LeetCode 上最经典的算法题目之一，也是很多面试的必考题目。本文将详细解析这道题目的多种解法，从最直观的暴力解法到最优的哈希表解法。
@@ -459,7 +566,7 @@ def twoSum(nums, target):
         tags: ["http", "https", "http2", "http3", "network", "protocol", "web", "security"],
         category: "network",
         featured: true,
-        slug: "http-protocol-deep-dive",
+        slug: "network",
         content: `# HTTP 协议深度解析：从基础到现代
 
 HTTP（HyperText Transfer Protocol）是万维网的基础协议，从 1991 年的 HTTP/0.9 到现在的 HTTP/3，经历了多次重大升级。本文将深入解析 HTTP 协议的发展历程、核心概念和现代特性。
@@ -630,6 +737,30 @@ HTTP 协议从简单的文本协议发展到现代的二进制协议，每一次
     if (currentPost) {
       setPost(currentPost)
       
+      // 设置当前分类和子分类
+      setCurrentCategory(currentPost.category)
+      
+      // 根据文章标签找到对应的子分类
+      const parentCategory = categories.find(cat => cat.id === currentPost.category)
+      if (parentCategory) {
+        // 首先尝试通过 slug 直接匹配子分类
+        const directMatch = parentCategory.children?.find(subCat => subCat.id === currentPost.slug)
+        if (directMatch) {
+          setCurrentSubCategory(directMatch.id)
+        } else {
+          // 如果没有直接匹配，通过标签匹配
+          const matchingSubCategory = parentCategory.children?.find(subCat => 
+            subCat.tags.some(tag => currentPost.tags.includes(tag))
+          )
+          if (matchingSubCategory) {
+            setCurrentSubCategory(matchingSubCategory.id)
+          } else {
+            // 如果都没有匹配，使用第一个子分类作为默认
+            setCurrentSubCategory(parentCategory.children?.[0]?.id || null)
+          }
+        }
+      }
+      
       // 获取相关文章（同分类的其他文章）
       const related = allPosts
         .filter(p => p.category === currentPost.category && p.slug !== slug)
@@ -656,10 +787,37 @@ HTTP 协议从简单的文本协议发展到现代的二进制协议，每一次
   if (loading) {
     return (
       <Layout>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto"></div>
-            <p className="mt-4 text-gray-600">加载中...</p>
+        <div className="min-h-screen bg-gray-50">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+              {/* 左侧分类导航 */}
+              <div className="lg:col-span-3">
+                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 sticky top-8">
+                  <h2 className="text-lg font-semibold text-gray-900 mb-4">分类导航</h2>
+                  <div className="text-center py-8">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mx-auto"></div>
+                    <p className="mt-2 text-sm text-gray-600">加载中...</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* 中间内容区域 */}
+              <div className="lg:col-span-6">
+                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
+                  <div className="text-center py-16">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto"></div>
+                    <p className="mt-4 text-gray-600">加载中...</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* 右侧目录导航 */}
+              <div className="lg:col-span-3">
+                <div className="sticky top-8">
+                  <TableOfContents />
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </Layout>
@@ -669,13 +827,41 @@ HTTP 协议从简单的文本协议发展到现代的二进制协议，每一次
   if (!post) {
     return (
       <Layout>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <div className="text-center">
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">文章不存在</h1>
-            <p className="text-gray-600 mb-8">请检查 URL 是否正确</p>
-            <Link href="/blog" className="text-purple-600 hover:text-purple-700 font-medium">
-              返回博客首页
-            </Link>
+        <div className="min-h-screen bg-gray-50">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+              {/* 左侧分类导航 */}
+              <div className="lg:col-span-3">
+                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 sticky top-8">
+                  <h2 className="text-lg font-semibold text-gray-900 mb-4">分类导航</h2>
+                  <CategoryNav 
+                    categories={categories} 
+                    currentCategory={currentCategory}
+                    currentSubCategory={currentSubCategory}
+                  />
+                </div>
+              </div>
+
+              {/* 中间内容区域 */}
+              <div className="lg:col-span-6">
+                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
+                  <div className="text-center py-16">
+                    <h1 className="text-4xl font-bold text-gray-900 mb-4">文章不存在</h1>
+                    <p className="text-gray-600 mb-8">请检查 URL 是否正确</p>
+                    <Link href="/blog" className="text-purple-600 hover:text-purple-700 font-medium">
+                      返回博客首页
+                    </Link>
+                  </div>
+                </div>
+              </div>
+
+              {/* 右侧目录导航 */}
+              <div className="lg:col-span-3">
+                <div className="sticky top-8">
+                  <TableOfContents />
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </Layout>
@@ -684,94 +870,122 @@ HTTP 协议从简单的文本协议发展到现代的二进制协议，每一次
 
   return (
     <Layout>
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        {/* 面包屑导航 */}
-        <nav className="flex items-center space-x-2 text-sm text-gray-500 mb-8">
-          <Link href="/" className="hover:text-gray-700">首页</Link>
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-          </svg>
-          <Link href="/blog" className="hover:text-gray-700">博客</Link>
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-          </svg>
-          <Link href={`/blog/${post.category}`} className="hover:text-gray-700">
-            {getCategoryName(post.category)}
-          </Link>
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-          </svg>
-          <span className="text-gray-900">{post.title}</span>
-        </nav>
-
-        {/* 文章头部 */}
-        <header className="mb-12">
-          <div className="flex items-center gap-3 mb-4">
-            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-              {getCategoryName(post.category)}
-            </span>
-            {post.featured && (
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                精选
-              </span>
-            )}
-          </div>
-          
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">{post.title}</h1>
-          <p className="text-xl text-gray-600 mb-6">{post.description}</p>
-          
-          <div className="flex items-center justify-between text-sm text-gray-500 mb-6">
-            <div className="flex items-center space-x-4">
-              <span>创建时间：{formatDate(post.createdAt)}</span>
-              <span>更新时间：{formatDate(post.updatedAt)}</span>
+      <div className="min-h-screen bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            {/* 左侧分类导航 */}
+            <div className="lg:col-span-3">
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 sticky top-8">
+                <h2 className="text-lg font-semibold text-gray-900 mb-4">分类导航</h2>
+                <CategoryNav 
+                  categories={categories} 
+                  currentCategory={currentCategory}
+                  currentSubCategory={currentSubCategory}
+                />
+              </div>
             </div>
-          </div>
-          
-          <div className="flex flex-wrap gap-2">
-            {post.tags.map((tag) => (
-              <span key={tag} className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-gray-100 text-gray-800">
-                {tag}
-              </span>
-            ))}
-          </div>
-        </header>
 
-        {/* 文章内容 */}
-        <article className="prose prose-lg max-w-none">
-          <div className="whitespace-pre-wrap text-gray-800 leading-relaxed">
-            {post.content}
-          </div>
-        </article>
+            {/* 中间内容区域 */}
+            <div className="lg:col-span-6">
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
+                {/* 面包屑导航 */}
+                <nav className="flex items-center space-x-2 text-sm text-gray-500 mb-8">
+                  <Link href="/" className="hover:text-gray-700">首页</Link>
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                  <Link href="/blog" className="hover:text-gray-700">博客</Link>
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                  <Link href={`/blog/${post.category}`} className="hover:text-gray-700">
+                    {getCategoryName(post.category)}
+                  </Link>
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                  <span className="text-gray-900">{post.title}</span>
+                </nav>
 
-        {/* 相关文章 */}
-        {relatedPosts.length > 0 && (
-          <section className="mt-16">
-            <h2 className="text-2xl font-semibold text-gray-900 mb-6">相关文章</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {relatedPosts.map((relatedPost) => (
-                <article key={relatedPost.slug} className="bg-white rounded-lg border border-gray-200 p-4 hover:shadow-md transition-shadow duration-200">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
-                    <Link href={`/blog/post/${relatedPost.slug}`} className="hover:text-purple-600 transition-colors">
-                      {relatedPost.title}
-                    </Link>
-                  </h3>
-                  <p className="text-gray-600 text-sm line-clamp-2 mb-3">
-                    {relatedPost.description}
-                  </p>
-                  <div className="flex items-center justify-between text-xs text-gray-500">
-                    <span>{formatDate(relatedPost.createdAt)}</span>
-                    <Link
-                      href={`/blog/post/${relatedPost.slug}`}
-                      className="text-purple-600 hover:text-purple-700 font-medium"
-                    >
-                      阅读更多
-                    </Link>
+                {/* 文章头部 */}
+                <header className="mb-12">
+                  <div className="flex items-center gap-3 mb-4">
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                      {getCategoryName(post.category)}
+                    </span>
+                    {post.featured && (
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                        精选
+                      </span>
+                    )}
+                  </div>
+                  
+                  <h1 className="text-4xl font-bold text-gray-900 mb-4">{post.title}</h1>
+                  <p className="text-xl text-gray-600 mb-6">{post.description}</p>
+                  
+                  <div className="flex items-center justify-between text-sm text-gray-500 mb-6">
+                    <div className="flex items-center space-x-4">
+                      <span>创建时间：{formatDate(post.createdAt)}</span>
+                      <span>更新时间：{formatDate(post.updatedAt)}</span>
+                    </div>
+                  </div>
+                  
+                  <div className="flex flex-wrap gap-2">
+                    {post.tags.map((tag) => (
+                      <span key={tag} className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-gray-100 text-gray-800">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </header>
+
+                {/* 文章内容 */}
+                <article className="prose prose-lg max-w-none">
+                  <div className="whitespace-pre-wrap text-gray-800 leading-relaxed">
+                    {post.content}
                   </div>
                 </article>
-              ))}
+
+                {/* 相关文章 */}
+                {relatedPosts.length > 0 && (
+                  <section className="mt-16">
+                    <h2 className="text-2xl font-semibold text-gray-900 mb-6">相关文章</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                      {relatedPosts.map((relatedPost) => (
+                        <article key={relatedPost.slug} className="bg-white rounded-lg border border-gray-200 p-4 hover:shadow-md transition-shadow duration-200">
+                          <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
+                            <Link href={`/blog/post/${relatedPost.slug}`} className="hover:text-purple-600 transition-colors">
+                              {relatedPost.title}
+                            </Link>
+                          </h3>
+                          <p className="text-gray-600 text-sm line-clamp-2 mb-3">
+                            {relatedPost.description}
+                          </p>
+                          <div className="flex items-center justify-between text-xs text-gray-500">
+                            <span>{formatDate(relatedPost.createdAt)}</span>
+                            <Link
+                              href={`/blog/post/${relatedPost.slug}`}
+                              className="text-purple-600 hover:text-purple-700 font-medium"
+                            >
+                              阅读更多
+                            </Link>
+                          </div>
+                        </article>
+                      ))}
+                    </div>
+                  </section>
+                )}
+              </div>
             </div>
-          </section>
-        )}
+
+            {/* 右侧目录导航 */}
+            <div className="lg:col-span-3">
+              <div className="sticky top-8">
+                <TableOfContents />
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </Layout>
   )

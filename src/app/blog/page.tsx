@@ -1,238 +1,395 @@
 'use client'
 
 import Layout from '@/components/Layout'
-import Link from 'next/link'
+import { RecursiveMenu } from '@/components/Menu'
 import { useState, useEffect } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { categories } from '@/config/categories'
 
-interface BlogPost {
-  title: string
-  description: string
-  createdAt: string
-  updatedAt: string
-  tags: string[]
-  category: string
-  featured: boolean
-  slug: string
+
+/**
+ * 目录导航组件
+ * 显示当前文章的目录结构（待实现）
+ */
+function TableOfContents() {
+  return (
+    <div className="bg-gray-50 rounded-lg p-4">
+      <h3 className="text-sm font-semibold text-gray-900 mb-3">目录</h3>
+      <div className="space-y-2">
+        <div className="text-sm text-gray-500">目录内容占位</div>
+        <div className="text-xs text-gray-400">待实现</div>
+      </div>
+    </div>
+  )
 }
 
-export default function BlogPage() {
-  const [posts, setPosts] = useState<BlogPost[]>([])
+// 模拟文章数据
+const mockPosts = {
+  vue: {
+    title: "Vue 3 Composition API 完全指南",
+    content: `# Vue 3 Composition API 完全指南
+
+Vue 3 的 Composition API 是一个革命性的特性，它让我们能够更好地组织和复用组件逻辑。
+
+## 什么是 Composition API？
+
+Composition API 是 Vue 3 引入的一种新的组件逻辑组织方式，它基于函数式编程的思想。
+
+## 核心概念
+
+### 1. setup() 函数
+
+\`setup()\` 是 Composition API 的入口点，它在组件创建之前执行。
+
+\`\`\`javascript
+import { ref, reactive, computed } from 'vue'
+
+export default {
+  setup() {
+    const count = ref(0)
+    const state = reactive({
+      name: 'Vue 3',
+      version: '3.0'
+    })
+    
+    return {
+      count,
+      state
+    }
+  }
+}
+\`\`\`
+
+## 总结
+
+Composition API 为 Vue 3 带来了更灵活、更强大的组件逻辑组织方式。`
+  },
+  react: {
+    title: "React Hooks 设计模式与最佳实践",
+    content: `# React Hooks 设计模式与最佳实践
+
+React Hooks 自 16.8 版本引入以来，彻底改变了我们编写 React 组件的方式。
+
+## 自定义 Hooks 模式
+
+### 1. 数据获取 Hook
+
+\`\`\`javascript
+import { useState, useEffect } from 'react'
+
+function useApi(url) {
+  const [data, setData] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
 
   useEffect(() => {
-    // 模拟从文件系统读取 MD 文件
-    const mockPosts: BlogPost[] = [
-      {
-        title: "Vue 3 Composition API 完全指南",
-        description: "深入理解 Vue 3 Composition API 的核心概念和最佳实践",
-        createdAt: "2024-01-15T10:00:00Z",
-        updatedAt: "2024-01-20T15:30:00Z",
-        tags: ["vue", "vue3", "composition-api", "javascript", "frontend"],
-        category: "frontend",
-        featured: true,
-        slug: "vue3-composition-api-guide"
-      },
-      {
-        title: "React Hooks 设计模式与最佳实践",
-        description: "探索 React Hooks 的各种设计模式，提升代码质量和可维护性",
-        createdAt: "2024-01-18T14:20:00Z",
-        updatedAt: "2024-01-22T09:15:00Z",
-        tags: ["react", "hooks", "javascript", "frontend", "patterns"],
-        category: "frontend",
-        featured: false,
-        slug: "react-hooks-patterns"
-      },
-      {
-        title: "LeetCode 两数之和：从暴力到哈希表",
-        description: "深入解析 LeetCode 经典题目两数之和，从暴力解法到最优解法的完整思路",
-        createdAt: "2024-01-20T16:45:00Z",
-        updatedAt: "2024-01-25T11:20:00Z",
-        tags: ["leetcode", "algorithm", "hash-table", "array", "two-pointer", "javascript", "python"],
-        category: "algorithm",
-        featured: true,
-        slug: "leetcode-two-sum"
-      },
-      {
-        title: "HTTP 协议深度解析：从基础到现代",
-        description: "全面解析 HTTP 协议的发展历程、核心概念和现代特性",
-        createdAt: "2024-01-22T09:30:00Z",
-        updatedAt: "2024-01-28T16:45:00Z",
-        tags: ["http", "https", "http2", "http3", "network", "protocol", "web", "security"],
-        category: "network",
-        featured: true,
-        slug: "http-protocol-deep-dive"
+    const fetchData = async () => {
+      try {
+        setLoading(true)
+        const response = await fetch(url)
+        const result = await response.json()
+        setData(result)
+      } catch (err) {
+        setError(err)
+      } finally {
+        setLoading(false)
       }
-    ]
+    }
+
+    fetchData()
+  }, [url])
+
+  return { data, loading, error }
+}
+\`\`\`
+
+## 总结
+
+React Hooks 为我们提供了强大的工具来构建可复用、可维护的组件逻辑。`
+  },
+  algorithm: {
+    title: "LeetCode 两数之和：从暴力到哈希表",
+    content: `# LeetCode 两数之和：从暴力到哈希表
+
+两数之和（Two Sum）是 LeetCode 上最经典的算法题目之一。
+
+## 题目描述
+
+给定一个整数数组 \`nums\` 和一个整数目标值 \`target\`，请你在该数组中找出和为目标值的那两个整数。
+
+## 解法一：暴力解法
+
+\`\`\`javascript
+function twoSum(nums, target) {
+    for (let i = 0; i < nums.length; i++) {
+        for (let j = i + 1; j < nums.length; j++) {
+            if (nums[i] + nums[j] === target) {
+                return [i, j];
+            }
+        }
+    }
+    return [];
+}
+\`\`\`
+
+## 解法二：哈希表解法
+
+\`\`\`javascript
+function twoSum(nums, target) {
+    const map = new Map();
     
-    setPosts(mockPosts)
-    setLoading(false)
-  }, [])
+    for (let i = 0; i < nums.length; i++) {
+        const complement = target - nums[i];
+        
+        if (map.has(complement)) {
+            return [map.get(complement), i];
+        }
+        
+        map.set(nums[i], i);
+    }
+    
+    return [];
+}
+\`\`\`
 
-  const getCategoryName = (categoryKey: string) => {
-    const category = categories.find(cat => cat.id === categoryKey)
-    return category?.name || categoryKey
+## 总结
+
+掌握这些解法不仅有助于解决 LeetCode 题目，更重要的是培养了算法思维。`
+  },
+  network: {
+    title: "HTTP 协议深度解析：从基础到现代",
+    content: `# HTTP 协议深度解析：从基础到现代
+
+HTTP（HyperText Transfer Protocol）是万维网的基础协议，从 1991 年的 HTTP/0.9 到现在的 HTTP/3，经历了多次重大升级。
+
+## HTTP 协议发展历程
+
+### HTTP/1.0 (1996)
+- 引入了请求头和响应头
+- 支持多种内容类型
+- 添加了状态码
+
+### HTTP/1.1 (1997)
+- 持久连接（Keep-Alive）
+- 管道化（Pipelining）
+- 分块传输编码
+
+### HTTP/2 (2015)
+- 二进制分帧
+- 多路复用
+- 服务器推送
+- 头部压缩
+
+### HTTP/3 (2022)
+- 基于 QUIC 协议
+- 更快的连接建立
+- 改进的拥塞控制
+
+## 总结
+
+HTTP 协议不断演进，从最初的简单文本传输到现在的多路复用和加密，旨在提供更快、更安全的网络体验。`
+  },
+  'vue-basics': {
+    title: "Vue 3 基础入门指南",
+    content: `# Vue 3 基础入门指南
+
+Vue 3 是一个渐进式 JavaScript 框架，用于构建用户界面。
+
+## 模板语法
+
+Vue 使用基于 HTML 的模板语法，允许你声明式地将 DOM 绑定到底层组件实例的数据。
+
+\`\`\`vue
+<template>
+  <div>
+    <h1>{{ title }}</h1>
+    <p v-if="showContent">{{ content }}</p>
+  </div>
+</template>
+\`\`\`
+
+## 指令
+
+Vue 提供了许多内置指令，如 v-if、v-for、v-model 等。
+
+## 总结
+
+掌握 Vue 3 的基础知识是学习更高级特性的前提。`
+  },
+  'vue-advanced': {
+    title: "Vue 3 进阶技巧与最佳实践",
+    content: `# Vue 3 进阶技巧与最佳实践
+
+深入理解 Vue 3 的高级特性和最佳实践。
+
+## Composition API
+
+Composition API 是 Vue 3 的核心特性，提供了更灵活的逻辑复用方式。
+
+## 性能优化
+
+- 使用 v-memo 优化渲染性能
+- 合理使用 keep-alive
+- 懒加载组件
+
+## 总结
+
+掌握这些进阶技巧，让你的 Vue 应用更加高效和可维护。`
+  },
+  'react-hooks': {
+    title: "React Hooks 完全指南",
+    content: `# React Hooks 完全指南
+
+React Hooks 让你在函数组件中使用状态和其他 React 特性。
+
+## 基础 Hooks
+
+### useState
+\`\`\`javascript
+const [count, setCount] = useState(0)
+\`\`\`
+
+### useEffect
+\`\`\`javascript
+useEffect(() => {
+  // 副作用逻辑
+}, [dependencies])
+\`\`\`
+
+## 自定义 Hooks
+
+创建可复用的状态逻辑。
+
+## 总结
+
+Hooks 让函数组件更加强大和灵活。`
+  },
+  'react-state': {
+    title: "React 状态管理深度解析",
+    content: `# React 状态管理深度解析
+
+探索 React 中各种状态管理方案。
+
+## Context API
+
+React 内置的状态管理解决方案。
+
+## Redux
+
+可预测的状态容器。
+
+## Zustand
+
+轻量级状态管理库。
+
+## 总结
+
+选择合适的状态管理方案对应用的可维护性至关重要。`
   }
+}
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('zh-CN', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    })
-  }
+/**
+ * 博客首页组件
+ * 三栏布局：左侧分类导航 + 中间文章内容 + 右侧目录
+ * 支持 URL 同步和单页面应用切换
+ */
+export default function BlogPage() {
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const [selectedSubCategory, setSelectedSubCategory] = useState<string | null>(null)
+  const [currentCategory, setCurrentCategory] = useState<string | null>(null)
 
-  if (loading) {
-    return (
-      <Layout>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto"></div>
-            <p className="mt-4 text-gray-600">加载中...</p>
-          </div>
-        </div>
-      </Layout>
+  /** 从 URL 参数初始化状态 */
+  useEffect(() => {
+    const article = searchParams.get('article')
+    if (article) {
+      setSelectedSubCategory(article)
+      // 找到对应的父分类
+      const parentCategory = categories.find(cat => 
+        cat.children?.some(child => child.id === article)
+      )
+      setCurrentCategory(parentCategory?.id || null)
+    }
+  }, [searchParams])
+
+  /** 处理子分类选择，更新状态和 URL */
+  const handleSubCategorySelect = (subCategoryId: string) => {
+    setSelectedSubCategory(subCategoryId)
+    // 找到对应的父分类
+    const parentCategory = categories.find(cat => 
+      cat.children?.some(child => child.id === subCategoryId)
     )
+    setCurrentCategory(parentCategory?.id || null)
+    
+    // 更新 URL 参数
+    const params = new URLSearchParams(searchParams.toString())
+    params.set('article', subCategoryId)
+    router.push(`/blog?${params.toString()}`, { scroll: false })
   }
+
+  /** 获取当前选中的文章内容 */
+  const getCurrentPost = () => {
+    if (!selectedSubCategory) return null
+    return mockPosts[selectedSubCategory as keyof typeof mockPosts] || null
+  }
+
+  const currentPost = getCurrentPost()
 
   return (
     <Layout>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        {/* 页面标题 */}
-        <div className="text-center mb-16">
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 mb-6">
-            技术博客
-          </h1>
-          <p className="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto">
-            分享技术见解、学习心得和实践经验
-          </p>
-        </div>
+      <div className="min-h-screen bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            {/* 左侧分类导航区域 */}
+            <div className="lg:col-span-3">
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 sticky top-8">
+                <h2 className="text-lg font-semibold text-gray-900 mb-4">分类导航</h2>
+                <RecursiveMenu 
+                  data={categories} 
+                  currentCategory={currentCategory || undefined}
+                  currentSubCategory={selectedSubCategory || undefined}
+                  onSubCategorySelect={handleSubCategorySelect}
+                />
+              </div>
+            </div>
 
-        {/* 分类导航 */}
-        <div className="mb-12">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-6">分类</h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
-            {categories.map((category) => (
-              <Link
-                key={category.id}
-                href={`/blog/${category.id}`}
-                className="p-4 bg-white rounded-lg border border-gray-200 hover:border-purple-300 hover:shadow-md transition-all duration-200 text-center"
-              >
-                <div className="text-sm font-medium text-gray-900">{category.name}</div>
-              </Link>
-            ))}
-          </div>
-        </div>
-
-        {/* 精选文章 */}
-        <div className="mb-12">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-6">精选文章</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {posts.filter(post => post.featured).map((post) => (
-              <article key={post.slug} className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow duration-200">
-                <div className="p-6">
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                      {getCategoryName(post.category)}
-                    </span>
-                    <span className="text-sm text-gray-500">
-                      {formatDate(post.createdAt)}
-                    </span>
-                  </div>
-                  
-                  <h3 className="text-xl font-semibold text-gray-900 mb-3 line-clamp-2">
-                    <Link href={`/blog/post/${post.slug}`} className="hover:text-purple-600 transition-colors">
-                      {post.title}
-                    </Link>
-                  </h3>
-                  
-                  <p className="text-gray-600 mb-4 line-clamp-3">
-                    {post.description}
-                  </p>
-                  
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    {post.tags.slice(0, 3).map((tag) => (
-                      <span key={tag} className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-gray-100 text-gray-800">
-                        {tag}
-                      </span>
-                    ))}
-                    {post.tags.length > 3 && (
-                      <span className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-gray-100 text-gray-800">
-                        +{post.tags.length - 3}
-                      </span>
-                    )}
-                  </div>
-                  
-                  <Link
-                    href={`/blog/post/${post.slug}`}
-                    className="inline-flex items-center text-purple-600 hover:text-purple-700 font-medium text-sm"
-                  >
-                    阅读更多
-                    <svg className="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
-                  </Link>
-                </div>
-              </article>
-            ))}
-          </div>
-        </div>
-
-        {/* 所有文章 */}
-        <div>
-          <h2 className="text-2xl font-semibold text-gray-900 mb-6">所有文章</h2>
-          <div className="space-y-6">
-            {posts.map((post) => (
-              <article key={post.slug} className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200">
-                <div className="flex flex-col md:flex-row md:items-center md:justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-2">
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                        {getCategoryName(post.category)}
-                      </span>
-                      {post.featured && (
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                          精选
-                        </span>
-                      )}
+            {/* 中间文章内容区域 */}
+            <div className="lg:col-span-6">
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
+                {currentPost ? (
+                  <article>
+                    {/* 文章标题区域 */}
+                    <header className="mb-8">
+                      <h1 className="text-3xl font-bold text-gray-900 mb-4">{currentPost.title}</h1>
+                    </header>
+                    {/* 文章正文内容 */}
+                    <div className="prose prose-lg max-w-none">
+                      <div className="whitespace-pre-wrap text-gray-800 leading-relaxed">
+                        {currentPost.content}
+                      </div>
                     </div>
-                    
-                    <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                      <Link href={`/blog/post/${post.slug}`} className="hover:text-purple-600 transition-colors">
-                        {post.title}
-                      </Link>
-                    </h3>
-                    
-                    <p className="text-gray-600 mb-3">
-                      {post.description}
-                    </p>
-                    
-                    <div className="flex flex-wrap gap-2">
-                      {post.tags.map((tag) => (
-                        <span key={tag} className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-gray-100 text-gray-800">
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                  
-                  <div className="mt-4 md:mt-0 md:ml-6 text-right">
-                    <div className="text-sm text-gray-500 mb-2">
-                      {formatDate(post.createdAt)}
-                    </div>
-                    <Link
-                      href={`/blog/post/${post.slug}`}
-                      className="inline-flex items-center text-purple-600 hover:text-purple-700 font-medium text-sm"
-                    >
-                      阅读更多
-                      <svg className="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </article>
+                ) : (
+                  /* 空状态提示 */
+                  <div className="text-center py-16">
+                    <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <svg className="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                       </svg>
-                    </Link>
+                    </div>
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">选择文章</h3>
+                    <p className="text-gray-600">请从左侧分类中选择一篇文章进行阅读</p>
                   </div>
-                </div>
-              </article>
-            ))}
+                )}
+              </div>
+            </div>
+
+            {/* 右侧目录导航区域 */}
+            <div className="lg:col-span-3">
+              <div className="sticky top-8">
+                <TableOfContents />
+              </div>
+            </div>
           </div>
         </div>
       </div>

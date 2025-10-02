@@ -24,7 +24,26 @@ export const categories: Category[] = [
         level: 2,
         parentId: "frontend",
         tags: ["vue", "vue3", "composition-api", "pinia", "vue-router", "nuxt", "vite-vue"],
-        children: []
+        children: [
+          {
+            id: "vue-basics",
+            name: "Vue 基础",
+            path: "/blog/frontend/vue/basics",
+            level: 3,
+            parentId: "vue",
+            tags: ["vue", "vue3", "basics", "template", "directive"],
+            children: []
+          },
+          {
+            id: "vue-advanced",
+            name: "Vue 进阶",
+            path: "/blog/frontend/vue/advanced",
+            level: 3,
+            parentId: "vue",
+            tags: ["vue", "vue3", "advanced", "composition-api", "pinia"],
+            children: []
+          }
+        ]
       },
       {
         id: "react",
@@ -33,7 +52,26 @@ export const categories: Category[] = [
         level: 2,
         parentId: "frontend",
         tags: ["react", "jsx", "hooks", "redux", "nextjs", "gatsby", "vite-react"],
-        children: []
+        children: [
+          {
+            id: "react-hooks",
+            name: "React Hooks",
+            path: "/blog/frontend/react/hooks",
+            level: 3,
+            parentId: "react",
+            tags: ["react", "hooks", "useState", "useEffect", "custom-hooks"],
+            children: []
+          },
+          {
+            id: "react-state",
+            name: "状态管理",
+            path: "/blog/frontend/react/state",
+            level: 3,
+            parentId: "react",
+            tags: ["react", "state", "redux", "context", "zustand"],
+            children: []
+          }
+        ]
       },
       {
         id: "vite",

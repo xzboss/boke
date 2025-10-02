@@ -9,9 +9,10 @@ import { categories, getCategoryById } from '@/config/categories'
 interface CategoryNavProps {
   categories: typeof categories
   currentCategory?: string
+  currentSubCategory?: string
 }
 
-function CategoryNav({ categories, currentCategory }: CategoryNavProps) {
+function CategoryNav({ categories, currentCategory, currentSubCategory }: CategoryNavProps) {
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set([currentCategory || '']))
 
   const toggleCategory = (categoryId: string) => {
@@ -75,7 +76,7 @@ function CategoryNav({ categories, currentCategory }: CategoryNavProps) {
                   key={subCategory.id}
                   href={`/blog/post/${subCategory.id}`}
                   className={`block px-3 py-2 text-sm rounded-md transition-colors ${
-                    currentCategory === subCategory.id
+                    currentSubCategory === subCategory.id
                       ? 'bg-purple-50 text-purple-700 font-medium'
                       : 'text-gray-600 hover:bg-gray-50'
                   }`}
@@ -103,12 +104,15 @@ function TableOfContents() {
   )
 }
 
-export default function CategoryPage() {
+export default function SubCategoryPage() {
   const params = useParams()
   const categoryKey = params.category as string
+  const subCategoryKey = params.subcategory as string
+  
   const category = getCategoryById(categoryKey)
+  const subCategory = category?.children?.find(child => child.id === subCategoryKey)
 
-  if (!category) {
+  if (!category || !subCategory) {
     return (
       <Layout>
         <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -136,6 +140,7 @@ export default function CategoryPage() {
                 <CategoryNav 
                   categories={categories} 
                   currentCategory={categoryKey}
+                  currentSubCategory={subCategoryKey}
                 />
               </div>
             </div>
@@ -154,40 +159,25 @@ export default function CategoryPage() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                     </svg>
                     <span className="text-gray-900">{category.name}</span>
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                    <span className="text-gray-900">{subCategory.name}</span>
                   </nav>
                   
-                  <h1 className="text-3xl font-bold text-gray-900 mb-2">{category.name}</h1>
-                  <p className="text-gray-600">探索 {category.name} 相关的技术文章和教程</p>
+                  <h1 className="text-3xl font-bold text-gray-900 mb-2">{subCategory.name}</h1>
+                  <p className="text-gray-600">探索 {subCategory.name} 相关的技术文章和教程</p>
                 </div>
 
-                {/* 子分类列表 */}
-                {category.children && category.children.length > 0 ? (
-                  <div className="space-y-4">
-                    <h2 className="text-xl font-semibold text-gray-900">子分类</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {category.children.map((subCategory) => (
-                        <Link
-                          key={subCategory.id}
-                          href={`/blog/${category.id}/${subCategory.id}`}
-                          className="block p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
-                        >
-                          <h3 className="font-medium text-gray-900 mb-1">{subCategory.name}</h3>
-                          <p className="text-sm text-gray-600">点击查看相关文章</p>
-                        </Link>
-                      ))}
-                    </div>
+                <div className="text-center py-16">
+                  <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg className="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
                   </div>
-                ) : (
-                  <div className="text-center py-16">
-                    <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <svg className="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                      </svg>
-                    </div>
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">文章列表占位</h3>
-                    <p className="text-gray-600">文章列表内容待实现</p>
-                  </div>
-                )}
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">文章列表占位</h3>
+                  <p className="text-gray-600">文章列表内容待实现</p>
+                </div>
               </div>
             </div>
 
