@@ -1,4 +1,5 @@
 import React from "react";
+import Link from "next/link";
 import { cn, colorUtils } from "@/utils/tools";
 import { useAppStore, colorSchemePresets, Theme } from "@/store/app";
 
@@ -12,6 +13,8 @@ export interface ButtonProps
   loading?: boolean;
   /** 点击事件 */
   onClick?: (e: React.MouseEvent<HTMLDivElement>) => void;
+  /** 链接地址（支持所有类型） */
+  href?: string;
   /** 子元素 */
   children: React.ReactNode;
   /** 自定义类名 */
@@ -86,7 +89,7 @@ BaseButton.displayName = "BaseButton";
 const PrimaryButton = React.forwardRef<
   HTMLDivElement,
   Omit<ButtonProps, "type"> & { theme: Theme }
->(({ ...props }, ref) => {
+>(({ href, ...props }, ref) => {
   const { colorScheme } = useAppStore();
   const primaryColor = colorSchemePresets[colorScheme];
   const lightColor = colorUtils.adjustBrightness(primaryColor, 40);
@@ -97,7 +100,7 @@ const PrimaryButton = React.forwardRef<
     textColor = colorSchemePresets.black;
   }
 
-  return (
+  const buttonContent = (
     <BaseButton
       ref={ref}
       className="active:scale-95 hover:opacity-90"
@@ -108,6 +111,12 @@ const PrimaryButton = React.forwardRef<
       {...props}
     />
   );
+
+  if (href) {
+    return <Link href={href}>{buttonContent}</Link>;
+  }
+
+  return buttonContent;
 });
 
 PrimaryButton.displayName = "PrimaryButton";
@@ -116,7 +125,7 @@ PrimaryButton.displayName = "PrimaryButton";
 const TextButton = React.forwardRef<
   HTMLDivElement,
   Omit<ButtonProps, "type"> & { theme: Theme }
->(({ theme, ...props }, ref) => {
+>(({ theme, href, ...props }, ref) => {
   const { colorScheme } = useAppStore();
   const primaryColor = colorSchemePresets[colorScheme];
 
@@ -124,7 +133,7 @@ const TextButton = React.forwardRef<
   const hoverClass =
     theme === "dark" ? "hover:bg-gray-700" : "hover:bg-gray-100";
 
-  return (
+  const buttonContent = (
     <BaseButton
       ref={ref}
       className={`active:scale-95 ${hoverClass}`}
@@ -134,6 +143,12 @@ const TextButton = React.forwardRef<
       {...props}
     />
   );
+
+  if (href) {
+    return <Link href={href}>{buttonContent}</Link>;
+  }
+
+  return buttonContent;
 });
 
 TextButton.displayName = "TextButton";
@@ -142,11 +157,11 @@ TextButton.displayName = "TextButton";
 const LinkButton = React.forwardRef<
   HTMLDivElement,
   Omit<ButtonProps, "type"> & { theme: Theme }
->(({ ...props }, ref) => {
+>(({ href, ...props }, ref) => {
   const { colorScheme } = useAppStore();
   const primaryColor = colorSchemePresets[colorScheme];
 
-  return (
+  const buttonContent = (
     <BaseButton
       ref={ref}
       className="underline hover:no-underline active:scale-95 hover:opacity-80"
@@ -156,6 +171,13 @@ const LinkButton = React.forwardRef<
       {...props}
     />
   );
+
+  // 如果有 href，使用 Link 包裹
+  if (href) {
+    return <Link href={href}>{buttonContent}</Link>;
+  }
+
+  return buttonContent;
 });
 
 LinkButton.displayName = "LinkButton";
@@ -164,7 +186,7 @@ LinkButton.displayName = "LinkButton";
 const DefaultButton = React.forwardRef<
   HTMLDivElement,
   Omit<ButtonProps, "type"> & { theme: Theme }
->(({ theme, ...props }, ref) => {
+>(({ theme, href, ...props }, ref) => {
   const { colorScheme } = useAppStore();
   const primaryColor = colorSchemePresets[colorScheme];
 
@@ -174,7 +196,7 @@ const DefaultButton = React.forwardRef<
       ? "bg-gray-800 hover:bg-gray-700"
       : "bg-gray-100 hover:bg-gray-200";
 
-  return (
+  const buttonContent = (
     <BaseButton
       ref={ref}
       className={`active:scale-95 ${bgClass}`}
@@ -184,26 +206,32 @@ const DefaultButton = React.forwardRef<
       {...props}
     />
   );
+
+  if (href) {
+    return <Link href={href}>{buttonContent}</Link>;
+  }
+
+  return buttonContent;
 });
 
 DefaultButton.displayName = "DefaultButton";
 
 // 主按钮组件
 const Button = React.forwardRef<HTMLDivElement, ButtonProps>(
-  ({ type = "primary", ...props }, ref) => {
+  ({ type = "primary", href, ...props }, ref) => {
     const { theme } = useAppStore();
 
     switch (type) {
       case "primary":
-        return <PrimaryButton ref={ref} theme={theme} {...props} />;
+        return <PrimaryButton ref={ref} theme={theme} href={href} {...props} />;
       case "text":
-        return <TextButton ref={ref} theme={theme} {...props} />;
+        return <TextButton ref={ref} theme={theme} href={href} {...props} />;
       case "link":
-        return <LinkButton ref={ref} theme={theme} {...props} />;
+        return <LinkButton ref={ref} theme={theme} href={href} {...props} />;
       case "default":
-        return <DefaultButton ref={ref} theme={theme} {...props} />;
+        return <DefaultButton ref={ref} theme={theme} href={href} {...props} />;
       default:
-        return <PrimaryButton ref={ref} theme={theme} {...props} />;
+        return <PrimaryButton ref={ref} theme={theme} href={href} {...props} />;
     }
   }
 );

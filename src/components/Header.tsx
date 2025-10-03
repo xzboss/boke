@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect } from "react";
-import Link from "next/link";
 import Button from "./Button";
 import Icon from "./Icon";
 import {
@@ -53,50 +52,40 @@ export default function Header() {
         <div className="flex items-center justify-between h-16">
           {/* 左侧首页按钮 */}
           <div className="flex-shrink-0">
-            <Link href="/" className="flex items-center group">
-              <div className="w-10 h-10 rounded-lg bg-gradient-to-r from-purple-500 to-purple-600 flex items-center justify-center group-hover:from-purple-600 group-hover:to-purple-700 transition-all duration-200">
-                <span className="text-white font-bold text-lg">B</span>
-              </div>
-            </Link>
+            <Button type="text" size="lg" href="/" className="p-0">
+              xushilong
+            </Button>
           </div>
 
           {/* 右侧导航菜单和操作区域 */}
           <div className="flex items-center space-x-2">
             {/* 桌面端导航菜单 */}
             <nav className="hidden md:flex items-center space-x-2">
-              <Link
-                href="/blog"
-                className="px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-200 no-underline"
-              >
+              <Button type="text" size="sm" href="/blog">
                 博客
-              </Link>
+              </Button>
 
               <a
                 href="https://github.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-200 no-underline flex items-center"
               >
-                <Icon
-                  type="icon-github"
-                  style={{ fontSize: "16px", marginRight: "4px" }}
-                />
-                GitHub
+                <Button type="text" size="sm">
+                  <Icon
+                    type="icon-github"
+                    style={{ fontSize: "16px", marginRight: "4px" }}
+                  />
+                  GitHub
+                </Button>
               </a>
 
-              <Link
-                href="/ui"
-                className="px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-200 no-underline"
-              >
+              <Button type="text" size="sm" href="/ui">
                 演练场
-              </Link>
+              </Button>
 
-              <Link
-                href="/about"
-                className="px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-200 no-underline"
-              >
+              <Button type="text" size="sm" href="/about">
                 关于
-              </Link>
+              </Button>
             </nav>
 
             {/* 主题颜色选择器 */}
