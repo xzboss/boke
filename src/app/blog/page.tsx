@@ -343,7 +343,7 @@ export default function BlogPage() {
             {/* 左侧分类导航区域 */}
             <div className="lg:col-span-3">
               <div className="bg-white dark:bg-gray-900 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 sticky top-8 transition-colors duration-200">
-                <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">分类导航</h2>
+                {/* <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">分类导航</h2> */}
                 <RecursiveMenu 
                   data={categories} 
                   currentCategory={currentCategory || undefined}
