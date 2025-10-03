@@ -37,7 +37,9 @@ const Select = React.forwardRef<HTMLDivElement, SelectProps>(
 
     // 获取当前选中项的标签
     const selectedLabel =
-      options.find((opt) => opt.value === value)?.label || placeholder || "请选择";
+      options.find((opt) => opt.value === value)?.label ||
+      placeholder ||
+      "请选择";
 
     // 点击外部关闭下拉框
     useEffect(() => {
@@ -66,10 +68,13 @@ const Select = React.forwardRef<HTMLDivElement, SelectProps>(
 
     // 根据主题选择样式
     const triggerBgClass = theme === "dark" ? "bg-gray-800" : "bg-gray-100";
-    const triggerHoverClass = theme === "dark" ? "hover:bg-gray-700" : "hover:bg-gray-200";
+    const triggerHoverClass =
+      theme === "dark" ? "hover:bg-gray-700" : "hover:bg-gray-200";
     const dropdownBgClass = theme === "dark" ? "bg-gray-800" : "bg-white";
-    const dropdownBorderClass = theme === "dark" ? "border-gray-700" : "border-gray-200";
-    const optionHoverClass = theme === "dark" ? "hover:bg-gray-700" : "hover:bg-gray-100";
+    const dropdownBorderClass =
+      theme === "dark" ? "border-gray-700" : "border-gray-200";
+    const optionHoverClass =
+      theme === "dark" ? "hover:bg-gray-700" : "hover:bg-gray-100";
 
     return (
       <div
@@ -87,7 +92,7 @@ const Select = React.forwardRef<HTMLDivElement, SelectProps>(
         <div
           className={cn(
             "flex items-center justify-between cursor-pointer select-none w-full",
-            "px-3 py-1.5 text-sm rounded-lg transition-all duration-200",
+            "px-3 py-1.5 text-sm rounded-lg",
             triggerBgClass,
             triggerHoverClass
           )}

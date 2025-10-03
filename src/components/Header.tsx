@@ -13,7 +13,7 @@ import {
 
 /**
  * 网站头部组件
- * 包含 Logo、导航菜单、主题切换功能
+ * 包含网站名称、导航菜单、色调选择器、主题切换按钮
  */
 export default function Header() {
   const {
@@ -25,7 +25,7 @@ export default function Header() {
     setMounted,
   } = useAppStore();
 
-  // 只开放紫色和黑色两种色调
+  /** 可选的色调列表 */
   const availableColorSchemes: SelectOption[] = useMemo(() => {
     const schemes: ColorSchemeKey[] = ["purple", "black", "white", "blue"];
     return schemes.map((key) => ({
@@ -35,41 +35,47 @@ export default function Header() {
   }, []);
 
   /**
-   * 切换主题（黑夜/白天）
+   * 切换主题（light/dark）
+   * 如果当前是黑白色调，切换主题时自动切换为对应色调
    */
   const handleThemeChange = () => {
-    console.log("handleThemeChange", theme, colorScheme);
-    // 黑白色调互换
+    // 黑白色调自动切换：黑色色调配深色主题，白色色调配浅色主题
     if (colorScheme === "white" || colorScheme === "black") {
       setColorScheme(theme === "dark" ? "black" : "white");
     }
     toggleTheme();
   };
 
-  // 初始化主题和 mounted 状态
+  /**
+   * 初始化主题和 mounted 状态
+   * 同步 DOM 的 dark class 和 CSS 变量
+   */
   useEffect(() => {
-    // 同步 DOM 的 dark class
+    // 同步 DOM 的 dark class，用于 UnoCSS 的 dark: 前缀
     if (theme === "dark") {
       document.documentElement.classList.add("dark");
     } else {
       document.documentElement.classList.remove("dark");
     }
-    
-    // 同步 CSS 变量
+
+    // 同步 CSS 变量，用于动态颜色
     const primaryColor = colorSchemePresets[colorScheme];
     document.documentElement.style.setProperty("--color-primary", primaryColor);
-    
+
     setMounted(true);
   }, [setMounted, theme, colorScheme]);
 
-  // 防止水合错误
+  /** 防止服务端渲染时的水合错误 */
   if (!mounted) {
     return null;
   }
 
   return (
-    <header className="w-full border-b">
-      <div className="px-4 py-4">
+    <header
+      className="w-full"
+      style={{ boxShadow: "0 0 1px 1px var(--color-primary)" }}
+    >
+      <div className="px-4 py-2">
         <div className="flex items-center justify-between">
           {/* 左侧首页按钮 */}
           <Button type="text" size="lg" href="/">
