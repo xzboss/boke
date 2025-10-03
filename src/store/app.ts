@@ -2,11 +2,12 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
 /**
- * 主题预设配置
- * 每个主题只定义主色调，组件内部自行处理深浅变化
+ * 色调预设配置
+ * 每个色调只定义主色调，组件内部自行处理深浅变化
  */
-export const themePresets = {
-  black: '#000000',
+export const colorSchemePresets = {
+  black: '#111827',
+  white: '#f9fafb',
   purple: '#a855f7',
   blue: '#3b82f6',
   green: '#10b981',
@@ -17,17 +18,18 @@ export const themePresets = {
   teal: '#14b8a6'
 } as const
 
-export type ThemeKey = keyof typeof themePresets
+export type ColorSchemeKey = keyof typeof colorSchemePresets
+export type Theme = 'light' | 'dark'
 
 interface AppState {
-  // 主题相关
-  currentTheme: ThemeKey
-  isDark: boolean
+  // 色调相关
+  colorScheme: ColorSchemeKey
+  theme: Theme
   mounted: boolean
   
   // 主题操作
-  setTheme: (theme: ThemeKey) => void
-  toggleDarkMode: () => void
+  setColorScheme: (scheme: ColorSchemeKey) => void
+  toggleTheme: () => void
   setMounted: (mounted: boolean) => void
 }
 
@@ -35,28 +37,29 @@ export const useAppStore = create<AppState>()(
   persist(
     (set, get) => ({
       // 初始状态
-      currentTheme: 'black',
-      isDark: false,
+      colorScheme: 'black',
+      theme: 'light',
       mounted: false,
       
-      // 主题操作
-      setTheme: (theme: ThemeKey) => {
-        set({ currentTheme: theme })
+      // 色调操作
+      setColorScheme: (scheme: ColorSchemeKey) => {
+        set({ colorScheme: scheme })
         // 更新 CSS 变量（为了兼容性保留）
         if (typeof window !== 'undefined') {
           const root = document.documentElement
-          root.style.setProperty('--color-primary', themePresets[theme])
+          root.style.setProperty('--color-primary', colorSchemePresets[scheme])
         }
       },
       
-      toggleDarkMode: () => {
-        const { isDark } = get()
-        const newIsDark = !isDark
-        set({ isDark: newIsDark })
+      // 主题切换（黑夜/白天）
+      toggleTheme: () => {
+        const { theme } = get()
+        const newTheme: Theme = theme === 'dark' ? 'light' : 'dark'
+        set({ theme: newTheme })
         
         // 更新 DOM
         if (typeof window !== 'undefined') {
-          if (newIsDark) {
+          if (newTheme === 'dark') {
             document.documentElement.classList.add('dark')
           } else {
             document.documentElement.classList.remove('dark')
@@ -71,19 +74,20 @@ export const useAppStore = create<AppState>()(
     {
       name: 'app-store',
       partialize: (state) => ({
-        currentTheme: state.currentTheme,
-        isDark: state.isDark
+        colorScheme: state.colorScheme,
+        theme: state.theme
       })
     }
   )
 )
 
 /**
- * 获取主题名称
+ * 获取色调名称
  */
-export const getThemeName = (key: ThemeKey): string => {
-  const names: Record<ThemeKey, string> = {
+export const getColorSchemeName = (key: ColorSchemeKey): string => {
+  const names: Record<ColorSchemeKey, string> = {
     black: '黑色',
+    white: '白色',
     purple: '紫色',
     blue: '蓝色',
     green: '绿色',
@@ -97,12 +101,12 @@ export const getThemeName = (key: ThemeKey): string => {
 }
 
 /**
- * 获取可用主题列表
+ * 获取可用色调列表
  */
-export const getAvailableThemes = () => {
-  return Object.entries(themePresets).map(([key, color]) => ({
-    key: key as ThemeKey,
-    name: getThemeName(key as ThemeKey),
+export const getAvailableColorSchemes = () => {
+  return Object.entries(colorSchemePresets).map(([key, color]) => ({
+    key: key as ColorSchemeKey,
+    name: getColorSchemeName(key as ColorSchemeKey),
     color
   }))
 }
