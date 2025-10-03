@@ -39,5 +39,21 @@ export const colorUtils = {
     const newB = Math.max(0, Math.min(255, b + amount))
     
     return colorUtils.rgbToHex(newR, newG, newB)
+  },
+
+  /** 
+   * 将颜色转换为带透明度的 rgba 格式
+   * @param hex 十六进制颜色值
+   * @param alpha 透明度，0-1 之间的值
+   * @returns rgba 颜色字符串
+   */
+  withAlpha: (hex: string, alpha: number) => {
+    const rgb = colorUtils.hexToRgb(hex)
+    if (!rgb) return hex
+    
+    const { r, g, b } = rgb
+    const clampedAlpha = Math.max(0, Math.min(1, alpha))
+    
+    return `rgba(${r}, ${g}, ${b}, ${clampedAlpha})`
   }
 }

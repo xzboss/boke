@@ -107,37 +107,112 @@ src/
 ## Button 组件功能
 
 ### 组件架构
-- **BaseButton**：基础按钮组件，处理公共逻辑（事件、加载状态、尺寸）
-- **PrimaryButton**：主按钮，主色调背景渐变 + 白字（白色色调用黑字）
-- **TextButton**：文本按钮，主色调文字 + 无背景（hover 有灰色背景）
-- **LinkButton**：链接按钮，主色调文字 + 下划线
-- **DefaultButton**：默认按钮，主色调文字 + 灰色背景
-- **Button**：主组件，根据 `type` 选择具体实现，传递 `theme` 状态
+- **BaseButton**：基础按钮组件，处理公共逻辑
+  - 尺寸处理（sm/md/lg）
+  - 加载状态（loading spinner）
+  - 事件处理（onClick, onKeyDown）
+  - 可访问性属性（role, tabIndex, aria-disabled）
+  - 基础样式：`flex items-center gap-2 font-medium rounded-lg transition-all duration-200 cursor-pointer select-none active:scale-95`
+  
+- **PrimaryButton**：主按钮
+  - 背景：主色调纯色
+  - 文字：白色（所有色调统一，不分 light/dark）
+  - hover：透明度降低到 80%
+  - 支持 `color` 属性自定义色调
+  
+- **DefaultButton**：默认按钮
+  - 背景：主色调 5% 透明度（rgba）
+  - 文字：主色调
+  - hover：背景透明度加重到 10%
+  - 通过 CSS 变量 `--bg-color` 和 `--hover-bg` 实现
+  
+- **TextButton**：文本按钮
+  - 背景：无
+  - 文字：深色主题用白色，浅色主题用黑色
+  - hover：背景显示为主色调 5% 透明度 + 文字变为主色调
+  - 通过 CSS 变量 `--hover-bg` 和 `--hover-text` 实现
+  
+- **LinkButton**：链接按钮
+  - 背景：无
+  - 文字：深色主题用白色，浅色主题用黑色
+  - hover：文字变为主色调
+  - 通过 CSS 变量 `--hover-text` 实现
+  
+- **Button**：主组件，根据 `type` 分发到具体实现
 
-### 类型和尺寸
-- **类型**: primary, text, link, default
-- **尺寸**: sm, md, lg
-- **功能**: loading 状态, 禁用状态
-- **样式**: 渐变背景（从标准色到浅色）, 悬停动画, 点击缩放效果
-- **交互**: cursor-pointer, active:scale-95 触摸反馈, select-none 防止文本选中
-- **注释**: 所有 props 都有完整的 JSDoc 注释
+### 核心特性
+- **类型**: primary, default, text, link
+- **尺寸**: sm (px-3 py-1.5 text-sm), md (px-4 py-2 text-base), lg (px-6 py-3 text-lg)
+- **功能**: loading 状态, 支持 href 链接
+- **样式**: 纯色背景（不使用渐变）, 透明度过渡, 点击缩放效果
+- **交互**: active:scale-95 触摸反馈, select-none 防止文本选中
+- **注释**: 所有组件和 props 都有 JSDoc 注释
 
 ### 按钮类型详细说明
-1. **primary**：主色调背景（渐变到浅色），白色文字（白色色调用黑色文字）
-2. **text**：无背景，主色调文字，hover 时有灰色背景（根据 theme 选择深浅）
-3. **link**：无背景，主色调文字 + 下划线，hover 时无下划线
-4. **default**：灰色背景（根据 theme 选择深浅），主色调文字
 
-### 按钮使用 div 而非 button
-- 使用 `<div>` 元素而非 `<button>` 避免原生样式干扰
-- 添加 `role="button"`, `tabIndex`, `aria-disabled` 保证可访问性
+| 类型 | 背景 | 文字 | hover 效果 |
+|------|------|------|-----------|
+| primary | 主色调 | 白色 | 透明度 80% |
+| default | 主色调 5% | 主色调 | 背景加重到 10% |
+| text | 无 | 黑/白 | 背景 5% + 文字变色调 |
+| link | 无 | 黑/白 | 文字变色调 |
+
+### color 属性
+- 所有按钮类型都支持 `color` 属性
+- 传入 `ColorSchemeKey` 类型（'purple' | 'blue' | 'green' 等）
+- 优先级高于全局 `colorScheme`，用于单个按钮自定义色调
+
+### 使用 div 而非 button
+- 使用 `<div>` 元素避免原生按钮样式干扰
+- 添加 `role="button"` 保证语义化
+- 添加 `tabIndex={loading ? -1 : 0}` 支持键盘导航
+- 添加 `aria-disabled={loading}` 标识禁用状态
 - 添加 `onKeyDown` 处理键盘事件（Enter/Space）
+
+### href 支持
+- 所有按钮类型都支持 `href` 属性
+- 有 `href` 时自动使用 `next/link` 包裹
+- Link 组件使用 `whitespace-nowrap` 和 `textDecoration: 'none'`
+
+### 透明度系统（重要）
+使用 `colorUtils.withAlpha()` 而非 `adjustBrightness()` 的原因：
+- **问题**：`adjustBrightness` 对不同颜色效果不一致（紫色 160 合适，但黑色 160 不合适）
+- **解决**：使用透明度叠加，效果统一
+- **实现**：`withAlpha(hex, alpha)` 返回 `rgba(r, g, b, alpha)` 格式
+- **优势**：不管是紫色、黑色还是白色，5%/10% 透明度都能保持一致的视觉效果
 
 ## Icon 组件
 - 基于 `@ant-design/icons` 的 `createFromIconfontCN`
 - 配置 scriptUrl 指向 iconfont.cn 生成的 JS 文件
 - 使用方式：`<Icon type="icon-name" style={{ fontSize: '20px' }} />`
-- 当前使用的图标：icon-github, icon-moon, icon-sun
+- 当前使用的图标：icon-github, icon-moon, icon-sun, icon-expand
+
+## Select 组件
+- 自定义下拉选择器组件
+- **功能**：支持选项列表、当前值、变更回调
+- **样式**：适配 light/dark 主题，自动使用主色调
+- **交互**：点击展开/收起，点击外部自动关闭
+- **图标**：使用 `icon-expand`，展开时旋转 270 度，收起时旋转 180 度
+- **定位**：下拉列表显示在触发器下方（`top: 100%`）
+- **使用场景**：Header 中的色调选择器
+
+## RecursiveMenu 组件（递归菜单）
+- **功能**：支持无限层级的树形菜单结构
+- **数据源**：来自 `src/config/categories.ts` 的分类配置
+- **状态管理**：
+  - `expandedItems`：展开的菜单项 ID 集合
+  - `currentCategory`：当前选中的分类
+  - `currentSubCategory`：当前选中的子分类
+- **交互逻辑**：
+  - 有子项的节点：点击展开/收起
+  - 叶子节点：点击触发 `onSubCategorySelect` 回调
+- **样式**：
+  - 复用 `Button` 组件（primary 表示选中，text 表示未选中）
+  - 使用 `Icon type="icon-expand"` 显示展开状态
+  - 子项通过 `paddingLeft` 缩进显示层级
+- **选中状态**：
+  - 叶子节点：使用 `currentSubCategory === item.id` 判断
+  - 非叶子节点：使用 `currentCategory === item.id` 判断
 
 ## 博客系统架构
 - **分类系统**: 基于 TypeScript 配置的层级分类结构
@@ -177,11 +252,24 @@ export function cn(...inputs: ClassValue[]) {
 ### colorUtils
 ```typescript
 export const colorUtils = {
-  hexToRgb: (hex: string) => { r, g, b },
-  rgbToHex: (r, g, b) => string,
-  adjustBrightness: (hex: string, amount: number) => string
+  // 将十六进制颜色转换为 RGB 对象
+  hexToRgb: (hex: string) => { r, g, b } | null,
+  
+  // 将 RGB 值转换为十六进制字符串
+  rgbToHex: (r: number, g: number, b: number) => string,
+  
+  // 调整颜色亮度（已弃用，改用 withAlpha）
+  adjustBrightness: (hex: string, amount: number) => string,
+  
+  // 将颜色转换为带透明度的 rgba 格式（推荐使用）
+  // @param hex 十六进制颜色值
+  // @param alpha 透明度，0-1 之间的值
+  // @returns rgba(r, g, b, alpha) 字符串
+  withAlpha: (hex: string, alpha: number) => string
 }
 ```
+
+**重要**：新项目应使用 `withAlpha` 而非 `adjustBrightness`，因为透明度叠加对所有颜色效果一致。
 
 ## 待完善功能
 - 实现 MD 文件内容展示（格式化、样式）
@@ -191,12 +279,32 @@ export const colorUtils = {
 - 搜索功能
 - 标签页面
 
-## 注意事项
-- 已修复水合错误（字体配置统一）
-- UI 演练场页面已标记为客户端组件
-- 所有交互功能需要在客户端组件中实现
+## 注意事项和最佳实践
+
+### 样式相关
 - **禁止使用 onMouseEnter/onMouseLeave**：所有 hover 效果通过 CSS 类名实现
 - **禁止使用 dark: 前缀**：UnoCSS 不支持，改用三元表达式选择类名
+- **禁止使用 inline 相关类名**：如 `inline-flex`、`inline-block`，统一使用 `flex` 或 `block`
 - **按钮无边框无阴影**：保持简洁设计
-- **变量命名清晰**：theme 表示 light/dark，colorScheme 表示色调
-- **色调渐变方向**：从标准色到浅色，标准色是最深的颜色
+- **动态类名限制**：Tailwind/UnoCSS 不支持运行时动态拼接类名（如 `bg-[${color}]`），必须使用 `style` 属性或 CSS 变量
+
+### 变量命名规范
+- **theme**：表示主题模式，值为 `'light'` | `'dark'`
+- **colorScheme**：表示色调，值为 `'purple'` | `'blue'` 等
+- **避免使用 isDark、currentTheme** 等旧命名
+
+### 颜色处理
+- **透明度优先**：使用 `colorUtils.withAlpha(color, 0.05)` 而非 `adjustBrightness(color, 160)`
+- **原因**：透明度对所有颜色效果一致，亮度调整在不同颜色上效果差异大
+- **CSS 变量**：当 style 属性的优先级高于 class 时，使用 CSS 变量（如 `--hover-bg`）配合 `hover:bg-[var(--hover-bg)]`
+
+### 属性传递
+- **className 合并**：使用 `cn(baseClass, conditionalClass, props.className)` 确保外部类名不被覆盖
+- **style 合并**：使用 `{ ...defaultStyle, ...props.style }` 确保外部样式优先级最高
+- **其他属性**：使用 `{...props}` 传递所有剩余属性
+
+### 组件开发
+- **组件注释**：使用 `/** */` JSDoc 格式
+- **HTML 注释**：使用 `{/* 注释内容 */}` 标注区块功能
+- **客户端组件**：交互功能必须添加 `'use client'` 指令
+- **水合错误**：确保 SSR 和 CSR 渲染一致（已通过字体配置统一解决）

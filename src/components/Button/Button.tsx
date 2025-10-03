@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import { cn, colorUtils } from "@/utils/tools";
-import { useAppStore, colorSchemePresets, Theme } from "@/store/app";
+import { useAppStore, colorSchemePresets, ColorSchemeKey } from "@/store/app";
 
 export interface ButtonProps
   extends Omit<React.HTMLAttributes<HTMLDivElement>, "onClick"> {
@@ -15,6 +15,8 @@ export interface ButtonProps
   onClick?: (e: React.MouseEvent<HTMLDivElement>) => void;
   /** 链接地址（支持所有类型） */
   href?: string;
+  /** 自定义色调（优先级高于全局色调） */
+  color?: ColorSchemeKey;
   /** 子元素 */
   children: React.ReactNode;
   /** 自定义类名 */
@@ -23,13 +25,15 @@ export interface ButtonProps
   style?: React.CSSProperties;
 }
 
-// 基础按钮组件
+/**
+ * 基础按钮组件
+ */
 const BaseButton = React.forwardRef<HTMLDivElement, ButtonProps>(
   (
     { className, size = "md", loading = false, children, onClick, ...props },
     ref
   ) => {
-    const baseStyles = `flex items-center gap-2 font-medium rounded-lg transition-all duration-200 cursor-pointer select-none`;
+    const baseStyles = `flex items-center gap-2 font-medium rounded-lg transition-all duration-200 cursor-pointer select-none active:scale-95`;
 
     const sizeStyles = {
       sm: "px-3 py-1.5 text-sm",
@@ -85,27 +89,27 @@ const BaseButton = React.forwardRef<HTMLDivElement, ButtonProps>(
 
 BaseButton.displayName = "BaseButton";
 
-// Primary 按钮 - 主色调背景白字
+/**
+ * Primary 按钮 - 色调背景白字
+ */
 const PrimaryButton = React.forwardRef<
   HTMLDivElement,
-  Omit<ButtonProps, "type"> & { theme: Theme }
->(({ href, className, style, ...props }, ref) => {
+  Omit<ButtonProps, "type">
+>(({ href, color, className, style, ...props }, ref) => {
   const { colorScheme } = useAppStore();
-  const primaryColor = colorSchemePresets[colorScheme];
-  const lightColor = colorUtils.adjustBrightness(primaryColor, 40);
-
-  // 白色色调用黑色文字，其他色调用白色文字
-  let textColor: string = colorSchemePresets.white;
-  if (colorScheme === "white") {
-    textColor = colorSchemePresets.black;
-  }
+  const finalColorScheme = color || colorScheme;
+  const primaryColor = colorSchemePresets[finalColorScheme];
+  const textColor =
+    colorScheme === "white"
+      ? colorSchemePresets.black
+      : colorSchemePresets.white;
 
   const buttonContent = (
     <BaseButton
       ref={ref}
-      className={cn("active:scale-95 hover:opacity-90", className)}
+      className={cn("hover:opacity-80", className)}
       style={{
-        background: `linear-gradient(to right, ${primaryColor}, ${lightColor})`,
+        backgroundColor: primaryColor,
         color: textColor,
         ...style,
       }}
@@ -114,7 +118,15 @@ const PrimaryButton = React.forwardRef<
   );
 
   if (href) {
-    return <Link href={href} className="whitespace-nowrap" style={{ textDecoration: 'none' }}>{buttonContent}</Link>;
+    return (
+      <Link
+        href={href}
+        className="whitespace-nowrap"
+        style={{ textDecoration: "none" }}
+      >
+        {buttonContent}
+      </Link>
+    );
   }
 
   return buttonContent;
@@ -122,97 +134,48 @@ const PrimaryButton = React.forwardRef<
 
 PrimaryButton.displayName = "PrimaryButton";
 
-// Text 按钮 - 无背景主色调字，hover后有灰背景
-const TextButton = React.forwardRef<
-  HTMLDivElement,
-  Omit<ButtonProps, "type"> & { theme: Theme }
->(({ theme, href, className, style, ...props }, ref) => {
-  const { colorScheme } = useAppStore();
-  const primaryColor = colorSchemePresets[colorScheme];
-
-  // 暗黑主题用深色背景，浅色主题用浅色背景
-  const hoverClass =
-    theme === "dark" ? "hover:bg-gray-700" : "hover:bg-gray-100";
-
-  const buttonContent = (
-    <BaseButton
-      ref={ref}
-      className={cn("active:scale-95", hoverClass, className)}
-      style={{
-        color: primaryColor,
-        ...style,
-      }}
-      {...props}
-    />
-  );
-
-  if (href) {
-    return <Link href={href} className="whitespace-nowrap" style={{ textDecoration: 'none' }}>{buttonContent}</Link>;
-  }
-
-  return buttonContent;
-});
-
-TextButton.displayName = "TextButton";
-
-// Link 按钮 - 无背景主色调字和下划线
-const LinkButton = React.forwardRef<
-  HTMLDivElement,
-  Omit<ButtonProps, "type"> & { theme: Theme }
->(({ href, className, style, ...props }, ref) => {
-  const { colorScheme } = useAppStore();
-  const primaryColor = colorSchemePresets[colorScheme];
-
-  const buttonContent = (
-    <BaseButton
-      ref={ref}
-      className={cn("underline hover:no-underline active:scale-95 hover:opacity-80", className)}
-      style={{
-        color: primaryColor,
-        ...style,
-      }}
-      {...props}
-    />
-  );
-
-  // 如果有 href，使用 Link 包裹
-  if (href) {
-    return <Link href={href} className="whitespace-nowrap">{buttonContent}</Link>;
-  }
-
-  return buttonContent;
-});
-
-LinkButton.displayName = "LinkButton";
-
-// Default 按钮 - 灰背景主色调字
+/**
+ * Default 按钮 - 浅色背景色调字，hover背景加重
+ */
 const DefaultButton = React.forwardRef<
   HTMLDivElement,
-  Omit<ButtonProps, "type"> & { theme: Theme }
->(({ theme, href, className, style, ...props }, ref) => {
+  Omit<ButtonProps, "type">
+>(({ href, color, className, style, ...props }, ref) => {
   const { colorScheme } = useAppStore();
-  const primaryColor = colorSchemePresets[colorScheme];
-
-  // 暗黑主题用深色背景，浅色主题用浅色背景
-  const bgClass =
-    theme === "dark"
-      ? "bg-gray-800 hover:bg-gray-700"
-      : "bg-gray-100 hover:bg-gray-200";
+  const finalColorScheme = color || colorScheme;
+  const primaryColor = colorSchemePresets[finalColorScheme];
+  const bgColor = colorUtils.withAlpha(primaryColor, 0.05);
+  const hoverBg = colorUtils.withAlpha(primaryColor, 0.1);
 
   const buttonContent = (
     <BaseButton
       ref={ref}
-      className={cn("active:scale-95", bgClass, className)}
-      style={{
-        color: primaryColor,
-        ...style,
-      }}
+      className={cn(
+        "bg-[var(--bg-color)] hover:bg-[var(--hover-bg)]",
+        className
+      )}
+      style={
+        {
+          color: primaryColor,
+          "--bg-color": bgColor,
+          "--hover-bg": hoverBg,
+          ...style,
+        } as React.CSSProperties
+      }
       {...props}
     />
   );
 
   if (href) {
-    return <Link href={href} className="whitespace-nowrap" style={{ textDecoration: 'none' }}>{buttonContent}</Link>;
+    return (
+      <Link
+        href={href}
+        className="whitespace-nowrap"
+        style={{ textDecoration: "none" }}
+      >
+        {buttonContent}
+      </Link>
+    );
   }
 
   return buttonContent;
@@ -220,22 +183,115 @@ const DefaultButton = React.forwardRef<
 
 DefaultButton.displayName = "DefaultButton";
 
-// 主按钮组件
-const Button = React.forwardRef<HTMLDivElement, ButtonProps>(
-  ({ type = "primary", href, ...props }, ref) => {
-    const { theme } = useAppStore();
+/**
+ * Text 按钮 - 黑字/白字无背景，hover有浅色背景和色调字
+ */
+const TextButton = React.forwardRef<HTMLDivElement, Omit<ButtonProps, "type">>(
+  ({ href, color, className, style, ...props }, ref) => {
+    const { colorScheme, theme } = useAppStore();
+    const finalColorScheme = color || colorScheme;
+    const primaryColor = colorSchemePresets[finalColorScheme];
+    const textColor =
+      theme === "light" ? colorSchemePresets.black : colorSchemePresets.white;
+    const hoverBg = colorUtils.withAlpha(primaryColor, 0.05);
 
+    const buttonContent = (
+      <BaseButton
+        ref={ref}
+        className={cn(
+          "hover:bg-[var(--hover-bg)] hover:!text-[var(--hover-text)]",
+          className
+        )}
+        style={
+          {
+            color: textColor,
+            "--hover-bg": hoverBg,
+            "--hover-text": primaryColor,
+            ...style,
+          } as React.CSSProperties
+        }
+        {...props}
+      />
+    );
+
+    if (href) {
+      return (
+        <Link
+          href={href}
+          className="whitespace-nowrap"
+          style={{ textDecoration: "none" }}
+        >
+          {buttonContent}
+        </Link>
+      );
+    }
+
+    return buttonContent;
+  }
+);
+
+TextButton.displayName = "TextButton";
+
+/**
+ * Link 按钮 - 黑字/白字无背景，hover字色变色调
+ */
+const LinkButton = React.forwardRef<HTMLDivElement, Omit<ButtonProps, "type">>(
+  ({ href, color, className, style, ...props }, ref) => {
+    const { colorScheme, theme } = useAppStore();
+    const finalColorScheme = color || colorScheme;
+    const primaryColor = colorSchemePresets[finalColorScheme];
+    const textColor =
+      theme === "light" ? colorSchemePresets.black : colorSchemePresets.white;
+
+    const buttonContent = (
+      <BaseButton
+        ref={ref}
+        className={cn("hover:!text-[var(--hover-text)]", className)}
+        style={
+          {
+            color: textColor,
+            "--hover-text": primaryColor,
+            ...style,
+          } as React.CSSProperties
+        }
+        {...props}
+      />
+    );
+
+    if (href) {
+      return (
+        <Link
+          href={href}
+          className="whitespace-nowrap"
+          style={{ textDecoration: "none" }}
+        >
+          {buttonContent}
+        </Link>
+      );
+    }
+
+    return buttonContent;
+  }
+);
+
+LinkButton.displayName = "LinkButton";
+
+/**
+ * 主按钮组件
+ */
+const Button = React.forwardRef<HTMLDivElement, ButtonProps>(
+  ({ type = "primary", ...props }, ref) => {
     switch (type) {
       case "primary":
-        return <PrimaryButton ref={ref} theme={theme} href={href} {...props} />;
-      case "text":
-        return <TextButton ref={ref} theme={theme} href={href} {...props} />;
-      case "link":
-        return <LinkButton ref={ref} theme={theme} href={href} {...props} />;
+        return <PrimaryButton ref={ref} {...props} />;
       case "default":
-        return <DefaultButton ref={ref} theme={theme} href={href} {...props} />;
+        return <DefaultButton ref={ref} {...props} />;
+      case "text":
+        return <TextButton ref={ref} {...props} />;
+      case "link":
+        return <LinkButton ref={ref} {...props} />;
       default:
-        return <PrimaryButton ref={ref} theme={theme} href={href} {...props} />;
+        return <PrimaryButton ref={ref} {...props} />;
     }
   }
 );
