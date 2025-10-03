@@ -1,12 +1,14 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import Button from "./Button";
 import Icon from "./Icon";
+import Select, { SelectOption } from "./Select";
 import {
   useAppStore,
-  getAvailableColorSchemes,
+  getColorSchemeName,
   ColorSchemeKey,
+  colorSchemePresets,
 } from "@/store/app";
 
 /**
@@ -22,7 +24,15 @@ export default function Header() {
     toggleTheme,
     setMounted,
   } = useAppStore();
-  const availableColorSchemes = getAvailableColorSchemes();
+
+  // 只开放紫色和黑色两种色调
+  const availableColorSchemes: SelectOption[] = useMemo(() => {
+    const schemes: ColorSchemeKey[] = ["purple", "black", "white", "blue"];
+    return schemes.map((key) => ({
+      value: key,
+      label: getColorSchemeName(key),
+    }));
+  }, []);
 
   /**
    * 切换主题（黑夜/白天）
@@ -36,10 +46,21 @@ export default function Header() {
     toggleTheme();
   };
 
-  // 设置 mounted 状态
+  // 初始化主题和 mounted 状态
   useEffect(() => {
+    // 同步 DOM 的 dark class
+    if (theme === "dark") {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+    
+    // 同步 CSS 变量
+    const primaryColor = colorSchemePresets[colorScheme];
+    document.documentElement.style.setProperty("--color-primary", primaryColor);
+    
     setMounted(true);
-  }, [setMounted]);
+  }, [setMounted, theme, colorScheme]);
 
   // 防止水合错误
   if (!mounted) {
@@ -47,108 +68,48 @@ export default function Header() {
   }
 
   return (
-    <header className="w-full border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 transition-colors duration-200">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+    <header className="w-full border-b">
+      <div className="px-4 py-4">
+        <div className="flex items-center justify-between">
           {/* 左侧首页按钮 */}
-          <div className="flex-shrink-0">
-            <Button type="text" size="lg" href="/" className="p-0">
-              xushilong
-            </Button>
-          </div>
+          <Button type="text" size="lg" href="/">
+            xushilong
+          </Button>
 
           {/* 右侧导航菜单和操作区域 */}
-          <div className="flex items-center space-x-2">
-            {/* 桌面端导航菜单 */}
-            <nav className="hidden md:flex items-center space-x-2">
-              <Button type="text" size="sm" href="/blog">
-                博客
-              </Button>
+          <div className="flex items-center gap-2">
+            <Button type="text" size="sm" href="/blog">
+              博客
+            </Button>
 
-              <a
-                href="https://github.com"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Button type="text" size="sm">
-                  <Icon
-                    type="icon-github"
-                    style={{ fontSize: "16px", marginRight: "4px" }}
-                  />
-                  GitHub
-                </Button>
-              </a>
+            <Button type="text" size="sm" href="https://github.com">
+              <Icon type="icon-github" style={{ fontSize: "16px" }} />
+              GitHub
+            </Button>
 
-              <Button type="text" size="sm" href="/ui">
-                演练场
-              </Button>
+            <Button type="text" size="sm" href="/ui">
+              演练场
+            </Button>
 
-              <Button type="text" size="sm" href="/about">
-                关于
-              </Button>
-            </nav>
+            <Button type="text" size="sm" href="/about">
+              关于
+            </Button>
 
             {/* 主题颜色选择器 */}
-            <div className="relative">
-              <select
-                value={colorScheme}
-                onChange={(e) =>
-                  setColorScheme(e.target.value as ColorSchemeKey)
-                }
-                className="appearance-none bg-transparent border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-1.5 text-sm text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-              >
-                {availableColorSchemes.map((scheme) => (
-                  <option key={scheme.key} value={scheme.key}>
-                    {scheme.name}
-                  </option>
-                ))}
-              </select>
-              <div className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
-                <svg
-                  className="w-4 h-4 text-gray-400"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
-              </div>
-            </div>
+            <Select
+              placeholder="色调"
+              options={availableColorSchemes}
+              value={colorScheme}
+              onChange={(value) => setColorScheme(value as ColorSchemeKey)}
+            />
 
             {/* 深色模式切换按钮 */}
-            <Button
-              type="text"
-              size="sm"
-              onClick={handleThemeChange}
-              aria-label="切换深色模式"
-            >
+            <Button type="text" size="sm" onClick={handleThemeChange}>
               {theme === "dark" ? (
                 <Icon type="icon-sun" style={{ fontSize: "20px" }} />
               ) : (
                 <Icon type="icon-moon" style={{ fontSize: "20px" }} />
               )}
-            </Button>
-
-            {/* 移动端菜单按钮 */}
-            <Button type="text" size="sm" className="md:hidden">
-              <svg
-                className="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4 6h16M4 12h16M4 18h16"
-                />
-              </svg>
             </Button>
           </div>
         </div>

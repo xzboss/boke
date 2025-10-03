@@ -29,7 +29,7 @@ const BaseButton = React.forwardRef<HTMLDivElement, ButtonProps>(
     { className, size = "md", loading = false, children, onClick, ...props },
     ref
   ) => {
-    const baseStyles = `inline-flex items-center justify-center font-medium rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer select-none`;
+    const baseStyles = `flex items-center gap-2 font-medium rounded-lg transition-all duration-200 cursor-pointer select-none`;
 
     const sizeStyles = {
       sm: "px-3 py-1.5 text-sm",
@@ -113,7 +113,7 @@ const PrimaryButton = React.forwardRef<
   );
 
   if (href) {
-    return <Link href={href}>{buttonContent}</Link>;
+    return <Link href={href} className="whitespace-nowrap" style={{ textDecoration: 'none' }}>{buttonContent}</Link>;
   }
 
   return buttonContent;
@@ -145,7 +145,7 @@ const TextButton = React.forwardRef<
   );
 
   if (href) {
-    return <Link href={href}>{buttonContent}</Link>;
+    return <Link href={href} className="whitespace-nowrap" style={{ textDecoration: 'none' }}>{buttonContent}</Link>;
   }
 
   return buttonContent;
@@ -174,7 +174,7 @@ const LinkButton = React.forwardRef<
 
   // 如果有 href，使用 Link 包裹
   if (href) {
-    return <Link href={href}>{buttonContent}</Link>;
+    return <Link href={href} className="whitespace-nowrap">{buttonContent}</Link>;
   }
 
   return buttonContent;
@@ -208,7 +208,7 @@ const DefaultButton = React.forwardRef<
   );
 
   if (href) {
-    return <Link href={href}>{buttonContent}</Link>;
+    return <Link href={href} className="whitespace-nowrap" style={{ textDecoration: 'none' }}>{buttonContent}</Link>;
   }
 
   return buttonContent;

@@ -910,11 +910,11 @@ HTTP 协议从简单的文本协议发展到现代的二进制协议，每一次
                 {/* 文章头部 */}
                 <header className="mb-12">
                   <div className="flex items-center gap-3 mb-4">
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                    <span className="flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
                       {getCategoryName(post.category)}
                     </span>
                     {post.featured && (
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                      <span className="flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
                         精选
                       </span>
                     )}
@@ -932,7 +932,7 @@ HTTP 协议从简单的文本协议发展到现代的二进制协议，每一次
                   
                   <div className="flex flex-wrap gap-2">
                     {post.tags.map((tag) => (
-                      <span key={tag} className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-gray-100 text-gray-800">
+                      <span key={tag} className="flex items-center px-2 py-1 rounded text-xs font-medium bg-gray-100 text-gray-800">
                         {tag}
                       </span>
                     ))}
