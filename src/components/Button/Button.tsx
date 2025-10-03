@@ -89,7 +89,7 @@ BaseButton.displayName = "BaseButton";
 const PrimaryButton = React.forwardRef<
   HTMLDivElement,
   Omit<ButtonProps, "type"> & { theme: Theme }
->(({ href, ...props }, ref) => {
+>(({ href, className, style, ...props }, ref) => {
   const { colorScheme } = useAppStore();
   const primaryColor = colorSchemePresets[colorScheme];
   const lightColor = colorUtils.adjustBrightness(primaryColor, 40);
@@ -103,10 +103,11 @@ const PrimaryButton = React.forwardRef<
   const buttonContent = (
     <BaseButton
       ref={ref}
-      className="active:scale-95 hover:opacity-90"
+      className={cn("active:scale-95 hover:opacity-90", className)}
       style={{
         background: `linear-gradient(to right, ${primaryColor}, ${lightColor})`,
         color: textColor,
+        ...style,
       }}
       {...props}
     />
@@ -125,7 +126,7 @@ PrimaryButton.displayName = "PrimaryButton";
 const TextButton = React.forwardRef<
   HTMLDivElement,
   Omit<ButtonProps, "type"> & { theme: Theme }
->(({ theme, href, ...props }, ref) => {
+>(({ theme, href, className, style, ...props }, ref) => {
   const { colorScheme } = useAppStore();
   const primaryColor = colorSchemePresets[colorScheme];
 
@@ -136,9 +137,10 @@ const TextButton = React.forwardRef<
   const buttonContent = (
     <BaseButton
       ref={ref}
-      className={`active:scale-95 ${hoverClass}`}
+      className={cn("active:scale-95", hoverClass, className)}
       style={{
         color: primaryColor,
+        ...style,
       }}
       {...props}
     />
@@ -157,16 +159,17 @@ TextButton.displayName = "TextButton";
 const LinkButton = React.forwardRef<
   HTMLDivElement,
   Omit<ButtonProps, "type"> & { theme: Theme }
->(({ href, ...props }, ref) => {
+>(({ href, className, style, ...props }, ref) => {
   const { colorScheme } = useAppStore();
   const primaryColor = colorSchemePresets[colorScheme];
 
   const buttonContent = (
     <BaseButton
       ref={ref}
-      className="underline hover:no-underline active:scale-95 hover:opacity-80"
+      className={cn("underline hover:no-underline active:scale-95 hover:opacity-80", className)}
       style={{
         color: primaryColor,
+        ...style,
       }}
       {...props}
     />
@@ -186,7 +189,7 @@ LinkButton.displayName = "LinkButton";
 const DefaultButton = React.forwardRef<
   HTMLDivElement,
   Omit<ButtonProps, "type"> & { theme: Theme }
->(({ theme, href, ...props }, ref) => {
+>(({ theme, href, className, style, ...props }, ref) => {
   const { colorScheme } = useAppStore();
   const primaryColor = colorSchemePresets[colorScheme];
 
@@ -199,9 +202,10 @@ const DefaultButton = React.forwardRef<
   const buttonContent = (
     <BaseButton
       ref={ref}
-      className={`active:scale-95 ${bgClass}`}
+      className={cn("active:scale-95", bgClass, className)}
       style={{
         color: primaryColor,
+        ...style,
       }}
       {...props}
     />
