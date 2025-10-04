@@ -101,7 +101,11 @@ export default function RecursiveMenu({
     if (currentSubCategory) {
       const ancestors = findAncestors(currentSubCategory, data);
       setExpandedItems((prev) => {
-        const newExpanded = new Set([...prev, currentSubCategory, ...ancestors]);
+        const newExpanded = new Set([
+          ...prev,
+          currentSubCategory,
+          ...ancestors,
+        ]);
         // 检查是否全部展开
         const allParentIds = getAllParentIds(data);
         const isAll = allParentIds.every((id) => newExpanded.has(id));
@@ -223,7 +227,7 @@ export default function RecursiveMenu({
           </Button>
         </div>
       )}
-      
+
       {/* 菜单项列表 */}
       {data.map((item) => renderMenuItem(item))}
     </nav>

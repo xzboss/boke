@@ -283,10 +283,11 @@ export const colorUtils = {
 
 ### 样式相关
 - **禁止使用 onMouseEnter/onMouseLeave**：所有 hover 效果通过 CSS 类名实现
-- **禁止使用 dark: 前缀**：UnoCSS 不支持，改用三元表达式选择类名
+- **禁止使用 dark: 前缀**：虽然 UnoCSS 支持（配置了 `dark: 'class'`），但为了统一性，统一使用三元表达式或内联样式根据 `theme` 状态判断
 - **禁止使用 inline 相关类名**：如 `inline-flex`、`inline-block`，统一使用 `flex` 或 `block`
 - **按钮无边框无阴影**：保持简洁设计
 - **动态类名限制**：Tailwind/UnoCSS 不支持运行时动态拼接类名（如 `bg-[${color}]`），必须使用 `style` 属性或 CSS 变量
+- **不使用 SCSS/SASS**：所有样式使用 Tailwind/UnoCSS 类名或内联样式，不创建单独的样式文件
 
 ### 变量命名规范
 - **theme**：表示主题模式，值为 `'light'` | `'dark'`

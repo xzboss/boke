@@ -19,11 +19,11 @@ html {
 }
 
 body {
-  font-family: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: var(--font-geist-sans), -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, sans-serif;
   background-color: var(--color-background);
   color: var(--color-text);
 }
-
 
 /* 深色模式样式 */
 .dark body {
@@ -31,29 +31,50 @@ body {
   color: var(--color-text-dark);
 }
 
-/* 滚动条样式 */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
+/* ==================== 自定义滚动条样式 ==================== */
+.custom-scrollbar, body {
+  /* 滚动条浮动显示，不占用容器宽度 */
+  overflow: overlay;
+  scrollbar-gutter: stable;
 
-::-webkit-scrollbar-track {
-  background: transparent;
-}
+  /* 滚动条整体宽度和高度 */
+  &::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
 
-::-webkit-scrollbar-thumb {
-  background: #d1d5db;
-  border-radius: 3px;
-}
+  /* 滚动条轨道背景 */
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
 
-.dark ::-webkit-scrollbar-thumb {
-  background: #4b5563;
-}
+  /* 滚动条滑块默认透明（隐藏） */
+  &::-webkit-scrollbar-thumb {
+    background: transparent;
+    border-radius: 3px;
+  }
 
-::-webkit-scrollbar-thumb:hover {
-  background: #9ca3af;
-}
+  &:hover {
+    /* 滚动条整体宽度和高度 */
+    &::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
 
-.dark ::-webkit-scrollbar-thumb:hover {
-  background: #6b7280;
+    /* 滚动条轨道背景 */
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    /* 滚动条滑块默认透明（隐藏） */
+    &::-webkit-scrollbar-thumb {
+      background: var(--color-primary-200);
+      border-radius: 3px;
+    }
+
+    /* 滚动条滑块 hover 状态 */
+    &::-webkit-scrollbar-thumb:hover {
+      background: var(--color-primary-300);
+    }
+  }
 }

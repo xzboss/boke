@@ -1,6 +1,6 @@
 'use client'
 
-import Layout from '@/components/Layout'
+import { Layout } from '@/components/layout'
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
@@ -805,8 +805,8 @@ HTTP 协议从简单的文本协议发展到现代的二进制协议，每一次
               <div className="lg:col-span-6">
                 <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
                   <div className="text-center py-16">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto"></div>
-                    <p className="mt-4 text-gray-600">加载中...</p>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto"></div>
+            <p className="mt-4 text-gray-600">加载中...</p>
                   </div>
                 </div>
               </div>
@@ -846,11 +846,11 @@ HTTP 协议从简单的文本协议发展到现代的二进制协议，每一次
               <div className="lg:col-span-6">
                 <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
                   <div className="text-center py-16">
-                    <h1 className="text-4xl font-bold text-gray-900 mb-4">文章不存在</h1>
-                    <p className="text-gray-600 mb-8">请检查 URL 是否正确</p>
-                    <Link href="/blog" className="text-purple-600 hover:text-purple-700 font-medium">
-                      返回博客首页
-                    </Link>
+            <h1 className="text-4xl font-bold text-gray-900 mb-4">文章不存在</h1>
+            <p className="text-gray-600 mb-8">请检查 URL 是否正确</p>
+            <Link href="/blog" className="text-purple-600 hover:text-purple-700 font-medium">
+              返回博客首页
+            </Link>
                   </div>
                 </div>
               </div>
@@ -888,93 +888,93 @@ HTTP 协议从简单的文本协议发展到现代的二进制协议，每一次
             {/* 中间内容区域 */}
             <div className="lg:col-span-6">
               <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
-                {/* 面包屑导航 */}
-                <nav className="flex items-center space-x-2 text-sm text-gray-500 mb-8">
-                  <Link href="/" className="hover:text-gray-700">首页</Link>
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                  <Link href="/blog" className="hover:text-gray-700">博客</Link>
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                  <Link href={`/blog/${post.category}`} className="hover:text-gray-700">
-                    {getCategoryName(post.category)}
-                  </Link>
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                  <span className="text-gray-900">{post.title}</span>
-                </nav>
+        {/* 面包屑导航 */}
+        <nav className="flex items-center space-x-2 text-sm text-gray-500 mb-8">
+          <Link href="/" className="hover:text-gray-700">首页</Link>
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+          <Link href="/blog" className="hover:text-gray-700">博客</Link>
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+          <Link href={`/blog/${post.category}`} className="hover:text-gray-700">
+            {getCategoryName(post.category)}
+          </Link>
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+          <span className="text-gray-900">{post.title}</span>
+        </nav>
 
-                {/* 文章头部 */}
-                <header className="mb-12">
-                  <div className="flex items-center gap-3 mb-4">
+        {/* 文章头部 */}
+        <header className="mb-12">
+          <div className="flex items-center gap-3 mb-4">
                     <span className="flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                      {getCategoryName(post.category)}
-                    </span>
-                    {post.featured && (
+              {getCategoryName(post.category)}
+            </span>
+            {post.featured && (
                       <span className="flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                        精选
-                      </span>
-                    )}
-                  </div>
-                  
-                  <h1 className="text-4xl font-bold text-gray-900 mb-4">{post.title}</h1>
-                  <p className="text-xl text-gray-600 mb-6">{post.description}</p>
-                  
-                  <div className="flex items-center justify-between text-sm text-gray-500 mb-6">
-                    <div className="flex items-center space-x-4">
-                      <span>创建时间：{formatDate(post.createdAt)}</span>
-                      <span>更新时间：{formatDate(post.updatedAt)}</span>
-                    </div>
-                  </div>
-                  
-                  <div className="flex flex-wrap gap-2">
-                    {post.tags.map((tag) => (
+                精选
+              </span>
+            )}
+          </div>
+          
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">{post.title}</h1>
+          <p className="text-xl text-gray-600 mb-6">{post.description}</p>
+          
+          <div className="flex items-center justify-between text-sm text-gray-500 mb-6">
+            <div className="flex items-center space-x-4">
+              <span>创建时间：{formatDate(post.createdAt)}</span>
+              <span>更新时间：{formatDate(post.updatedAt)}</span>
+            </div>
+          </div>
+          
+          <div className="flex flex-wrap gap-2">
+            {post.tags.map((tag) => (
                       <span key={tag} className="flex items-center px-2 py-1 rounded text-xs font-medium bg-gray-100 text-gray-800">
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                </header>
+                {tag}
+              </span>
+            ))}
+          </div>
+        </header>
 
-                {/* 文章内容 */}
-                <article className="prose prose-lg max-w-none">
+        {/* 文章内容 */}
+        <article className="prose prose-lg max-w-none">
                   <div className="whitespace-pre-wrap text-gray-800 leading-relaxed">
                     {post.content}
                   </div>
-                </article>
+        </article>
 
-                {/* 相关文章 */}
-                {relatedPosts.length > 0 && (
-                  <section className="mt-16">
-                    <h2 className="text-2xl font-semibold text-gray-900 mb-6">相关文章</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                      {relatedPosts.map((relatedPost) => (
-                        <article key={relatedPost.slug} className="bg-white rounded-lg border border-gray-200 p-4 hover:shadow-md transition-shadow duration-200">
-                          <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
+        {/* 相关文章 */}
+        {relatedPosts.length > 0 && (
+          <section className="mt-16">
+            <h2 className="text-2xl font-semibold text-gray-900 mb-6">相关文章</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {relatedPosts.map((relatedPost) => (
+                <article key={relatedPost.slug} className="bg-white rounded-lg border border-gray-200 p-4 hover:shadow-md transition-shadow duration-200">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
                             <Link href={`/blog/post/${relatedPost.slug}`} className="hover:text-purple-600 transition-colors">
-                              {relatedPost.title}
-                            </Link>
-                          </h3>
-                          <p className="text-gray-600 text-sm line-clamp-2 mb-3">
-                            {relatedPost.description}
-                          </p>
-                          <div className="flex items-center justify-between text-xs text-gray-500">
-                            <span>{formatDate(relatedPost.createdAt)}</span>
-                            <Link
+                      {relatedPost.title}
+                    </Link>
+                  </h3>
+                  <p className="text-gray-600 text-sm line-clamp-2 mb-3">
+                    {relatedPost.description}
+                  </p>
+                  <div className="flex items-center justify-between text-xs text-gray-500">
+                    <span>{formatDate(relatedPost.createdAt)}</span>
+                    <Link
                               href={`/blog/post/${relatedPost.slug}`}
-                              className="text-purple-600 hover:text-purple-700 font-medium"
-                            >
-                              阅读更多
-                            </Link>
-                          </div>
-                        </article>
-                      ))}
-                    </div>
-                  </section>
-                )}
+                      className="text-purple-600 hover:text-purple-700 font-medium"
+                    >
+                      阅读更多
+                    </Link>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </section>
+        )}
               </div>
             </div>
 

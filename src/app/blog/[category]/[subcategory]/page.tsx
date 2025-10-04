@@ -1,6 +1,6 @@
 'use client'
 
-import Layout from '@/components/Layout'
+import { Layout } from '@/components/layout'
 import Link from 'next/link'
 import { useState } from 'react'
 import { useParams } from 'next/navigation'

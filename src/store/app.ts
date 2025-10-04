@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+import {colorUtils} from '@/utils/tools'
 
 /**
  * 色调预设配置
@@ -48,6 +49,14 @@ export const useAppStore = create<AppState>()(
         if (typeof window !== 'undefined') {
           const root = document.documentElement
           root.style.setProperty('--color-primary', colorSchemePresets[scheme])
+          root.style.setProperty('--color-primary-100', colorUtils.withAlpha(colorSchemePresets[scheme], 0.1))
+          root.style.setProperty('--color-primary-200', colorUtils.withAlpha(colorSchemePresets[scheme], 0.2))
+          root.style.setProperty('--color-primary-300', colorUtils.withAlpha(colorSchemePresets[scheme], 0.3))
+          root.style.setProperty('--color-primary-400', colorUtils.withAlpha(colorSchemePresets[scheme], 0.4))
+          root.style.setProperty('--color-primary-500', colorUtils.withAlpha(colorSchemePresets[scheme], 0.5))
+          root.style.setProperty('--color-primary-600', colorUtils.withAlpha(colorSchemePresets[scheme], 0.6))
+          root.style.setProperty('--color-primary-700', colorUtils.withAlpha(colorSchemePresets[scheme], 0.7))
+          root.style.setProperty('--color-primary-900', colorUtils.withAlpha(colorSchemePresets[scheme], 0.9))
         }
       },
       
