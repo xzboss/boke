@@ -51,15 +51,78 @@ export interface TocItem {
 }
 
 /**
+ * 生成标题 ID（去重处理）
+ * @param text 标题文本
+ * @param usedIds 已使用的 ID 集合
+ * @returns 唯一的 ID
+ */
+function generateUniqueId(text: string, usedIds: Set<string>): string {
+  // 生成基础 ID
+  const baseId = text
+    .toLowerCase()
+    .replace(/\s+/g, '-')
+    .replace(/[^\w\u4e00-\u9fa5-]/g, '');
+
+  // 如果 ID 没有重复，直接使用
+  if (!usedIds.has(baseId)) {
+    usedIds.add(baseId);
+    return baseId;
+  }
+
+  // 如果重复，添加数字后缀
+  let counter = 1;
+  let uniqueId = `${baseId}-${counter}`;
+  while (usedIds.has(uniqueId)) {
+    counter++;
+    uniqueId = `${baseId}-${counter}`;
+  }
+  usedIds.add(uniqueId);
+  return uniqueId;
+}
+
+/**
  * 将 Markdown 转换为 HTML
  * @param markdown Markdown 文本
+ * @param toc 目录项数组（用于同步 ID）
  * @returns HTML 字符串
  */
-export async function markdownToHtml(markdown: string): Promise<string> {
+export async function markdownToHtml(markdown: string, toc: TocItem[]): Promise<string> {
+  // 创建标题文本到 ID 的映射
+  const headingIdMap = new Map<string, string>();
+  toc.forEach(item => {
+    headingIdMap.set(item.text, item.id);
+  });
+
+  // 使用 rehype-slug 的默认行为，但通过自定义插件设置我们的 ID
   const result = await remark()
     .use(remarkGfm) // 支持 GitHub 风格 Markdown
     .use(remarkRehype) // 将 Markdown AST 转换为 HTML AST
-    .use(rehypeSlug) // 为标题添加 id
+    .use(() => (tree: any) => {
+      // 遍历 HTML AST，为标题节点设置 ID
+      const visit = (node: any) => {
+        if (node.type === 'element' && /^h[1-6]$/.test(node.tagName)) {
+          // 提取标题文本
+          const getText = (n: any): string => {
+            if (n.type === 'text') return n.value;
+            if (n.children) return n.children.map(getText).join('');
+            return '';
+          };
+          const text = getText(node).trim();
+          
+          // 从映射中获取对应的 ID
+          const id = headingIdMap.get(text);
+          if (id) {
+            node.properties = node.properties || {};
+            node.properties.id = id;
+          }
+        }
+        
+        if (node.children) {
+          node.children.forEach(visit);
+        }
+      };
+      visit(tree);
+    })
     .use(rehypeAutolinkHeadings, { behavior: 'wrap' }) // 为标题添加锚点链接
     .use(rehypeStringify) // 将 HTML AST 转换为字符串
     .process(markdown);
@@ -75,6 +138,7 @@ export async function markdownToHtml(markdown: string): Promise<string> {
 export function extractToc(markdown: string): TocItem[] {
   const toc: TocItem[] = [];
   const lines = markdown.split('\n');
+  const idCounts = new Map<string, number>(); // 记录每个 ID 出现的次数
 
   for (const line of lines) {
     // 匹配标题行 (# 、## 、### 等)
@@ -82,11 +146,19 @@ export function extractToc(markdown: string): TocItem[] {
     if (match) {
       const level = match[1].length;
       const text = match[2].trim();
-      // 生成 id：转小写，替换空格为短横线，移除特殊字符
-      const id = text
+      // 生成基础 id：转小写，替换空格为短横线，移除特殊字符
+      let baseId = text
         .toLowerCase()
         .replace(/\s+/g, '-')
         .replace(/[^\w\u4e00-\u9fa5-]/g, '');
+
+      // 处理重复的 ID
+      let id = baseId;
+      const count = idCounts.get(baseId) || 0;
+      if (count > 0) {
+        id = `${baseId}-${count}`;
+      }
+      idCounts.set(baseId, count + 1);
 
       toc.push({ level, text, id });
     }
@@ -104,11 +176,11 @@ export async function parseMarkdown(fileContent: string): Promise<ParsedPost> {
   const { data, content } = matter(fileContent);
   const metadata = data as PostMetadata;
 
-  // 转换 Markdown 为 HTML
-  const htmlContent = await markdownToHtml(content);
-
-  // 提取目录
+  // 先提取目录（生成唯一的 ID）
   const toc = extractToc(content);
+
+  // 使用 TOC 中的 ID 转换 Markdown 为 HTML
+  const htmlContent = await markdownToHtml(content, toc);
 
   return {
     metadata,

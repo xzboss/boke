@@ -61,7 +61,7 @@ export const categories: Category[] = [
         path: "/blog/frontend/vite",
         level: 2,
         parentId: "frontend",
-        tags: ["vite", "vite-vue", "vite-react", "rollup", "esbuild", "hmr"],
+        tags: ["vite", "vite-vue", "vite-react", "rollup", "esbuild", "hmr", "hot"],
         children: []
       },
       {
@@ -70,7 +70,7 @@ export const categories: Category[] = [
         path: "/blog/frontend/javascript",
         level: 2,
         parentId: "frontend",
-        tags: ["js", "javascript", "async", "promise", "es6"],
+        tags: ["js", "javascript", "async", "promise", "es6", "hot"],
         children: []
       },
       {
@@ -86,7 +86,11 @@ export const categories: Category[] = [
   }
 ]
 
-// 工具函数
+/**
+ * 根据 ID 获取分类
+ * @param id 
+ * @returns 
+ */
 export const getCategoryById = (id: string): Category | undefined => {
   const findCategory = (categories: Category[]): Category | undefined => {
     for (const category of categories) {
@@ -99,6 +103,11 @@ export const getCategoryById = (id: string): Category | undefined => {
   return findCategory(categories)
 }
 
+/**
+ * 根据层级获取分类
+ * @param level 层级
+ * @returns 分类
+ */
 export const getCategoriesByLevel = (level: number): Category[] => {
   const result: Category[] = []
   const findCategories = (cats: Category[]) => {
@@ -111,11 +120,21 @@ export const getCategoriesByLevel = (level: number): Category[] => {
   return result
 }
 
+/**
+ * 根据父 ID 获取子分类
+ * @param parentId 父 ID
+ * @returns 子分类
+ */
 export const getSubCategories = (parentId: string): Category[] => {
   const parent = getCategoryById(parentId)
   return parent?.children || []
 }
 
+/**
+ * 根据标签获取分类
+ * @param tag 标签
+ * @returns 分类
+ */
 export const findCategoriesByTag = (tag: string): Category[] => {
   const result: Category[] = []
   const findCategories = (cats: Category[]) => {

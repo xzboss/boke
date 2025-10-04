@@ -16,28 +16,51 @@
 src/
 ├── app/                    # Next.js App Router
 │   ├── page.tsx           # 首页
+│   ├── blog/              # 博客页面
+│   │   ├── page.tsx       # 博客首页（三栏布局）
+│   │   ├── page.scss      # 博客页面样式（侧边栏 hover 效果）
+│   │   └── api/           # API 路由
+│   │       └── blog/[slug]/route.ts  # 博客文章 API
 │   ├── ui/page.tsx        # UI演练场（客户端组件）
 │   ├── layout.tsx         # 根布局
-│   └── globals.css        # 全局样式
+│   └── globals.css        # 全局样式（主题、滚动条）
 ├── components/            # 组件库
 │   ├── Button/           # 按钮组件
-│   │   ├── Button.tsx    # 按钮组件实现
+│   │   ├── Button.tsx    # 按钮组件实现（复合组件架构）
 │   │   └── index.ts      # 按钮组件导出
 │   ├── Icon/             # 图标组件
 │   │   ├── Icon.tsx      # Iconfont 图标组件
 │   │   └── index.ts      # 图标组件导出
+│   ├── Select/           # 下拉选择器组件
+│   │   ├── Select.tsx    # 下拉选择器实现
+│   │   └── index.ts      # 下拉选择器导出
 │   ├── Menu/             # 菜单组件
 │   │   ├── RecursiveMenu.tsx  # 递归菜单组件
 │   │   └── index.ts      # 菜单组件导出
-│   ├── Layout.tsx        # 布局组件
-│   ├── Header.tsx        # 头部组件
-│   └── Footer.tsx        # 底部组件
+│   ├── Catalog/          # 目录组件
+│   │   ├── Catalog.tsx   # 文章目录组件（TOC）
+│   │   ├── catalog.scss  # 目录样式（进度条）
+│   │   └── index.ts      # 目录组件导出
+│   ├── layout/           # 布局组件
+│   │   ├── Layout.tsx    # 主布局组件
+│   │   ├── Header.tsx    # 头部组件
+│   │   └── Footer.tsx    # 底部组件
+│   └── index.ts          # 组件统一导出
 ├── store/                # 全局状态管理
 │   └── app.ts            # 应用状态 (Zustand)
 ├── config/               # 配置文件
 │   └── categories.ts     # 博客分类配置
+├── content/              # 内容文件
+│   └── blog/             # 博客 Markdown 文件
+│       ├── vue-basics.md     # Vue 3 响应式原理
+│       ├── react-hooks.md    # React Hooks 完全指南
+│       ├── javascript.md     # JavaScript 异步编程
+│       ├── typescript.md     # TypeScript 类型系统
+│       └── vite.md           # Vite 构建工具
 └── utils/
-    └── tools.ts          # 工具函数集合 (cn, colorUtils)
+    ├── tools.ts          # 工具函数集合 (cn, colorUtils)
+    ├── markdown.ts       # Markdown 处理（解析、TOC 生成）
+    └── blog.ts           # 博客工具函数
 ```
 
 ## 开发约定
@@ -233,11 +256,56 @@ src/
 - **灵活调整**: 可随时修改 TypeScript 配置来调整分类结构
 
 ## 博客系统功能
-- **博客首页** (`/blog`): 三栏布局，左侧分类导航，中间内容区域，右侧目录导航
-- **URL 同步**: 通过查询参数 `?article=vue` 访问特定文章，支持直接链接访问
-- **单页面应用**: 无页面刷新切换文章，避免闪烁问题
-- **导航交互**: 点击父节点展开/收起，点击子节点切换文章内容
-- **状态保持**: 文章页面保持三栏布局，左侧导航自动展开对应分类
+
+### 页面布局
+- **三栏布局** (`/blog`): 
+  - 左侧：分类导航（RecursiveMenu）
+  - 中间：文章内容（Markdown 渲染的 HTML）
+  - 右侧：文章目录（Catalog）
+- **固定 Header**: 顶部导航固定，带动态阴影（使用主色调）
+- **非滚动主容器**: `main` 元素不滚动，三栏各自独立滚动
+- **可收起侧边栏**: 左右侧边栏都可以收起/展开，带平滑过渡动画
+- **Hover 显示收起按钮**: 侧边栏 hover 时显示收起按钮（CSS 实现）
+
+### 文章管理
+- **URL 同步**: 通过查询参数 `?article=slug` 访问特定文章
+- **单页面应用**: 无页面刷新切换文章，避免闪烁
+- **默认文章**: 首次访问或无 URL 参数时，自动打开第一个带 `hot` 标签的文章
+- **刷新保持**: 刷新页面时根据 URL 参数恢复文章状态
+- **瞬间跳转**: 点击目录项直接跳转到对应标题（无平滑滚动）
+- **自动高亮**: 滚动内容时，目录自动高亮当前标题（距顶部 50px 触发）
+
+### Markdown 处理
+- **解析库**: `gray-matter`（frontmatter）, `remark`（Markdown → HTML）
+- **增强功能**: 
+  - `remark-gfm`: 支持 GitHub Flavored Markdown
+  - `rehype-slug`: 自动为标题添加 ID
+  - `rehype-autolink-headings`: 为标题添加锚点链接
+- **TOC 生成**: 自动提取标题生成目录结构（TocItem[]）
+- **ID 去重**: 相同标题文本会自动添加数字后缀（如 `基础用法`, `基础用法-1`）
+- **ID 同步**: HTML 中的标题 ID 与 TOC 中的 ID 保持一致
+
+### 导航交互
+- **分类展开**: 
+  - 非叶子节点：只展开/收起，不选中
+  - 叶子节点：选中并加载文章
+- **全部展开/收起**: 
+  - RecursiveMenu 支持"全部展开/收起"按钮
+  - Catalog 支持"全部展开/收起"按钮
+- **自动展开**: 切换文章时，只展开选中项的祖先路径，其他收起
+- **状态保持**: 左侧导航自动展开对应分类并高亮选中项
+
+### Catalog（目录）组件
+- **功能**: 显示文章标题层级结构，支持点击跳转
+- **进度指示器**: 左侧竖条，跟随当前标题位置"跳跃式"显示
+- **全部收起时**: 进度条定位到当前标题的最高级祖先（level 1）
+- **全部展开时**: 进度条恢复到当前标题的实际位置
+- **自动滚动**: 当前激活项自动滚动到目录容器中间位置
+- **展开/收起**: 
+  - 左侧：展开图标，点击只展开/收起
+  - 右侧：标题按钮，点击选中并跳转
+- **层级缩进**: 根据标题 level 动态调整左侧缩进
+- **无子节点样式**: 叶子节点额外添加 `marginLeft: '24px'` 保持对齐
 
 ## 工具函数
 
@@ -271,13 +339,121 @@ export const colorUtils = {
 
 **重要**：新项目应使用 `withAlpha` 而非 `adjustBrightness`，因为透明度叠加对所有颜色效果一致。
 
+## 滚动条样式系统
+
+### 自定义滚动条
+- **应用范围**: `body` 和 `.custom-scrollbar` 类的元素
+- **特性**: 
+  - 不占用容器宽度（`overflow: overlay`）
+  - 宽度 6px，圆角 3px
+  - 默认透明（隐藏）
+  - Hover 时显示，颜色使用主色调
+  - 深色模式自动适配
+- **颜色变量**: 
+  - 浅色模式：`var(--color-primary-200)`, hover 时 `var(--color-primary-300)`
+  - 深色模式：`var(--color-primary-400)`, hover 时 `var(--color-primary-500)`
+- **Firefox 支持**: 使用 `scrollbar-width: thin` 和 `scrollbar-color`
+
+### 实现位置
+- **CSS**: `src/app/globals.css` - 全局滚动条样式
+- **应用**: Blog 页面的三个滚动区域（左侧菜单、中间内容、右侧目录）
+
+## API 路由
+
+### `/api/blog/[slug]`
+- **文件**: `src/app/api/blog/[slug]/route.ts`
+- **方法**: GET
+- **参数**: `slug` - 文章 ID（对应 MD 文件名）
+- **返回**: 
+  ```typescript
+  {
+    metadata: PostMetadata,  // 文章元数据
+    content: string,         // HTML 内容
+    toc: TocItem[]          // 目录结构
+  }
+  ```
+- **错误处理**: 文件不存在返回 404
+
+## Markdown 工具函数
+
+### `src/utils/markdown.ts`
+
+#### `extractToc(markdown: string): TocItem[]`
+- 从 Markdown 文本中提取目录结构
+- 自动处理重复标题（添加数字后缀）
+- 返回 `{ level, text, id }[]` 数组
+
+#### `markdownToHtml(markdown: string, toc: TocItem[]): Promise<string>`
+- 将 Markdown 转换为 HTML
+- 接收 TOC 参数确保 ID 一致
+- 使用 remark 和 rehype 插件增强功能
+
+#### `parseMarkdown(fileContent: string): Promise<ParsedPost>`
+- 解析 Markdown 文件（包含 frontmatter）
+- 先提取 TOC，再转换 HTML（确保 ID 一致）
+- 返回完整的文章数据
+
+### `src/utils/blog.ts`
+
+#### `getPostBySlug(slug: string): Promise<MarkdownResult | null>`
+- 根据 slug 读取并处理 Markdown 文件
+- 文件路径：`content/blog/${slug}.md`
+- 返回解析后的文章数据
+
+## 状态管理最佳实践
+
+### Catalog 组件状态管理
+- **activeIndex**: 当前激活的标题索引
+- **expandedIds**: 已展开的标题 ID 集合
+- **isAllExpanded**: 是否全部展开状态
+- **itemRefs**: 目录项 DOM 引用数组（用于滚动和进度条定位）
+- **isClickScrolling**: 标记是否为点击触发的滚动（防止自动高亮冲突）
+- **scrollTimeoutRef**: 滚动定时器引用（用于延迟解除点击标记）
+
+### 关键 useEffect 依赖
+```typescript
+// 初始化展开状态和激活索引 - 依赖 toc 变化
+useEffect(() => { ... }, [toc])
+
+// 自动滚动目录让激活项保持在视野中间 - 依赖 activeIndex
+useEffect(() => { ... }, [activeIndex])
+
+// 监听页面滚动，自动高亮当前可见的标题 - 依赖 toc
+useEffect(() => { ... }, [toc])
+```
+
+### Blog 页面状态管理
+- **selectedSubCategory**: 当前选中的文章 ID
+- **currentCategory**: 当前选中的分类 ID
+- **currentPost**: 当前文章数据（title, content, toc）
+- **loading**: 加载状态
+- **isLeftSidebarOpen / isRightSidebarOpen**: 侧边栏展开状态
+
+## 性能优化
+
+### useMemo 使用
+- `firstHotArticle`: 缓存第一个 hot 文章的查找结果
+- `visibleItems`: 缓存可见的目录项（根据展开状态过滤）
+
+### IntersectionObserver
+- 用于监听标题元素进入视口
+- `rootMargin: '-50px 0px -80% 0px'` - 标题距顶部 50px 触发
+- 避免在点击滚动期间触发自动高亮（`isClickScrolling` 标记）
+
+### 防止重复渲染
+- 使用 `useCallback` 包装事件处理函数
+- 使用 `useMemo` 缓存计算结果
+- 切换文章时清空 `itemRefs.current` 防止旧引用累积
+
 ## 待完善功能
-- 实现 MD 文件内容展示（格式化、样式）
-- 完善右侧目录导航
+- MD 文件代码高亮
+- 图片优化（Next.js Image 组件）
 - 其他 UI 组件（Input, Card, Modal 等）
-- 文档系统
 - 搜索功能
 - 标签页面
+- RSS 订阅
+- 评论系统
+- 文章访问统计
 
 ## 注意事项和最佳实践
 
@@ -309,3 +485,117 @@ export const colorUtils = {
 - **HTML 注释**：使用 `{/* 注释内容 */}` 标注区块功能
 - **客户端组件**：交互功能必须添加 `'use client'` 指令
 - **水合错误**：确保 SSR 和 CSR 渲染一致（已通过字体配置统一解决）
+
+## 关键 Bug 修复记录
+
+### 1. 目录重复项 Bug（JavaScript 异步编程文章）
+**问题**: 文章中有两个"基础用法"标题，生成的 ID 相同，导致目录出现重复项且无法点击。
+
+**原因**: 
+- `extractToc` 函数直接生成 ID，没有去重处理
+- `rehype-slug` 独立生成 HTML 标题 ID，两者不一致
+- 相同 ID 导致 React key 冲突、IntersectionObserver 混乱、itemRefs 引用错乱
+
+**解决方案**:
+1. `extractToc` 使用 `Map` 记录 ID 出现次数，重复时添加数字后缀
+2. `markdownToHtml` 接收 TOC 参数，使用自定义 rehype 插件设置 ID
+3. `parseMarkdown` 先提取 TOC，再用 TOC 生成 HTML（确保 ID 一致）
+
+### 2. 点击目录滚动动画跳跃 Bug
+**问题**: 快速连续点击目录项时，滚动动画会跳跃。
+
+**原因**: 前一个平滑滚动动画还未完成，新的滚动动画就开始了。
+
+**解决方案**: 
+- 改为瞬间跳转（`behavior: 'auto'`），不使用平滑滚动
+- 缩短防抖时间从 800ms 到 100ms
+
+### 3. 点击目录触发自动高亮 Bug
+**问题**: 点击目录项跳转时，滚动过程中会依次高亮中间的每个标题。
+
+**原因**: `IntersectionObserver` 监听到滚动过程中的标题进入视口，触发自动高亮。
+
+**解决方案**:
+- 添加 `isClickScrolling` ref 标记
+- 点击时设置标记为 `true`
+- `IntersectionObserver` 检查标记，为 `true` 时不更新高亮
+- 100ms 后解除标记
+
+### 4. 切换文章后目录顶部出现重复项 Bug
+**问题**: 频繁切换文章后，目录顶部出现多个"基础用法"项。
+
+**原因**: 
+- `itemRefs.current` 数组没有在文章切换时清空
+- 旧的 DOM 引用累积，导致渲染异常
+
+**解决方案**:
+- 在 `useEffect([toc])` 中添加 `itemRefs.current = []`
+- 每次 TOC 变化时清空旧引用
+
+### 5. RecursiveMenu 刷新后默认展开所有菜单 Bug
+**问题**: 切换文章或刷新页面后，左侧菜单默认展开所有项。
+
+**原因**: `setExpandedItems((prev) => ...)` 累积了之前的状态。
+
+**解决方案**:
+- 移除 `prev` 依赖，直接创建新的 `Set`
+- 只包含当前选中项和其祖先节点
+
+### 6. 展开/收起逻辑 Bug
+**问题**: 只有根节点可以展开收起，其他节点不能。
+
+**原因**: `getVisibleItems` 只查找最近的父节点，无法处理多层级嵌套。
+
+**解决方案**:
+- 重写 `getVisibleItems` 函数
+- 使用 `lastVisibleAtLevel` 记录每个层级最后显示的节点
+- 检查所有更浅层级的父节点是否都展开
+
+## 架构决策
+
+### 为什么使用复合组件（Composite Component）？
+**Button 组件架构**: BaseButton + PrimaryButton + DefaultButton + TextButton + LinkButton
+
+**优势**:
+1. **职责分离**: 每个子组件只负责一种按钮样式
+2. **易于维护**: 修改某种类型不影响其他类型
+3. **易于扩展**: 新增类型只需添加新组件
+4. **代码复用**: BaseButton 处理公共逻辑
+5. **类型安全**: 每个子组件有明确的 props 类型
+
+### 为什么使用 TypeScript 配置而非 JSON？
+**分类配置**: `/src/config/categories.ts`
+
+**优势**:
+1. **类型安全**: 编译时检查数据结构
+2. **智能提示**: IDE 自动补全
+3. **工具函数**: 可直接导出辅助函数
+4. **注释支持**: 可添加 JSDoc 注释
+5. **灵活性**: 可使用 TypeScript 特性（enum、type 等）
+
+### 为什么使用 Zustand 而非 Redux？
+**状态管理**: `/src/store/app.ts`
+
+**优势**:
+1. **简单**: 无需 action、reducer、dispatch
+2. **轻量**: 包体积小，无额外依赖
+3. **灵活**: 支持中间件（persist）
+4. **TypeScript 友好**: 原生 TypeScript 支持
+5. **性能好**: 基于 hooks，按需更新
+
+### 为什么使用 API 路由而非直接读取文件？
+**文章加载**: `/api/blog/[slug]`
+
+**优势**:
+1. **安全**: 不暴露文件系统路径
+2. **灵活**: 可添加缓存、权限控制等
+3. **错误处理**: 统一的错误响应格式
+4. **扩展性**: 未来可改为数据库查询
+5. **客户端友好**: 标准的 HTTP 请求
+
+## 技术债务
+- [ ] 滚动条"只在滚动时显示"功能已回退（需要 JS 控制，暂时搁置）
+- [ ] 代码高亮未实现（需要 `rehype-highlight` 或 `prism`）
+- [ ] 图片未优化（需要 Next.js Image 组件和图片处理）
+- [ ] 无单元测试（需要 Jest + Testing Library）
+- [ ] 无 E2E 测试（需要 Playwright 或 Cypress）

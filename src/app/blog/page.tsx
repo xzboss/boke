@@ -5,7 +5,7 @@ import { RecursiveMenu } from "@/components/Menu";
 import { Catalog } from "@/components/Catalog";
 import Button from "@/components/Button";
 import Icon from "@/components/Icon";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { categories } from "@/config/categories";
 import type { TocItem } from "@/utils/markdown";
@@ -42,18 +42,55 @@ export default function BlogPage() {
   /** 加载状态 */
   const [loading, setLoading] = useState(false);
 
-  /** 从 URL 参数初始化状态 */
+  /**
+   * 获取第一个包含 hot 标签的叶子节点（缓存结果）
+   */
+  const firstHotArticle = useMemo(() => {
+    const findHotLeaf = (cats: typeof categories): string | null => {
+      for (const cat of cats) {
+        // 如果是叶子节点（没有子节点）且包含 hot 标签
+        if (cat.children.length === 0 && cat.tags.includes('hot')) {
+          return cat.id;
+        }
+        // 递归查找子节点
+        if (cat.children.length > 0) {
+          const found = findHotLeaf(cat.children);
+          if (found) return found;
+        }
+      }
+      return null;
+    };
+    return findHotLeaf(categories);
+  }, []);
+
+  /**
+   * 从 URL 参数初始化状态
+   * 如果没有 article 参数，默认打开第一个 hot 标签的文章
+   */
   useEffect(() => {
     const article = searchParams.get("article");
+    
     if (article) {
+      // 有 URL 参数，使用 URL 参数
       setSelectedSubCategory(article);
       // 找到对应的父分类
       const parentCategory = categories.find((cat) =>
         cat.children?.some((child) => child.id === article)
       );
       setCurrentCategory(parentCategory?.id || null);
+    } else if (firstHotArticle) {
+      // 没有 URL 参数，打开第一个 hot 文章
+      setSelectedSubCategory(firstHotArticle);
+      // 找到对应的父分类
+      const parentCategory = categories.find((cat) =>
+        cat.children?.some((child) => child.id === firstHotArticle)
+      );
+      setCurrentCategory(parentCategory?.id || null);
+      
+      // 更新 URL（不刷新页面）
+      router.replace(`/blog?article=${firstHotArticle}`, { scroll: false });
     }
-  }, [searchParams]);
+  }, [searchParams, router, firstHotArticle]);
 
   /** 加载文章数据 */
   useEffect(() => {
@@ -227,6 +264,7 @@ export default function BlogPage() {
               style={{
                 left: 0,
                 top: "200px",
+                transform: "translateX(-50%)",
               }}
             >
               <Button

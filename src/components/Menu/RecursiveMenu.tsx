@@ -100,18 +100,16 @@ export default function RecursiveMenu({
   useEffect(() => {
     if (currentSubCategory) {
       const ancestors = findAncestors(currentSubCategory, data);
-      setExpandedItems((prev) => {
-        const newExpanded = new Set([
-          ...prev,
-          currentSubCategory,
-          ...ancestors,
-        ]);
-        // 检查是否全部展开
-        const allParentIds = getAllParentIds(data);
-        const isAll = allParentIds.every((id) => newExpanded.has(id));
-        setIsAllExpanded(isAll);
-        return newExpanded;
-      });
+      const newExpanded = new Set([
+        currentSubCategory,
+        ...ancestors,
+      ]);
+      setExpandedItems(newExpanded);
+      
+      // 检查是否全部展开
+      const allParentIds = getAllParentIds(data);
+      const isAll = allParentIds.every((id) => newExpanded.has(id));
+      setIsAllExpanded(isAll);
     }
   }, [currentSubCategory, data]);
 
