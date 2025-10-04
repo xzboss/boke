@@ -38,9 +38,9 @@ export default function Layout({ children }: LayoutProps) {
   }, [mounted, colorScheme, setColorScheme]);
 
   return (
-    <div className="flex flex-col" style={{ height: "99vh" }}>
+    <div className="h-full">
       <Header />
-      <main className="flex-1 mt-16 overflow-hidden">{children}</main>
+      <main className="h-full pt-16 overflow-auto">{children}</main>
     </div>
   );
 }

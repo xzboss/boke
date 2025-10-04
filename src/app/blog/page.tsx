@@ -348,7 +348,7 @@ export default function BlogPage() {
 
   return (
     <Layout>
-      <div className="h-full flex overflow-hidden">
+      <div className="h-full flex">
         {/* 左侧分类导航 - 可收起 */}
         <div
           className="blog-sidebar-left relative h-full transition-all duration-300"
