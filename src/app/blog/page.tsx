@@ -2,6 +2,7 @@
 
 import { Layout } from "@/components/layout";
 import { RecursiveMenu } from "@/components/Menu";
+import { Catalog } from "@/components/Catalog";
 import Button from "@/components/Button";
 import Icon from "@/components/Icon";
 import { useState, useEffect } from "react";
@@ -9,51 +10,6 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { categories } from "@/config/categories";
 import type { TocItem } from "@/utils/markdown";
 import "./page.scss";
-
-/**
- * 目录导航组件
- * 显示当前文章的目录结构
- */
-function TableOfContents({ toc }: { toc: TocItem[] }) {
-  /**
-   * 处理目录项点击，跳转到对应标题
-   */
-  const handleTocClick = (id: string) => {
-    const element = document.getElementById(id);
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
-    }
-  };
-
-  if (!toc || toc.length === 0) {
-    return (
-      <div className="p-4">
-        <h3 className="text-sm font-semibold mb-3">目录</h3>
-        <div className="text-sm opacity-60">暂无目录</div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="p-4">
-      <h3 className="text-sm font-semibold mb-3">目录</h3>
-      <nav className="space-y-1">
-        {toc.map((item, index) => (
-          <button
-            key={index}
-            onClick={() => handleTocClick(item.id)}
-            className="block w-full text-left text-sm hover:opacity-100 opacity-70 transition-opacity"
-            style={{
-              paddingLeft: `${(item.level - 1) * 12}px`,
-            }}
-          >
-            {item.text}
-          </button>
-        ))}
-      </nav>
-    </div>
-  );
-}
 
 /** 文章数据类型 */
 interface PostData {
@@ -259,11 +215,8 @@ export default function BlogPage() {
           style={{ width: isRightSidebarOpen ? "280px" : "0" }}
         >
           <div className="h-full overflow-hidden">
-            <div
-              className="h-full custom-scrollbar"
-              style={{ width: "280px" }}
-            >
-              <TableOfContents toc={currentPost?.toc || []} />
+            <div className="h-full" style={{ width: "280px" }}>
+              <Catalog toc={currentPost?.toc || []} />
             </div>
           </div>
 
