@@ -14,54 +14,63 @@
 
 ## 项目结构
 ```
-src/
-├── app/                    # Next.js App Router
-│   ├── page.tsx           # 首页
-│   ├── blog/              # 博客页面
-│   │   ├── page.tsx       # 博客首页（Server Component - SSG）
-│   │   ├── BlogPageClient.tsx  # 博客客户端组件（三栏布局）
-│   │   └── page.scss      # 博客页面样式（侧边栏 hover 效果）
-│   ├── ui/page.tsx        # UI演练场（客户端组件）
-│   ├── layout.tsx         # 根布局
-│   └── globals.css        # 全局样式（主题、滚动条）
-├── components/            # 组件库
-│   ├── Button/           # 按钮组件
-│   │   ├── Button.tsx    # 按钮组件实现（复合组件架构）
-│   │   └── index.ts      # 按钮组件导出
-│   ├── Icon/             # 图标组件
-│   │   ├── Icon.tsx      # Iconfont 图标组件
-│   │   └── index.ts      # 图标组件导出
-│   ├── Select/           # 下拉选择器组件
-│   │   ├── Select.tsx    # 下拉选择器实现
-│   │   └── index.ts      # 下拉选择器导出
-│   ├── Menu/             # 菜单组件
-│   │   ├── RecursiveMenu.tsx  # 递归菜单组件
-│   │   └── index.ts      # 菜单组件导出
-│   ├── Catalog/          # 目录组件
-│   │   ├── Catalog.tsx   # 文章目录组件（TOC）
-│   │   ├── catalog.scss  # 目录样式（进度条）
-│   │   └── index.ts      # 目录组件导出
-│   ├── layout/           # 布局组件
-│   │   ├── Layout.tsx    # 主布局组件
-│   │   ├── Header.tsx    # 头部组件
-│   │   └── Footer.tsx    # 底部组件
-│   └── index.ts          # 组件统一导出
-├── store/                # 全局状态管理
-│   └── app.ts            # 应用状态 (Zustand)
-├── config/               # 配置文件
-│   └── categories.ts     # 博客分类配置
-├── content/              # 内容文件
-│   └── blog/             # 博客 Markdown 文件
+boke/
+├── src/
+│   ├── app/                    # Next.js App Router
+│   │   ├── page.tsx           # 首页
+│   │   ├── blog/              # 博客页面
+│   │   │   ├── page.tsx       # 博客首页（Server Component - SSG）
+│   │   │   ├── BlogPageClient.tsx  # 博客客户端组件（三栏布局）
+│   │   │   └── page.scss      # 博客页面样式（侧边栏 hover 效果）
+│   │   ├── ui/                # UI 演练场
+│   │   │   └── page.tsx       # UI 组件展示页（客户端组件）
+│   │   ├── layout.tsx         # 根布局
+│   │   ├── globals.css        # 全局样式（主题、滚动条）
+│   │   └── favicon.ico        # 网站图标
+│   ├── components/            # 组件库
+│   │   ├── Button/           # 按钮组件
+│   │   │   ├── Button.tsx    # 按钮组件实现（复合组件架构）
+│   │   │   └── index.ts      # 按钮组件导出
+│   │   ├── Icon/             # 图标组件
+│   │   │   ├── Icon.tsx      # Iconfont 图标组件
+│   │   │   └── index.ts      # 图标组件导出
+│   │   ├── Select/           # 下拉选择器组件
+│   │   │   ├── Select.tsx    # 下拉选择器实现
+│   │   │   └── index.ts      # 下拉选择器导出
+│   │   ├── Menu/             # 菜单组件
+│   │   │   ├── RecursiveMenu.tsx  # 递归菜单组件
+│   │   │   └── index.ts      # 菜单组件导出
+│   │   ├── Catalog/          # 目录组件
+│   │   │   ├── Catalog.tsx   # 文章目录组件（TOC）
+│   │   │   ├── catalog.scss  # 目录样式（进度条）
+│   │   │   └── index.ts      # 目录组件导出
+│   │   └── layout/           # 布局组件
+│   │       ├── Layout.tsx    # 主布局组件
+│   │       ├── Header.tsx    # 头部组件
+│   │       ├── Footer.tsx    # 底部组件
+│   │       └── index.ts      # 布局组件导出
+│   ├── store/                # 全局状态管理
+│   │   └── app.ts            # 应用状态 (Zustand)
+│   ├── config/               # 配置文件
+│   │   └── categories.ts     # 博客分类配置
+│   └── utils/                # 工具函数
+│       ├── tools.ts          # 工具函数集合 (cn, colorUtils)
+│       ├── markdown.ts       # Markdown 处理（解析、TOC 生成、ID 去重）
+│       └── staticBlog.ts     # 静态博客工具（SSG 专用）
+├── content/                   # 内容文件（项目根目录）
+│   └── blog/                 # 博客 Markdown 文件
 │       ├── vue-basics.md     # Vue 3 响应式原理
 │       ├── react-hooks.md    # React Hooks 完全指南
 │       ├── javascript.md     # JavaScript 异步编程
 │       ├── typescript.md     # TypeScript 类型系统
 │       └── vite.md           # Vite 构建工具
-└── utils/
-    ├── tools.ts          # 工具函数集合 (cn, colorUtils)
-    ├── markdown.ts       # Markdown 处理（解析、TOC 生成、ID 去重）
-    ├── blog.ts           # 博客工具函数（已废弃，保留兼容）
-    └── staticBlog.ts     # 静态博客工具（SSG 专用）
+├── public/                   # 静态资源
+│   ├── *.svg                # SVG 图标文件
+│   └── ...
+├── package.json
+├── tsconfig.json
+├── next.config.ts
+└── uno.config.ts
 ```
 
 ## 开发约定
@@ -424,11 +433,6 @@ export const colorUtils = {
 - 解析 Markdown 文件（包含 frontmatter）
 - 先提取 TOC，再转换 HTML（确保 ID 一致）
 - 返回完整的文章数据
-
-### `src/utils/blog.ts` (已废弃)
-- **状态**: 已被 `staticBlog.ts` 取代，保留仅为兼容性
-- **原功能**: 运行时读取和处理 Markdown 文件
-- **新方案**: 使用 SSG 在构建时处理，无需运行时 API
 
 ## 状态管理最佳实践
 
