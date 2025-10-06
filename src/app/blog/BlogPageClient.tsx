@@ -132,7 +132,7 @@ export default function BlogPageClient({ allPosts }: BlogPageClientProps) {
 
   return (
     <Layout>
-      <div className="h-[calc(99vh-68px)] flex overflow-hidden">
+      <div className="h-[calc(99vh-68px)] flex overflow-hidden relative">
         {/* 左侧分类导航 - 可收起 */}
         <div
           className="blog-sidebar-left relative h-full transition-all duration-300"
@@ -157,8 +157,8 @@ export default function BlogPageClient({ allPosts }: BlogPageClientProps) {
             <div
               className="collapse-btn absolute z-10"
               style={{
-                right: 0,
-                top: "200px",
+                right: "0px",
+                top: "20px",
               }}
             >
               <Button
@@ -177,7 +177,7 @@ export default function BlogPageClient({ allPosts }: BlogPageClientProps) {
               className="absolute z-10"
               style={{
                 left: 0,
-                top: "200px",
+                top: "20px",
               }}
             >
               <Button
@@ -196,7 +196,10 @@ export default function BlogPageClient({ allPosts }: BlogPageClientProps) {
         </div>
 
         {/* 中间文章内容区域 */}
-        <div className="flex-1 h-full overflow-y-auto px-8 py-8 custom-scrollbar">
+        <div
+          className="flex-1 h-full overflow-y-auto px-8 py-8 custom-scrollbar transition-all duration-300"
+          style={{ paddingRight: isRightSidebarOpen ? "280px" : "0" }}
+        >
           {currentPost ? (
             <article className="max-w-4xl mx-auto">
               <header className="mb-8">
@@ -218,7 +221,7 @@ export default function BlogPageClient({ allPosts }: BlogPageClientProps) {
 
         {/* 右侧目录导航 - 可收起 */}
         <div
-          className="blog-sidebar-right relative h-full transition-all duration-300"
+          className="absolute right-0 top-0 bottom-0 blog-sidebar-right h-full transition-all duration-300"
           style={{ width: isRightSidebarOpen ? "280px" : "0" }}
         >
           <div className="h-full overflow-hidden">
@@ -235,8 +238,8 @@ export default function BlogPageClient({ allPosts }: BlogPageClientProps) {
             <div
               className="collapse-btn absolute z-10"
               style={{
-                left: 0,
-                top: "200px",
+                left: "-20px",
+                top: "20px",
               }}
             >
               <Button
@@ -257,8 +260,8 @@ export default function BlogPageClient({ allPosts }: BlogPageClientProps) {
             <div
               className="absolute z-10"
               style={{
-                right: 0,
-                top: "200px",
+                right: "0",
+                top: "20px",
               }}
             >
               <Button

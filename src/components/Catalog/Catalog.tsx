@@ -53,10 +53,10 @@ export function Catalog({
       const allIds = new Set(catalog.map((item) => item.id));
       setExpandedIds(allIds);
       setIsAllExpanded(true);
-      
+
       // 重置激活索引为 0
       setActiveIndex(0);
-      
+
       // 清空 itemRefs 避免旧引用
       itemRefs.current = [];
     }
@@ -293,11 +293,6 @@ export function Catalog({
 
   return (
     <div className={`catalog-container ${className || ""}`}>
-      {/* 目录标题 */}
-      <div className="catalog-header">
-        <h3 className="text-sm font-semibold">目录</h3>
-      </div>
-
       {/* 全部展开/收起按钮 */}
       {showExpandAll && (
         <div className="px-3 py-2">
