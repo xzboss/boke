@@ -224,7 +224,10 @@ export default function BlogPageClient({ allPosts }: BlogPageClientProps) {
               className="h-full custom-scrollbar"
               style={{ width: "280px" }}
             >
-              <Catalog catalog={currentPost?.catalog || []} />
+              <Catalog 
+                key={selectedSubCategory} 
+                catalog={currentPost?.catalog || []} 
+              />
             </div>
           </div>
 

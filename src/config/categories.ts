@@ -31,7 +31,16 @@ export const categories: Category[] = [
             path: "/blog/frontend/vue/basics",
             level: 3,
             parentId: "vue",
-            tags: ["vue", "vue3", "响应式", "proxy"],
+            tags: ["vue", "vue3", "响应式", "proxy", "hot"],
+            children: []
+          },
+          {
+            id: "vue-router-guide",
+            name: "Vue Router 实战指南",
+            path: "/blog/frontend/vue/router",
+            level: 3,
+            parentId: "vue",
+            tags: ["vue", "vue-router", "路由", "导航守卫"],
             children: []
           }
         ]
@@ -51,6 +60,15 @@ export const categories: Category[] = [
             level: 3,
             parentId: "react",
             tags: ["react", "hooks", "useState", "useEffect", "custom-hooks"],
+            children: []
+          },
+          {
+            id: "react-performance",
+            name: "React 性能优化实践",
+            path: "/blog/frontend/react/performance",
+            level: 3,
+            parentId: "react",
+            tags: ["react", "性能优化", "memo", "useMemo", "useCallback"],
             children: []
           }
         ]
@@ -81,6 +99,54 @@ export const categories: Category[] = [
         parentId: "frontend",
         tags: ["ts", "typescript", "interface", "type", "generic"],
         children: []
+      },
+      {
+        id: "css",
+        name: "CSS",
+        path: "/blog/frontend/css",
+        level: 2,
+        parentId: "frontend",
+        tags: ["css", "css3", "flexbox", "grid", "animation"],
+        children: [
+          {
+            id: "css-layout",
+            name: "现代 CSS 布局完全指南",
+            path: "/blog/frontend/css/layout",
+            level: 3,
+            parentId: "css",
+            tags: ["css", "flexbox", "grid", "布局"],
+            children: []
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id: "backend",
+    name: "后端",
+    path: "/blog/backend",
+    level: 1,
+    parentId: null,
+    tags: [],
+    children: [
+      {
+        id: "nodejs",
+        name: "Node.js",
+        path: "/blog/backend/nodejs",
+        level: 2,
+        parentId: "backend",
+        tags: ["nodejs", "express", "koa", "nest"],
+        children: [
+          {
+            id: "nodejs-stream",
+            name: "Node.js Stream 流式处理",
+            path: "/blog/backend/nodejs/stream",
+            level: 3,
+            parentId: "nodejs",
+            tags: ["nodejs", "stream", "buffer", "pipe"],
+            children: []
+          }
+        ]
       }
     ]
   }
