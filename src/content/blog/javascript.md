@@ -10,7 +10,7 @@ featured: false
 
 # JavaScript 异步编程完全指南
 
-JavaScript 是单线程语言，但通过异步编程可以实现非阻塞操作，这是 JavaScript 最重要的特性之一。
+JavaScript 是213单线程语言，但通过异步编程可以实现非阻塞操作，这是 JavaScript 最重要的特性之一。
 
 ## 为什么需要异步
 

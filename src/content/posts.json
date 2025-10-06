@@ -1,0 +1,876 @@
+{
+  "javascript": {
+    "metadata": {
+      "title": "JavaScript 异步编程完全指南",
+      "description": "从回调函数到 Promise 再到 async/await 的演进",
+      "createdAt": "2024-01-08",
+      "updatedAt": "2024-01-12",
+      "tags": [
+        "js",
+        "javascript",
+        "async",
+        "promise",
+        "es6"
+      ],
+      "category": "前端",
+      "featured": false
+    },
+    "content": "<h1 id=\"javascript-异步编程完全指南\"><a href=\"#javascript-异步编程完全指南\">JavaScript 异步编程完全指南</a></h1>\n<p>JavaScript 是213单线程语言，但通过异步编程可以实现非阻塞操作，这是 JavaScript 最重要的特性之一。</p>\n<h2 id=\"为什么需要异步\"><a href=\"#为什么需要异步\">为什么需要异步</a></h2>\n<h3 id=\"同步代码的问题\"><a href=\"#同步代码的问题\">同步代码的问题</a></h3>\n<pre><code class=\"language-javascript\">// 同步代码会阻塞后续执行\nconsole.log('开始');\n// 假设这是一个耗时操作\nfor (let i = 0; i &#x3C; 1000000000; i++) {}\nconsole.log('结束'); // 需要等待循环结束才能执行\n</code></pre>\n<h3 id=\"异步的优势\"><a href=\"#异步的优势\">异步的优势</a></h3>\n<ul>\n<li>不阻塞主线程</li>\n<li>提高程序响应性</li>\n<li>充分利用 I/O 等待时间</li>\n</ul>\n<h2 id=\"回调函数callback\"><a href=\"#回调函数callback\">回调函数（Callback）</a></h2>\n<p>最早的异步解决方案。</p>\n<pre><code class=\"language-javascript\">function getData(callback) {\n  setTimeout(() => {\n    const data = { id: 1, name: '用户' };\n    callback(data);\n  }, 1000);\n}\n\ngetData((data) => {\n  console.log('获取到数据：', data);\n});\n</code></pre>\n<h3 id=\"回调地狱\"><a href=\"#回调地狱\">回调地狱</a></h3>\n<p>当多个异步操作需要依次执行时，会出现\"回调地狱\"：</p>\n<pre><code class=\"language-javascript\">getData((data) => {\n  processData(data, (processed) => {\n    saveData(processed, (result) => {\n      sendNotification(result, (status) => {\n        console.log('全部完成');\n      });\n    });\n  });\n});\n</code></pre>\n<p><strong>问题</strong>：</p>\n<ul>\n<li>代码难以阅读和维护</li>\n<li>错误处理困难</li>\n<li>无法使用 try/catch</li>\n</ul>\n<h2 id=\"promise\"><a href=\"#promise\">Promise</a></h2>\n<p>ES6 引入的 Promise 解决了回调地狱问题。</p>\n<h3 id=\"基础用法-1\"><a href=\"#基础用法-1\">基础用法</a></h3>\n<pre><code class=\"language-javascript\">const promise = new Promise((resolve, reject) => {\n  setTimeout(() => {\n    const success = true;\n    if (success) {\n      resolve('操作成功');\n    } else {\n      reject('操作失败');\n    }\n  }, 1000);\n});\n\npromise\n  .then(result => {\n    console.log(result);\n    return '下一步';\n  })\n  .then(result => {\n    console.log(result);\n  })\n  .catch(error => {\n    console.error(error);\n  })\n  .finally(() => {\n    console.log('无论成功失败都会执行');\n  });\n</code></pre>\n<h3 id=\"promise-链式调用\"><a href=\"#promise-链式调用\">Promise 链式调用</a></h3>\n<pre><code class=\"language-javascript\">getData()\n  .then(data => processData(data))\n  .then(processed => saveData(processed))\n  .then(result => sendNotification(result))\n  .then(() => console.log('全部完成'))\n  .catch(error => console.error('出错了：', error));\n</code></pre>\n<h3 id=\"promise-静态方法\"><a href=\"#promise-静态方法\">Promise 静态方法</a></h3>\n<h4 id=\"promiseall\"><a href=\"#promiseall\">Promise.all</a></h4>\n<p>所有 Promise 都成功才成功：</p>\n<pre><code class=\"language-javascript\">const promises = [\n  fetch('/api/user'),\n  fetch('/api/posts'),\n  fetch('/api/comments')\n];\n\nPromise.all(promises)\n  .then(([user, posts, comments]) => {\n    console.log('全部数据获取成功');\n  })\n  .catch(error => {\n    console.error('有请求失败：', error);\n  });\n</code></pre>\n<h4 id=\"promiserace\"><a href=\"#promiserace\">Promise.race</a></h4>\n<p>返回最先完成的 Promise：</p>\n<pre><code class=\"language-javascript\">const timeout = new Promise((_, reject) => {\n  setTimeout(() => reject('超时'), 5000);\n});\n\nconst request = fetch('/api/data');\n\nPromise.race([request, timeout])\n  .then(data => console.log('成功'))\n  .catch(error => console.error(error));\n</code></pre>\n<h4 id=\"promiseallsettled\"><a href=\"#promiseallsettled\">Promise.allSettled</a></h4>\n<p>等待所有 Promise 完成（无论成功失败）：</p>\n<pre><code class=\"language-javascript\">const promises = [\n  Promise.resolve('成功1'),\n  Promise.reject('失败'),\n  Promise.resolve('成功2')\n];\n\nPromise.allSettled(promises)\n  .then(results => {\n    results.forEach(result => {\n      if (result.status === 'fulfilled') {\n        console.log('成功：', result.value);\n      } else {\n        console.log('失败：', result.reason);\n      }\n    });\n  });\n</code></pre>\n<h4 id=\"promiseany\"><a href=\"#promiseany\">Promise.any</a></h4>\n<p>返回第一个成功的 Promise：</p>\n<pre><code class=\"language-javascript\">const promises = [\n  fetch('https://api1.com/data'),\n  fetch('https://api2.com/data'),\n  fetch('https://api3.com/data')\n];\n\nPromise.any(promises)\n  .then(data => console.log('第一个成功的数据：', data))\n  .catch(() => console.log('全部失败'));\n</code></pre>\n<h2 id=\"asyncawait\"><a href=\"#asyncawait\">async/await</a></h2>\n<p>ES2017 引入的语法糖，让异步代码看起来像同步代码。</p>\n<h3 id=\"基础用法-1\"><a href=\"#基础用法-1\">基础用法</a></h3>\n<pre><code class=\"language-javascript\">async function fetchData() {\n  try {\n    const response = await fetch('/api/data');\n    const data = await response.json();\n    return data;\n  } catch (error) {\n    console.error('请求失败：', error);\n  }\n}\n\n// 使用\nfetchData().then(data => console.log(data));\n</code></pre>\n<h3 id=\"并行执行\"><a href=\"#并行执行\">并行执行</a></h3>\n<pre><code class=\"language-javascript\">// ❌ 串行执行（慢）\nasync function serial() {\n  const user = await fetchUser();      // 等待 1 秒\n  const posts = await fetchPosts();    // 再等待 1 秒\n  // 总共 2 秒\n}\n\n// ✅ 并行执行（快）\nasync function parallel() {\n  const [user, posts] = await Promise.all([\n    fetchUser(),\n    fetchPosts()\n  ]);\n  // 总共 1 秒（同时执行）\n}\n</code></pre>\n<h3 id=\"错误处理\"><a href=\"#错误处理\">错误处理</a></h3>\n<pre><code class=\"language-javascript\">async function getData() {\n  try {\n    const data = await fetch('/api/data');\n    return data;\n  } catch (error) {\n    // 捕获 fetch 或 JSON 解析错误\n    console.error(error);\n    throw error; // 重新抛出或返回默认值\n  }\n}\n</code></pre>\n<h3 id=\"循环中使用-await\"><a href=\"#循环中使用-await\">循环中使用 await</a></h3>\n<pre><code class=\"language-javascript\">// ❌ 不推荐：串行执行\nasync function processItems(items) {\n  for (const item of items) {\n    await processItem(item); // 一个接一个\n  }\n}\n\n// ✅ 推荐：并行执行\nasync function processItems(items) {\n  await Promise.all(\n    items.map(item => processItem(item))\n  );\n}\n</code></pre>\n<h2 id=\"事件循环event-loop\"><a href=\"#事件循环event-loop\">事件循环（Event Loop）</a></h2>\n<p>理解异步的关键是理解事件循环机制。</p>\n<h3 id=\"执行栈和任务队列\"><a href=\"#执行栈和任务队列\">执行栈和任务队列</a></h3>\n<pre><code class=\"language-javascript\">console.log('1');\n\nsetTimeout(() => {\n  console.log('2');\n}, 0);\n\nPromise.resolve().then(() => {\n  console.log('3');\n});\n\nconsole.log('4');\n\n// 输出顺序：1 4 3 2\n</code></pre>\n<p><strong>执行顺序</strong>：</p>\n<ol>\n<li>同步代码：1, 4</li>\n<li>微任务（Microtask）：Promise.then -> 3</li>\n<li>宏任务（Macrotask）：setTimeout -> 2</li>\n</ol>\n<h3 id=\"微任务-vs-宏任务\"><a href=\"#微任务-vs-宏任务\">微任务 vs 宏任务</a></h3>\n<p><strong>微任务</strong>：</p>\n<ul>\n<li>Promise.then/catch/finally</li>\n<li>MutationObserver</li>\n<li>queueMicrotask</li>\n</ul>\n<p><strong>宏任务</strong>：</p>\n<ul>\n<li>setTimeout/setInterval</li>\n<li>setImmediate (Node.js)</li>\n<li>I/O 操作</li>\n<li>UI 渲染</li>\n</ul>\n<h2 id=\"实战案例\"><a href=\"#实战案例\">实战案例</a></h2>\n<h3 id=\"1-请求重试\"><a href=\"#1-请求重试\">1. 请求重试</a></h3>\n<pre><code class=\"language-javascript\">async function fetchWithRetry(url, retries = 3) {\n  for (let i = 0; i &#x3C; retries; i++) {\n    try {\n      const response = await fetch(url);\n      return await response.json();\n    } catch (error) {\n      if (i === retries - 1) throw error;\n      console.log(`重试 ${i + 1}/${retries}`);\n      await new Promise(resolve => setTimeout(resolve, 1000));\n    }\n  }\n}\n</code></pre>\n<h3 id=\"2-请求超时控制\"><a href=\"#2-请求超时控制\">2. 请求超时控制</a></h3>\n<pre><code class=\"language-javascript\">function fetchWithTimeout(url, timeout = 5000) {\n  return Promise.race([\n    fetch(url),\n    new Promise((_, reject) =>\n      setTimeout(() => reject(new Error('请求超时')), timeout)\n    )\n  ]);\n}\n</code></pre>\n<h3 id=\"3-并发控制\"><a href=\"#3-并发控制\">3. 并发控制</a></h3>\n<p>限制同时进行的请求数量：</p>\n<pre><code class=\"language-javascript\">async function concurrentRequest(urls, limit = 3) {\n  const results = [];\n  const executing = [];\n\n  for (const url of urls) {\n    const promise = fetch(url).then(res => res.json());\n    results.push(promise);\n\n    if (urls.length >= limit) {\n      const e = promise.then(() => \n        executing.splice(executing.indexOf(e), 1)\n      );\n      executing.push(e);\n      \n      if (executing.length >= limit) {\n        await Promise.race(executing);\n      }\n    }\n  }\n\n  return Promise.all(results);\n}\n</code></pre>\n<h2 id=\"最佳实践\"><a href=\"#最佳实践\">最佳实践</a></h2>\n<h3 id=\"1-优先使用-asyncawait\"><a href=\"#1-优先使用-asyncawait\">1. 优先使用 async/await</a></h3>\n<pre><code class=\"language-javascript\">// ✅ 清晰易读\nasync function good() {\n  const data = await getData();\n  return processData(data);\n}\n\n// ❌ 不必要的复杂\nfunction bad() {\n  return getData().then(data => processData(data));\n}\n</code></pre>\n<h3 id=\"2-正确处理错误\"><a href=\"#2-正确处理错误\">2. 正确处理错误</a></h3>\n<pre><code class=\"language-javascript\">async function handleErrors() {\n  try {\n    const data = await riskyOperation();\n    return data;\n  } catch (error) {\n    console.error('操作失败：', error);\n    // 返回默认值或重新抛出\n    return defaultValue;\n  }\n}\n</code></pre>\n<h3 id=\"3-避免不必要的-await\"><a href=\"#3-避免不必要的-await\">3. 避免不必要的 await</a></h3>\n<pre><code class=\"language-javascript\">// ❌ 不必要的 await\nasync function bad() {\n  return await getData(); // 多余\n}\n\n// ✅ 直接返回 Promise\nasync function good() {\n  return getData();\n}\n</code></pre>\n<h2 id=\"总结\"><a href=\"#总结\">总结</a></h2>\n<p>JavaScript 异步编程经历了三个阶段的演进：</p>\n<ol>\n<li><strong>回调函数</strong>：最基础，但容易陷入回调地狱</li>\n<li><strong>Promise</strong>：解决了回调地狱，支持链式调用</li>\n<li><strong>async/await</strong>：让异步代码看起来像同步代码，最优雅</li>\n</ol>\n<p>掌握异步编程是成为优秀 JavaScript 开发者的必经之路。</p>",
+    "toc": [
+      {
+        "level": 1,
+        "text": "JavaScript 异步编程完全指南",
+        "id": "javascript-异步编程完全指南"
+      },
+      {
+        "level": 2,
+        "text": "为什么需要异步",
+        "id": "为什么需要异步"
+      },
+      {
+        "level": 3,
+        "text": "同步代码的问题",
+        "id": "同步代码的问题"
+      },
+      {
+        "level": 3,
+        "text": "异步的优势",
+        "id": "异步的优势"
+      },
+      {
+        "level": 2,
+        "text": "回调函数（Callback）",
+        "id": "回调函数callback"
+      },
+      {
+        "level": 3,
+        "text": "回调地狱",
+        "id": "回调地狱"
+      },
+      {
+        "level": 2,
+        "text": "Promise",
+        "id": "promise"
+      },
+      {
+        "level": 3,
+        "text": "基础用法",
+        "id": "基础用法"
+      },
+      {
+        "level": 3,
+        "text": "Promise 链式调用",
+        "id": "promise-链式调用"
+      },
+      {
+        "level": 3,
+        "text": "Promise 静态方法",
+        "id": "promise-静态方法"
+      },
+      {
+        "level": 4,
+        "text": "Promise.all",
+        "id": "promiseall"
+      },
+      {
+        "level": 4,
+        "text": "Promise.race",
+        "id": "promiserace"
+      },
+      {
+        "level": 4,
+        "text": "Promise.allSettled",
+        "id": "promiseallsettled"
+      },
+      {
+        "level": 4,
+        "text": "Promise.any",
+        "id": "promiseany"
+      },
+      {
+        "level": 2,
+        "text": "async/await",
+        "id": "asyncawait"
+      },
+      {
+        "level": 3,
+        "text": "基础用法",
+        "id": "基础用法-1"
+      },
+      {
+        "level": 3,
+        "text": "并行执行",
+        "id": "并行执行"
+      },
+      {
+        "level": 3,
+        "text": "错误处理",
+        "id": "错误处理"
+      },
+      {
+        "level": 3,
+        "text": "循环中使用 await",
+        "id": "循环中使用-await"
+      },
+      {
+        "level": 2,
+        "text": "事件循环（Event Loop）",
+        "id": "事件循环event-loop"
+      },
+      {
+        "level": 3,
+        "text": "执行栈和任务队列",
+        "id": "执行栈和任务队列"
+      },
+      {
+        "level": 3,
+        "text": "微任务 vs 宏任务",
+        "id": "微任务-vs-宏任务"
+      },
+      {
+        "level": 2,
+        "text": "实战案例",
+        "id": "实战案例"
+      },
+      {
+        "level": 3,
+        "text": "1. 请求重试",
+        "id": "1-请求重试"
+      },
+      {
+        "level": 3,
+        "text": "2. 请求超时控制",
+        "id": "2-请求超时控制"
+      },
+      {
+        "level": 3,
+        "text": "3. 并发控制",
+        "id": "3-并发控制"
+      },
+      {
+        "level": 2,
+        "text": "最佳实践",
+        "id": "最佳实践"
+      },
+      {
+        "level": 3,
+        "text": "1. 优先使用 async/await",
+        "id": "1-优先使用-asyncawait"
+      },
+      {
+        "level": 3,
+        "text": "2. 正确处理错误",
+        "id": "2-正确处理错误"
+      },
+      {
+        "level": 3,
+        "text": "3. 避免不必要的 await",
+        "id": "3-避免不必要的-await"
+      },
+      {
+        "level": 2,
+        "text": "总结",
+        "id": "总结"
+      }
+    ]
+  },
+  "react-hooks": {
+    "metadata": {
+      "title": "React Hooks 完全指南",
+      "description": "深入理解 React Hooks 的使用方法和最佳实践",
+      "createdAt": "2024-01-10",
+      "updatedAt": "2024-01-15",
+      "tags": [
+        "react",
+        "hooks",
+        "useState",
+        "useEffect",
+        "custom-hooks"
+      ],
+      "category": "前端",
+      "featured": true
+    },
+    "content": "<h1 id=\"react-hooks-完全指南\"><a href=\"#react-hooks-完全指南\">React Hooks 完全指南</a></h1>\n<p>React Hooks 是 React 16.8 引入的新特性，它让你在不编写 class 的情况下使用 state 和其他 React 特性。</p>\n<h2 id=\"为什么需要-hooks\"><a href=\"#为什么需要-hooks\">为什么需要 Hooks</a></h2>\n<p>在 Hooks 之前，函数组件被称为\"无状态组件\"，只能用于展示。如果需要状态管理，就必须使用 class 组件。</p>\n<h3 id=\"class-组件的问题\"><a href=\"#class-组件的问题\">class 组件的问题</a></h3>\n<ul>\n<li><strong>复杂组件难以理解</strong>：生命周期函数中包含大量不相关的逻辑</li>\n<li><strong>难以复用状态逻辑</strong>：需要使用 render props 或 HOC，导致\"嵌套地狱\"</li>\n<li><strong>this 指向问题</strong>：需要频繁 bind this</li>\n</ul>\n<h2 id=\"基础-hooks\"><a href=\"#基础-hooks\">基础 Hooks</a></h2>\n<h3 id=\"usestate\"><a href=\"#usestate\">useState</a></h3>\n<p><code>useState</code> 是最常用的 Hook，用于在函数组件中添加状态。</p>\n<pre><code class=\"language-javascript\">import { useState } from 'react';\n\nfunction Counter() {\n  const [count, setCount] = useState(0);\n\n  return (\n    &#x3C;div>\n      &#x3C;p>当前计数：{count}&#x3C;/p>\n      &#x3C;button onClick={() => setCount(count + 1)}>\n        增加\n      &#x3C;/button>\n    &#x3C;/div>\n  );\n}\n</code></pre>\n<p><strong>重要特性</strong>：</p>\n<ul>\n<li>可以多次调用 <code>useState</code> 声明多个状态</li>\n<li>状态更新是异步的</li>\n<li>函数式更新：<code>setCount(prev => prev + 1)</code></li>\n</ul>\n<h3 id=\"useeffect\"><a href=\"#useeffect\">useEffect</a></h3>\n<p><code>useEffect</code> 用于处理副作用，如数据获取、订阅、DOM 操作等。</p>\n<pre><code class=\"language-javascript\">import { useState, useEffect } from 'react';\n\nfunction UserProfile({ userId }) {\n  const [user, setUser] = useState(null);\n  const [loading, setLoading] = useState(true);\n\n  useEffect(() => {\n    // 数据获取\n    fetch(`/api/users/${userId}`)\n      .then(res => res.json())\n      .then(data => {\n        setUser(data);\n        setLoading(false);\n      });\n\n    // 清理函数\n    return () => {\n      // 取消请求、清理订阅等\n    };\n  }, [userId]); // 依赖项数组\n\n  if (loading) return &#x3C;div>加载中...&#x3C;/div>;\n  return &#x3C;div>用户名：{user.name}&#x3C;/div>;\n}\n</code></pre>\n<p><strong>执行时机</strong>：</p>\n<ul>\n<li>组件挂载后执行</li>\n<li>依赖项变化时重新执行</li>\n<li>组件卸载前执行清理函数</li>\n</ul>\n<h3 id=\"usecontext\"><a href=\"#usecontext\">useContext</a></h3>\n<p><code>useContext</code> 用于在组件树中共享数据，避免 props 层层传递。</p>\n<pre><code class=\"language-javascript\">import { createContext, useContext } from 'react';\n\nconst ThemeContext = createContext('light');\n\nfunction ThemedButton() {\n  const theme = useContext(ThemeContext);\n  return (\n    &#x3C;button style={{ \n      background: theme === 'dark' ? '#333' : '#fff',\n      color: theme === 'dark' ? '#fff' : '#333'\n    }}>\n      主题按钮\n    &#x3C;/button>\n  );\n}\n</code></pre>\n<h2 id=\"额外的-hooks\"><a href=\"#额外的-hooks\">额外的 Hooks</a></h2>\n<h3 id=\"useref\"><a href=\"#useref\">useRef</a></h3>\n<p>用于保存可变值，且不会触发重新渲染。</p>\n<pre><code class=\"language-javascript\">function TextInput() {\n  const inputRef = useRef(null);\n\n  const handleFocus = () => {\n    inputRef.current.focus();\n  };\n\n  return (\n    &#x3C;>\n      &#x3C;input ref={inputRef} />\n      &#x3C;button onClick={handleFocus}>聚焦输入框&#x3C;/button>\n    &#x3C;/>\n  );\n}\n</code></pre>\n<h3 id=\"usememo\"><a href=\"#usememo\">useMemo</a></h3>\n<p>用于优化性能，缓存计算结果。</p>\n<pre><code class=\"language-javascript\">function ExpensiveComponent({ data }) {\n  const processedData = useMemo(() => {\n    // 昂贵的计算\n    return data.map(item => /* 复杂处理 */);\n  }, [data]);\n\n  return &#x3C;div>{/* 使用 processedData */}&#x3C;/div>;\n}\n</code></pre>\n<h3 id=\"usecallback\"><a href=\"#usecallback\">useCallback</a></h3>\n<p>用于缓存函数引用，避免子组件不必要的重新渲染。</p>\n<pre><code class=\"language-javascript\">function Parent() {\n  const [count, setCount] = useState(0);\n\n  const handleClick = useCallback(() => {\n    console.log('clicked');\n  }, []); // 函数引用不会改变\n\n  return &#x3C;Child onClick={handleClick} />;\n}\n</code></pre>\n<h2 id=\"自定义-hooks\"><a href=\"#自定义-hooks\">自定义 Hooks</a></h2>\n<p>自定义 Hooks 是复用状态逻辑的最佳方式。</p>\n<h3 id=\"数据获取-hook\"><a href=\"#数据获取-hook\">数据获取 Hook</a></h3>\n<pre><code class=\"language-javascript\">function useApi(url) {\n  const [data, setData] = useState(null);\n  const [loading, setLoading] = useState(true);\n  const [error, setError] = useState(null);\n\n  useEffect(() => {\n    const fetchData = async () => {\n      try {\n        const response = await fetch(url);\n        const result = await response.json();\n        setData(result);\n      } catch (err) {\n        setError(err);\n      } finally {\n        setLoading(false);\n      }\n    };\n\n    fetchData();\n  }, [url]);\n\n  return { data, loading, error };\n}\n\n// 使用\nfunction UserList() {\n  const { data, loading, error } = useApi('/api/users');\n\n  if (loading) return &#x3C;div>Loading...&#x3C;/div>;\n  if (error) return &#x3C;div>Error: {error.message}&#x3C;/div>;\n  return &#x3C;ul>{data.map(user => &#x3C;li key={user.id}>{user.name}&#x3C;/li>)}&#x3C;/ul>;\n}\n</code></pre>\n<h3 id=\"本地存储-hook\"><a href=\"#本地存储-hook\">本地存储 Hook</a></h3>\n<pre><code class=\"language-javascript\">function useLocalStorage(key, initialValue) {\n  const [value, setValue] = useState(() => {\n    const item = localStorage.getItem(key);\n    return item ? JSON.parse(item) : initialValue;\n  });\n\n  useEffect(() => {\n    localStorage.setItem(key, JSON.stringify(value));\n  }, [key, value]);\n\n  return [value, setValue];\n}\n\n// 使用\nfunction Settings() {\n  const [theme, setTheme] = useLocalStorage('theme', 'light');\n  \n  return (\n    &#x3C;button onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}>\n      当前主题：{theme}\n    &#x3C;/button>\n  );\n}\n</code></pre>\n<h2 id=\"hooks-使用规则\"><a href=\"#hooks-使用规则\">Hooks 使用规则</a></h2>\n<h3 id=\"1-只在顶层调用-hooks\"><a href=\"#1-只在顶层调用-hooks\">1. 只在顶层调用 Hooks</a></h3>\n<p>❌ 错误：</p>\n<pre><code class=\"language-javascript\">function Bad() {\n  if (condition) {\n    const [count, setCount] = useState(0); // 错误！\n  }\n}\n</code></pre>\n<p>✅ 正确：</p>\n<pre><code class=\"language-javascript\">function Good() {\n  const [count, setCount] = useState(0);\n  \n  if (condition) {\n    // 使用 count\n  }\n}\n</code></pre>\n<h3 id=\"2-只在-react-函数中调用-hooks\"><a href=\"#2-只在-react-函数中调用-hooks\">2. 只在 React 函数中调用 Hooks</a></h3>\n<ul>\n<li>React 函数组件</li>\n<li>自定义 Hooks</li>\n</ul>\n<p>❌ 不能在普通 JavaScript 函数中调用</p>\n<h2 id=\"性能优化技巧\"><a href=\"#性能优化技巧\">性能优化技巧</a></h2>\n<h3 id=\"1-避免不必要的状态\"><a href=\"#1-避免不必要的状态\">1. 避免不必要的状态</a></h3>\n<pre><code class=\"language-javascript\">// ❌ 不好\nfunction Bad() {\n  const [firstName, setFirstName] = useState('');\n  const [lastName, setLastName] = useState('');\n  const [fullName, setFullName] = useState('');\n\n  useEffect(() => {\n    setFullName(`${firstName} ${lastName}`);\n  }, [firstName, lastName]);\n}\n\n// ✅ 好\nfunction Good() {\n  const [firstName, setFirstName] = useState('');\n  const [lastName, setLastName] = useState('');\n  const fullName = `${firstName} ${lastName}`; // 直接计算\n}\n</code></pre>\n<h3 id=\"2-使用-usememo-和-usecallback\"><a href=\"#2-使用-usememo-和-usecallback\">2. 使用 useMemo 和 useCallback</a></h3>\n<p>只在必要时使用，过度优化反而影响性能。</p>\n<h3 id=\"3-拆分组件\"><a href=\"#3-拆分组件\">3. 拆分组件</a></h3>\n<p>将大组件拆分成小组件，减少重新渲染的范围。</p>\n<h2 id=\"总结\"><a href=\"#总结\">总结</a></h2>\n<p>React Hooks 带来了：</p>\n<ul>\n<li>✅ 更简洁的代码</li>\n<li>✅ 更好的逻辑复用</li>\n<li>✅ 更容易理解的组件</li>\n<li>✅ 更好的类型推导（TypeScript）</li>\n</ul>\n<p>掌握 Hooks 是现代 React 开发的必备技能。</p>",
+    "toc": [
+      {
+        "level": 1,
+        "text": "React Hooks 完全指南",
+        "id": "react-hooks-完全指南"
+      },
+      {
+        "level": 2,
+        "text": "为什么需要 Hooks",
+        "id": "为什么需要-hooks"
+      },
+      {
+        "level": 3,
+        "text": "class 组件的问题",
+        "id": "class-组件的问题"
+      },
+      {
+        "level": 2,
+        "text": "基础 Hooks",
+        "id": "基础-hooks"
+      },
+      {
+        "level": 3,
+        "text": "useState",
+        "id": "usestate"
+      },
+      {
+        "level": 3,
+        "text": "useEffect",
+        "id": "useeffect"
+      },
+      {
+        "level": 3,
+        "text": "useContext",
+        "id": "usecontext"
+      },
+      {
+        "level": 2,
+        "text": "额外的 Hooks",
+        "id": "额外的-hooks"
+      },
+      {
+        "level": 3,
+        "text": "useRef",
+        "id": "useref"
+      },
+      {
+        "level": 3,
+        "text": "useMemo",
+        "id": "usememo"
+      },
+      {
+        "level": 3,
+        "text": "useCallback",
+        "id": "usecallback"
+      },
+      {
+        "level": 2,
+        "text": "自定义 Hooks",
+        "id": "自定义-hooks"
+      },
+      {
+        "level": 3,
+        "text": "数据获取 Hook",
+        "id": "数据获取-hook"
+      },
+      {
+        "level": 3,
+        "text": "本地存储 Hook",
+        "id": "本地存储-hook"
+      },
+      {
+        "level": 2,
+        "text": "Hooks 使用规则",
+        "id": "hooks-使用规则"
+      },
+      {
+        "level": 3,
+        "text": "1. 只在顶层调用 Hooks",
+        "id": "1-只在顶层调用-hooks"
+      },
+      {
+        "level": 3,
+        "text": "2. 只在 React 函数中调用 Hooks",
+        "id": "2-只在-react-函数中调用-hooks"
+      },
+      {
+        "level": 2,
+        "text": "性能优化技巧",
+        "id": "性能优化技巧"
+      },
+      {
+        "level": 3,
+        "text": "1. 避免不必要的状态",
+        "id": "1-避免不必要的状态"
+      },
+      {
+        "level": 3,
+        "text": "2. 使用 useMemo 和 useCallback",
+        "id": "2-使用-usememo-和-usecallback"
+      },
+      {
+        "level": 3,
+        "text": "3. 拆分组件",
+        "id": "3-拆分组件"
+      },
+      {
+        "level": 2,
+        "text": "总结",
+        "id": "总结"
+      }
+    ]
+  },
+  "typescript": {
+    "metadata": {
+      "title": "TypeScript 类型系统深度解析",
+      "description": "掌握 TypeScript 的核心类型系统和高级特性",
+      "createdAt": "2024-01-05",
+      "updatedAt": "2024-01-10",
+      "tags": [
+        "ts",
+        "typescript",
+        "type",
+        "generic",
+        "interface"
+      ],
+      "category": "前端",
+      "featured": true
+    },
+    "content": "<h1 id=\"typescript-类型系统深度解析\"><a href=\"#typescript-类型系统深度解析\">TypeScript 类型系统深度解析</a></h1>\n<p>TypeScript 是 JavaScript 的超集，为 JavaScript 添加了静态类型检查，大大提升了代码的可维护性和健壮性。</p>\n<h2 id=\"基础类型\"><a href=\"#基础类型\">基础类型</a></h2>\n<h3 id=\"原始类型\"><a href=\"#原始类型\">原始类型</a></h3>\n<pre><code class=\"language-typescript\">// 字符串\nlet name: string = \"张三\";\n\n// 数字\nlet age: number = 25;\n\n// 布尔值\nlet isActive: boolean = true;\n\n// null 和 undefined\nlet n: null = null;\nlet u: undefined = undefined;\n\n// symbol\nlet sym: symbol = Symbol('key');\n\n// bigint\nlet big: bigint = 100n;\n</code></pre>\n<h3 id=\"数组和元组\"><a href=\"#数组和元组\">数组和元组</a></h3>\n<pre><code class=\"language-typescript\">// 数组\nlet numbers: number[] = [1, 2, 3];\nlet strings: Array&#x3C;string> = ['a', 'b', 'c'];\n\n// 元组：固定长度和类型的数组\nlet tuple: [string, number] = ['age', 25];\n\n// 可选元素\nlet optionalTuple: [string, number?] = ['name'];\n\n// 剩余元素\nlet restTuple: [string, ...number[]] = ['numbers', 1, 2, 3];\n</code></pre>\n<h3 id=\"对象类型\"><a href=\"#对象类型\">对象类型</a></h3>\n<pre><code class=\"language-typescript\">// 对象字面量类型\nlet user: { name: string; age: number } = {\n  name: '张三',\n  age: 25\n};\n\n// 可选属性\nlet partialUser: { name: string; age?: number } = {\n  name: '李四'\n};\n\n// 只读属性\nlet readonlyUser: { readonly name: string } = {\n  name: '王五'\n};\n// readonlyUser.name = '赵六'; // 错误！\n</code></pre>\n<h2 id=\"接口interface\"><a href=\"#接口interface\">接口（Interface）</a></h2>\n<p>接口是 TypeScript 中定义对象结构的主要方式。</p>\n<h3 id=\"基础接口\"><a href=\"#基础接口\">基础接口</a></h3>\n<pre><code class=\"language-typescript\">interface User {\n  id: number;\n  name: string;\n  email?: string; // 可选属性\n  readonly createdAt: Date; // 只读属性\n}\n\nconst user: User = {\n  id: 1,\n  name: '张三',\n  createdAt: new Date()\n};\n</code></pre>\n<h3 id=\"函数接口\"><a href=\"#函数接口\">函数接口</a></h3>\n<pre><code class=\"language-typescript\">interface SearchFunc {\n  (source: string, subString: string): boolean;\n}\n\nconst search: SearchFunc = (src, sub) => {\n  return src.includes(sub);\n};\n</code></pre>\n<h3 id=\"可索引类型\"><a href=\"#可索引类型\">可索引类型</a></h3>\n<pre><code class=\"language-typescript\">interface StringArray {\n  [index: number]: string;\n}\n\nconst arr: StringArray = ['a', 'b', 'c'];\n\ninterface StringMap {\n  [key: string]: string;\n}\n\nconst map: StringMap = {\n  name: '张三',\n  city: '北京'\n};\n</code></pre>\n<h3 id=\"接口继承\"><a href=\"#接口继承\">接口继承</a></h3>\n<pre><code class=\"language-typescript\">interface Animal {\n  name: string;\n}\n\ninterface Dog extends Animal {\n  breed: string;\n}\n\nconst dog: Dog = {\n  name: 'Buddy',\n  breed: 'Golden Retriever'\n};\n\n// 多重继承\ninterface Flyable {\n  fly(): void;\n}\n\ninterface Swimmable {\n  swim(): void;\n}\n\ninterface Duck extends Animal, Flyable, Swimmable {\n  quack(): void;\n}\n</code></pre>\n<h2 id=\"类型别名type-alias\"><a href=\"#类型别名type-alias\">类型别名（Type Alias）</a></h2>\n<p>type 关键字可以为类型创建别名。</p>\n<h3 id=\"基础用法\"><a href=\"#基础用法\">基础用法</a></h3>\n<pre><code class=\"language-typescript\">type ID = number | string;\ntype Point = { x: number; y: number };\n\nlet userId: ID = 123;\nlet position: Point = { x: 10, y: 20 };\n</code></pre>\n<h3 id=\"联合类型\"><a href=\"#联合类型\">联合类型</a></h3>\n<pre><code class=\"language-typescript\">type Status = 'pending' | 'success' | 'error';\n\nfunction handleStatus(status: Status) {\n  switch (status) {\n    case 'pending':\n      console.log('处理中');\n      break;\n    case 'success':\n      console.log('成功');\n      break;\n    case 'error':\n      console.log('错误');\n      break;\n  }\n}\n</code></pre>\n<h3 id=\"交叉类型\"><a href=\"#交叉类型\">交叉类型</a></h3>\n<pre><code class=\"language-typescript\">type Colorful = { color: string };\ntype Circle = { radius: number };\n\ntype ColorfulCircle = Colorful &#x26; Circle;\n\nconst cc: ColorfulCircle = {\n  color: 'red',\n  radius: 10\n};\n</code></pre>\n<h2 id=\"interface-vs-type\"><a href=\"#interface-vs-type\">Interface vs Type</a></h2>\n<h3 id=\"相同点\"><a href=\"#相同点\">相同点</a></h3>\n<p>都可以描述对象结构：</p>\n<pre><code class=\"language-typescript\">interface IUser {\n  name: string;\n}\n\ntype TUser = {\n  name: string;\n};\n</code></pre>\n<h3 id=\"不同点\"><a href=\"#不同点\">不同点</a></h3>\n<p><strong>Interface</strong>：</p>\n<ul>\n<li>可以声明合并</li>\n<li>可以被类实现（implements）</li>\n<li>更适合定义对象结构</li>\n</ul>\n<p><strong>Type</strong>：</p>\n<ul>\n<li>支持联合类型、交叉类型</li>\n<li>支持类型映射</li>\n<li>更灵活</li>\n</ul>\n<pre><code class=\"language-typescript\">// 声明合并（只有 interface 支持）\ninterface Window {\n  title: string;\n}\n\ninterface Window {\n  count: number;\n}\n\n// Window 现在有 title 和 count 两个属性\n\n// 联合类型（只有 type 支持）\ntype StringOrNumber = string | number;\n</code></pre>\n<h2 id=\"泛型generics\"><a href=\"#泛型generics\">泛型（Generics）</a></h2>\n<p>泛型让类型可以参数化，提高代码复用性。</p>\n<h3 id=\"基础泛型\"><a href=\"#基础泛型\">基础泛型</a></h3>\n<pre><code class=\"language-typescript\">function identity&#x3C;T>(arg: T): T {\n  return arg;\n}\n\nlet output1 = identity&#x3C;string>(\"hello\");\nlet output2 = identity&#x3C;number>(123);\n// 类型推断\nlet output3 = identity(\"world\"); // T 自动推断为 string\n</code></pre>\n<h3 id=\"泛型接口\"><a href=\"#泛型接口\">泛型接口</a></h3>\n<pre><code class=\"language-typescript\">interface GenericIdentityFn&#x3C;T> {\n  (arg: T): T;\n}\n\nlet myIdentity: GenericIdentityFn&#x3C;number> = identity;\n</code></pre>\n<h3 id=\"泛型类\"><a href=\"#泛型类\">泛型类</a></h3>\n<pre><code class=\"language-typescript\">class GenericNumber&#x3C;T> {\n  zeroValue: T;\n  add: (x: T, y: T) => T;\n  \n  constructor(zero: T, addFn: (x: T, y: T) => T) {\n    this.zeroValue = zero;\n    this.add = addFn;\n  }\n}\n\nlet numberBox = new GenericNumber&#x3C;number>(0, (x, y) => x + y);\nlet stringBox = new GenericNumber&#x3C;string>(\"\", (x, y) => x + y);\n</code></pre>\n<h3 id=\"泛型约束\"><a href=\"#泛型约束\">泛型约束</a></h3>\n<pre><code class=\"language-typescript\">interface Lengthwise {\n  length: number;\n}\n\nfunction logLength&#x3C;T extends Lengthwise>(arg: T): T {\n  console.log(arg.length);\n  return arg;\n}\n\nlogLength(\"hello\"); // OK\nlogLength([1, 2, 3]); // OK\n// logLength(123); // 错误！number 没有 length 属性\n</code></pre>\n<h2 id=\"高级类型\"><a href=\"#高级类型\">高级类型</a></h2>\n<h3 id=\"条件类型\"><a href=\"#条件类型\">条件类型</a></h3>\n<pre><code class=\"language-typescript\">type IsString&#x3C;T> = T extends string ? true : false;\n\ntype A = IsString&#x3C;string>; // true\ntype B = IsString&#x3C;number>; // false\n</code></pre>\n<h3 id=\"映射类型\"><a href=\"#映射类型\">映射类型</a></h3>\n<pre><code class=\"language-typescript\">type Readonly&#x3C;T> = {\n  readonly [P in keyof T]: T[P];\n};\n\ntype Partial&#x3C;T> = {\n  [P in keyof T]?: T[P];\n};\n\ninterface User {\n  name: string;\n  age: number;\n}\n\ntype ReadonlyUser = Readonly&#x3C;User>;\n// { readonly name: string; readonly age: number; }\n\ntype PartialUser = Partial&#x3C;User>;\n// { name?: string; age?: number; }\n</code></pre>\n<h3 id=\"工具类型\"><a href=\"#工具类型\">工具类型</a></h3>\n<p>TypeScript 内置了许多实用的工具类型：</p>\n<pre><code class=\"language-typescript\">// Pick：选择部分属性\ntype UserName = Pick&#x3C;User, 'name'>;\n// { name: string }\n\n// Omit：排除部分属性\ntype UserWithoutAge = Omit&#x3C;User, 'age'>;\n// { name: string }\n\n// Record：构造对象类型\ntype PageInfo = Record&#x3C;'home' | 'about', { title: string }>;\n// { home: { title: string }; about: { title: string } }\n\n// Exclude：排除联合类型中的某些类型\ntype T0 = Exclude&#x3C;'a' | 'b' | 'c', 'a'>; // 'b' | 'c'\n\n// Extract：提取联合类型中的某些类型\ntype T1 = Extract&#x3C;'a' | 'b' | 'c', 'a' | 'f'>; // 'a'\n\n// NonNullable：排除 null 和 undefined\ntype T2 = NonNullable&#x3C;string | number | null | undefined>; // string | number\n\n// ReturnType：获取函数返回值类型\nfunction f1(): string { return 'hello'; }\ntype T3 = ReturnType&#x3C;typeof f1>; // string\n\n// Parameters：获取函数参数类型\ntype T4 = Parameters&#x3C;typeof f1>; // []\n</code></pre>\n<h2 id=\"类型守卫\"><a href=\"#类型守卫\">类型守卫</a></h2>\n<p>帮助 TypeScript 缩小类型范围。</p>\n<h3 id=\"typeof-类型守卫\"><a href=\"#typeof-类型守卫\">typeof 类型守卫</a></h3>\n<pre><code class=\"language-typescript\">function padLeft(value: string, padding: string | number) {\n  if (typeof padding === 'number') {\n    return ' '.repeat(padding) + value;\n  }\n  return padding + value;\n}\n</code></pre>\n<h3 id=\"instanceof-类型守卫\"><a href=\"#instanceof-类型守卫\">instanceof 类型守卫</a></h3>\n<pre><code class=\"language-typescript\">class Bird {\n  fly() { console.log('飞'); }\n}\n\nclass Fish {\n  swim() { console.log('游'); }\n}\n\nfunction move(animal: Bird | Fish) {\n  if (animal instanceof Bird) {\n    animal.fly();\n  } else {\n    animal.swim();\n  }\n}\n</code></pre>\n<h3 id=\"自定义类型守卫\"><a href=\"#自定义类型守卫\">自定义类型守卫</a></h3>\n<pre><code class=\"language-typescript\">interface Cat {\n  meow(): void;\n}\n\ninterface Dog {\n  bark(): void;\n}\n\nfunction isCat(animal: Cat | Dog): animal is Cat {\n  return (animal as Cat).meow !== undefined;\n}\n\nfunction makeSound(animal: Cat | Dog) {\n  if (isCat(animal)) {\n    animal.meow();\n  } else {\n    animal.bark();\n  }\n}\n</code></pre>\n<h2 id=\"实战技巧\"><a href=\"#实战技巧\">实战技巧</a></h2>\n<h3 id=\"1-使用-const-断言\"><a href=\"#1-使用-const-断言\">1. 使用 const 断言</a></h3>\n<pre><code class=\"language-typescript\">const config = {\n  endpoint: 'https://api.example.com',\n  timeout: 5000\n} as const;\n\n// config.endpoint 的类型是 'https://api.example.com'\n// 而不是 string\n</code></pre>\n<h3 id=\"2-使用类型推断\"><a href=\"#2-使用类型推断\">2. 使用类型推断</a></h3>\n<pre><code class=\"language-typescript\">// ❌ 不必要的类型注解\nconst name: string = 'John';\n\n// ✅ 让 TypeScript 自动推断\nconst name = 'John';\n</code></pre>\n<h3 id=\"3-善用-unknown-替代-any\"><a href=\"#3-善用-unknown-替代-any\">3. 善用 unknown 替代 any</a></h3>\n<pre><code class=\"language-typescript\">// ❌ 不安全\nfunction process(value: any) {\n  return value.toUpperCase();\n}\n\n// ✅ 更安全\nfunction process(value: unknown) {\n  if (typeof value === 'string') {\n    return value.toUpperCase();\n  }\n  throw new Error('Invalid value');\n}\n</code></pre>\n<h3 id=\"4-使用可辨识联合\"><a href=\"#4-使用可辨识联合\">4. 使用可辨识联合</a></h3>\n<pre><code class=\"language-typescript\">interface Square {\n  kind: 'square';\n  size: number;\n}\n\ninterface Rectangle {\n  kind: 'rectangle';\n  width: number;\n  height: number;\n}\n\ntype Shape = Square | Rectangle;\n\nfunction area(shape: Shape): number {\n  switch (shape.kind) {\n    case 'square':\n      return shape.size ** 2;\n    case 'rectangle':\n      return shape.width * shape.height;\n  }\n}\n</code></pre>\n<h2 id=\"总结\"><a href=\"#总结\">总结</a></h2>\n<p>TypeScript 的类型系统非常强大：</p>\n<ul>\n<li>✅ 提供静态类型检查</li>\n<li>✅ 更好的 IDE 支持</li>\n<li>✅ 提升代码可维护性</li>\n<li>✅ 减少运行时错误</li>\n<li>✅ 优秀的类型推断能力</li>\n</ul>\n<p>掌握 TypeScript 类型系统是现代前端开发的必备技能。</p>",
+    "toc": [
+      {
+        "level": 1,
+        "text": "TypeScript 类型系统深度解析",
+        "id": "typescript-类型系统深度解析"
+      },
+      {
+        "level": 2,
+        "text": "基础类型",
+        "id": "基础类型"
+      },
+      {
+        "level": 3,
+        "text": "原始类型",
+        "id": "原始类型"
+      },
+      {
+        "level": 3,
+        "text": "数组和元组",
+        "id": "数组和元组"
+      },
+      {
+        "level": 3,
+        "text": "对象类型",
+        "id": "对象类型"
+      },
+      {
+        "level": 2,
+        "text": "接口（Interface）",
+        "id": "接口interface"
+      },
+      {
+        "level": 3,
+        "text": "基础接口",
+        "id": "基础接口"
+      },
+      {
+        "level": 3,
+        "text": "函数接口",
+        "id": "函数接口"
+      },
+      {
+        "level": 3,
+        "text": "可索引类型",
+        "id": "可索引类型"
+      },
+      {
+        "level": 3,
+        "text": "接口继承",
+        "id": "接口继承"
+      },
+      {
+        "level": 2,
+        "text": "类型别名（Type Alias）",
+        "id": "类型别名type-alias"
+      },
+      {
+        "level": 3,
+        "text": "基础用法",
+        "id": "基础用法"
+      },
+      {
+        "level": 3,
+        "text": "联合类型",
+        "id": "联合类型"
+      },
+      {
+        "level": 3,
+        "text": "交叉类型",
+        "id": "交叉类型"
+      },
+      {
+        "level": 2,
+        "text": "Interface vs Type",
+        "id": "interface-vs-type"
+      },
+      {
+        "level": 3,
+        "text": "相同点",
+        "id": "相同点"
+      },
+      {
+        "level": 3,
+        "text": "不同点",
+        "id": "不同点"
+      },
+      {
+        "level": 2,
+        "text": "泛型（Generics）",
+        "id": "泛型generics"
+      },
+      {
+        "level": 3,
+        "text": "基础泛型",
+        "id": "基础泛型"
+      },
+      {
+        "level": 3,
+        "text": "泛型接口",
+        "id": "泛型接口"
+      },
+      {
+        "level": 3,
+        "text": "泛型类",
+        "id": "泛型类"
+      },
+      {
+        "level": 3,
+        "text": "泛型约束",
+        "id": "泛型约束"
+      },
+      {
+        "level": 2,
+        "text": "高级类型",
+        "id": "高级类型"
+      },
+      {
+        "level": 3,
+        "text": "条件类型",
+        "id": "条件类型"
+      },
+      {
+        "level": 3,
+        "text": "映射类型",
+        "id": "映射类型"
+      },
+      {
+        "level": 3,
+        "text": "工具类型",
+        "id": "工具类型"
+      },
+      {
+        "level": 2,
+        "text": "类型守卫",
+        "id": "类型守卫"
+      },
+      {
+        "level": 3,
+        "text": "typeof 类型守卫",
+        "id": "typeof-类型守卫"
+      },
+      {
+        "level": 3,
+        "text": "instanceof 类型守卫",
+        "id": "instanceof-类型守卫"
+      },
+      {
+        "level": 3,
+        "text": "自定义类型守卫",
+        "id": "自定义类型守卫"
+      },
+      {
+        "level": 2,
+        "text": "实战技巧",
+        "id": "实战技巧"
+      },
+      {
+        "level": 3,
+        "text": "1. 使用 const 断言",
+        "id": "1-使用-const-断言"
+      },
+      {
+        "level": 3,
+        "text": "2. 使用类型推断",
+        "id": "2-使用类型推断"
+      },
+      {
+        "level": 3,
+        "text": "3. 善用 unknown 替代 any",
+        "id": "3-善用-unknown-替代-any"
+      },
+      {
+        "level": 3,
+        "text": "4. 使用可辨识联合",
+        "id": "4-使用可辨识联合"
+      },
+      {
+        "level": 2,
+        "text": "总结",
+        "id": "总结"
+      }
+    ]
+  },
+  "vite": {
+    "metadata": {
+      "title": "Vite 极速构建工具完全指南",
+      "description": "了解 Vite 的核心原理和最佳实践",
+      "createdAt": "2024-01-03",
+      "updatedAt": "2024-01-08",
+      "tags": [
+        "vite",
+        "vite-vue",
+        "vite-react",
+        "rollup",
+        "esbuild"
+      ],
+      "category": "前端",
+      "featured": false
+    },
+    "content": "<h1 id=\"vite-极速构建工具完全指南\"><a href=\"#vite-极速构建工具完全指南\">Vite 极速构建工具完全指南</a></h1>\n<p>Vite 是新一代前端构建工具，由 Vue.js 作者尤雨溪开发，以其极快的开发服务器启动速度和热更新性能而闻名。</p>\n<h2 id=\"为什么选择-vite\"><a href=\"#为什么选择-vite\">为什么选择 Vite</a></h2>\n<h3 id=\"传统构建工具的问题\"><a href=\"#传统构建工具的问题\">传统构建工具的问题</a></h3>\n<p><strong>Webpack 的痛点</strong>：</p>\n<ul>\n<li>冷启动慢：需要打包整个项目</li>\n<li>热更新慢：修改一个文件需要重新打包相关模块</li>\n<li>配置复杂：学习成本高</li>\n</ul>\n<h3 id=\"vite-的优势\"><a href=\"#vite-的优势\">Vite 的优势</a></h3>\n<ul>\n<li>⚡ <strong>极速启动</strong>：无需打包，秒级启动</li>\n<li>🔥 <strong>快速热更新</strong>：基于 ESM 的 HMR，速度与项目大小无关</li>\n<li>📦 <strong>优化的构建</strong>：基于 Rollup 的生产构建</li>\n<li>🛠️ <strong>开箱即用</strong>：内置支持 TypeScript、JSX、CSS 等</li>\n<li>🔌 <strong>插件生态</strong>：兼容 Rollup 插件</li>\n</ul>\n<h2 id=\"核心原理\"><a href=\"#核心原理\">核心原理</a></h2>\n<h3 id=\"开发环境基于-esm\"><a href=\"#开发环境基于-esm\">开发环境：基于 ESM</a></h3>\n<p>Vite 在开发环境下不打包代码，而是利用浏览器原生的 ES 模块支持：</p>\n<pre><code class=\"language-javascript\">// 传统方式：需要打包\nimport { createApp } from 'vue';\nimport App from './App.vue';\n\n// Vite 方式：浏览器直接请求\n// http://localhost:5173/@fs/path/to/vue\n// http://localhost:5173/src/App.vue\n</code></pre>\n<h3 id=\"依赖预构建\"><a href=\"#依赖预构建\">依赖预构建</a></h3>\n<p>Vite 使用 esbuild 预构建依赖：</p>\n<pre><code class=\"language-bash\">node_modules/.vite/\n  ├── vue.js          # 预构建的 Vue\n  ├── react.js        # 预构建的 React\n  └── ...\n</code></pre>\n<p><strong>为什么预构建</strong>：</p>\n<ol>\n<li>转换 CommonJS/UMD 为 ESM</li>\n<li>减少 HTTP 请求数量</li>\n<li>提升加载性能</li>\n</ol>\n<h3 id=\"生产构建基于-rollup\"><a href=\"#生产构建基于-rollup\">生产构建：基于 Rollup</a></h3>\n<p>生产环境使用 Rollup 打包，获得最优的代码分割和懒加载效果。</p>\n<h2 id=\"快速开始\"><a href=\"#快速开始\">快速开始</a></h2>\n<h3 id=\"创建项目\"><a href=\"#创建项目\">创建项目</a></h3>\n<pre><code class=\"language-bash\"># npm\nnpm create vite@latest my-app\n\n# yarn\nyarn create vite my-app\n\n# pnpm\npnpm create vite my-app\n</code></pre>\n<h3 id=\"选择模板\"><a href=\"#选择模板\">选择模板</a></h3>\n<p>Vite 支持多种模板：</p>\n<ul>\n<li>vanilla（原生 JS）</li>\n<li>vue</li>\n<li>vue-ts</li>\n<li>react</li>\n<li>react-ts</li>\n<li>preact</li>\n<li>lit</li>\n<li>svelte</li>\n<li>solid</li>\n</ul>\n<h3 id=\"项目结构\"><a href=\"#项目结构\">项目结构</a></h3>\n<pre><code>my-app/\n├── index.html          # 入口 HTML\n├── package.json\n├── vite.config.ts      # Vite 配置\n├── public/             # 静态资源\n└── src/\n    ├── main.ts         # 应用入口\n    ├── App.vue\n    └── components/\n</code></pre>\n<h2 id=\"配置\"><a href=\"#配置\">配置</a></h2>\n<h3 id=\"基础配置\"><a href=\"#基础配置\">基础配置</a></h3>\n<pre><code class=\"language-typescript\">// vite.config.ts\nimport { defineConfig } from 'vite';\nimport vue from '@vitejs/plugin-vue';\n\nexport default defineConfig({\n  plugins: [vue()],\n  server: {\n    port: 3000,\n    open: true, // 自动打开浏览器\n  },\n  build: {\n    outDir: 'dist',\n    sourcemap: true,\n  },\n});\n</code></pre>\n<h3 id=\"路径别名\"><a href=\"#路径别名\">路径别名</a></h3>\n<pre><code class=\"language-typescript\">import { defineConfig } from 'vite';\nimport path from 'path';\n\nexport default defineConfig({\n  resolve: {\n    alias: {\n      '@': path.resolve(__dirname, 'src'),\n      '@components': path.resolve(__dirname, 'src/components'),\n    },\n  },\n});\n</code></pre>\n<h3 id=\"环境变量\"><a href=\"#环境变量\">环境变量</a></h3>\n<pre><code class=\"language-bash\"># .env\nVITE_API_URL=https://api.example.com\n\n# .env.development\nVITE_API_URL=http://localhost:3000\n\n# .env.production\nVITE_API_URL=https://prod-api.example.com\n</code></pre>\n<pre><code class=\"language-typescript\">// 使用环境变量\nconst apiUrl = import.meta.env.VITE_API_URL;\nconsole.log(apiUrl);\n</code></pre>\n<h3 id=\"代理配置\"><a href=\"#代理配置\">代理配置</a></h3>\n<pre><code class=\"language-typescript\">export default defineConfig({\n  server: {\n    proxy: {\n      '/api': {\n        target: 'http://localhost:8080',\n        changeOrigin: true,\n        rewrite: (path) => path.replace(/^\\/api/, ''),\n      },\n    },\n  },\n});\n</code></pre>\n<h2 id=\"静态资源处理\"><a href=\"#静态资源处理\">静态资源处理</a></h2>\n<h3 id=\"导入静态资源\"><a href=\"#导入静态资源\">导入静态资源</a></h3>\n<pre><code class=\"language-typescript\">// 导入为 URL\nimport imgUrl from './assets/logo.png';\n\n// 导入为字符串\nimport imgContent from './assets/logo.svg?raw';\n\n// 导入为 Web Worker\nimport Worker from './worker?worker';\n</code></pre>\n<h3 id=\"public-目录\"><a href=\"#public-目录\">public 目录</a></h3>\n<p><code>public</code> 目录下的文件会被直接复制到输出目录：</p>\n<pre><code class=\"language-html\">&#x3C;!-- 直接引用 public 目录下的文件 -->\n&#x3C;img src=\"/logo.png\" />\n</code></pre>\n<h3 id=\"css-处理\"><a href=\"#css-处理\">CSS 处理</a></h3>\n<pre><code class=\"language-typescript\">// 导入 CSS\nimport './style.css';\n\n// CSS Modules\nimport styles from './style.module.css';\n\n// SCSS/SASS\nimport './style.scss';\n</code></pre>\n<h2 id=\"插件系统\"><a href=\"#插件系统\">插件系统</a></h2>\n<h3 id=\"官方插件\"><a href=\"#官方插件\">官方插件</a></h3>\n<pre><code class=\"language-bash\"># Vue\nnpm install @vitejs/plugin-vue\n\n# React\nnpm install @vitejs/plugin-react\n\n# Legacy 浏览器支持\nnpm install @vitejs/plugin-legacy\n</code></pre>\n<h3 id=\"使用插件\"><a href=\"#使用插件\">使用插件</a></h3>\n<pre><code class=\"language-typescript\">import { defineConfig } from 'vite';\nimport vue from '@vitejs/plugin-vue';\nimport legacy from '@vitejs/plugin-legacy';\n\nexport default defineConfig({\n  plugins: [\n    vue(),\n    legacy({\n      targets: ['defaults', 'not IE 11'],\n    }),\n  ],\n});\n</code></pre>\n<h3 id=\"自定义插件\"><a href=\"#自定义插件\">自定义插件</a></h3>\n<pre><code class=\"language-typescript\">export default function myPlugin() {\n  return {\n    name: 'my-plugin',\n    \n    // 转换钩子\n    transform(code, id) {\n      if (id.endsWith('.txt')) {\n        return {\n          code: `export default ${JSON.stringify(code)}`,\n          map: null,\n        };\n      }\n    },\n    \n    // 服务器钩子\n    configureServer(server) {\n      server.middlewares.use((req, res, next) => {\n        // 自定义中间件\n        next();\n      });\n    },\n  };\n}\n</code></pre>\n<h2 id=\"性能优化\"><a href=\"#性能优化\">性能优化</a></h2>\n<h3 id=\"1-依赖预构建优化\"><a href=\"#1-依赖预构建优化\">1. 依赖预构建优化</a></h3>\n<pre><code class=\"language-typescript\">export default defineConfig({\n  optimizeDeps: {\n    include: ['lodash-es', 'axios'], // 预构建指定依赖\n    exclude: ['some-large-dep'], // 排除不需要预构建的依赖\n  },\n});\n</code></pre>\n<h3 id=\"2-代码分割\"><a href=\"#2-代码分割\">2. 代码分割</a></h3>\n<pre><code class=\"language-typescript\">export default defineConfig({\n  build: {\n    rollupOptions: {\n      output: {\n        manualChunks: {\n          'vendor': ['vue', 'vue-router'],\n          'ui': ['element-plus'],\n        },\n      },\n    },\n  },\n});\n</code></pre>\n<h3 id=\"3-压缩配置\"><a href=\"#3-压缩配置\">3. 压缩配置</a></h3>\n<pre><code class=\"language-typescript\">export default defineConfig({\n  build: {\n    minify: 'esbuild', // 或 'terser'\n    terserOptions: {\n      compress: {\n        drop_console: true, // 移除 console\n        drop_debugger: true,\n      },\n    },\n  },\n});\n</code></pre>\n<h3 id=\"4-图片优化\"><a href=\"#4-图片优化\">4. 图片优化</a></h3>\n<pre><code class=\"language-bash\">npm install vite-plugin-imagemin\n</code></pre>\n<pre><code class=\"language-typescript\">import viteImagemin from 'vite-plugin-imagemin';\n\nexport default defineConfig({\n  plugins: [\n    viteImagemin({\n      gifsicle: {\n        optimizationLevel: 7,\n      },\n      optipng: {\n        optimizationLevel: 7,\n      },\n      mozjpeg: {\n        quality: 80,\n      },\n    }),\n  ],\n});\n</code></pre>\n<h2 id=\"与-webpack-对比\"><a href=\"#与-webpack-对比\">与 Webpack 对比</a></h2>\n<table>\n<thead>\n<tr>\n<th>特性</th>\n<th>Vite</th>\n<th>Webpack</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>启动速度</td>\n<td>⚡ 秒级</td>\n<td>🐌 分钟级</td>\n</tr>\n<tr>\n<td>热更新</td>\n<td>⚡ 毫秒级</td>\n<td>🐌 秒级</td>\n</tr>\n<tr>\n<td>配置复杂度</td>\n<td>简单</td>\n<td>复杂</td>\n</tr>\n<tr>\n<td>生态</td>\n<td>新兴</td>\n<td>成熟</td>\n</tr>\n<tr>\n<td>浏览器支持</td>\n<td>现代浏览器</td>\n<td>全面</td>\n</tr>\n</tbody>\n</table>\n<h2 id=\"实战案例\"><a href=\"#实战案例\">实战案例</a></h2>\n<h3 id=\"vue-3--vite-项目\"><a href=\"#vue-3--vite-项目\">Vue 3 + Vite 项目</a></h3>\n<pre><code class=\"language-typescript\">// vite.config.ts\nimport { defineConfig } from 'vite';\nimport vue from '@vitejs/plugin-vue';\nimport Components from 'unplugin-vue-components/vite';\nimport AutoImport from 'unplugin-auto-import/vite';\n\nexport default defineConfig({\n  plugins: [\n    vue(),\n    // 自动导入组件\n    Components({\n      dts: true,\n      dirs: ['src/components'],\n    }),\n    // 自动导入 API\n    AutoImport({\n      imports: ['vue', 'vue-router'],\n      dts: true,\n    }),\n  ],\n});\n</code></pre>\n<h3 id=\"react--vite-项目\"><a href=\"#react--vite-项目\">React + Vite 项目</a></h3>\n<pre><code class=\"language-typescript\">// vite.config.ts\nimport { defineConfig } from 'vite';\nimport react from '@vitejs/plugin-react';\n\nexport default defineConfig({\n  plugins: [\n    react({\n      // 启用 React Fast Refresh\n      fastRefresh: true,\n    }),\n  ],\n  esbuild: {\n    jsxInject: `import React from 'react'`, // 自动注入 React\n  },\n});\n</code></pre>\n<h2 id=\"常见问题\"><a href=\"#常见问题\">常见问题</a></h2>\n<h3 id=\"1-依赖预构建失败\"><a href=\"#1-依赖预构建失败\">1. 依赖预构建失败</a></h3>\n<pre><code class=\"language-bash\"># 清除缓存\nrm -rf node_modules/.vite\n</code></pre>\n<h3 id=\"2-hmr-不工作\"><a href=\"#2-hmr-不工作\">2. HMR 不工作</a></h3>\n<p>检查防火墙设置，确保 WebSocket 连接正常。</p>\n<h3 id=\"3-生产环境白屏\"><a href=\"#3-生产环境白屏\">3. 生产环境白屏</a></h3>\n<p>检查 <code>base</code> 配置：</p>\n<pre><code class=\"language-typescript\">export default defineConfig({\n  base: '/my-app/', // 子路径部署\n});\n</code></pre>\n<h2 id=\"总结\"><a href=\"#总结\">总结</a></h2>\n<p>Vite 的核心优势：</p>\n<ul>\n<li>⚡ 极速的开发体验</li>\n<li>🔥 基于 ESM 的 HMR</li>\n<li>📦 优化的生产构建</li>\n<li>🛠️ 简单的配置</li>\n<li>🔌 丰富的插件生态</li>\n</ul>\n<p>Vite 是现代前端开发的最佳选择之一，特别适合新项目。</p>",
+    "toc": [
+      {
+        "level": 1,
+        "text": "Vite 极速构建工具完全指南",
+        "id": "vite-极速构建工具完全指南"
+      },
+      {
+        "level": 2,
+        "text": "为什么选择 Vite",
+        "id": "为什么选择-vite"
+      },
+      {
+        "level": 3,
+        "text": "传统构建工具的问题",
+        "id": "传统构建工具的问题"
+      },
+      {
+        "level": 3,
+        "text": "Vite 的优势",
+        "id": "vite-的优势"
+      },
+      {
+        "level": 2,
+        "text": "核心原理",
+        "id": "核心原理"
+      },
+      {
+        "level": 3,
+        "text": "开发环境：基于 ESM",
+        "id": "开发环境基于-esm"
+      },
+      {
+        "level": 3,
+        "text": "依赖预构建",
+        "id": "依赖预构建"
+      },
+      {
+        "level": 3,
+        "text": "生产构建：基于 Rollup",
+        "id": "生产构建基于-rollup"
+      },
+      {
+        "level": 2,
+        "text": "快速开始",
+        "id": "快速开始"
+      },
+      {
+        "level": 3,
+        "text": "创建项目",
+        "id": "创建项目"
+      },
+      {
+        "level": 1,
+        "text": "npm",
+        "id": "npm"
+      },
+      {
+        "level": 1,
+        "text": "yarn",
+        "id": "yarn"
+      },
+      {
+        "level": 1,
+        "text": "pnpm",
+        "id": "pnpm"
+      },
+      {
+        "level": 3,
+        "text": "选择模板",
+        "id": "选择模板"
+      },
+      {
+        "level": 3,
+        "text": "项目结构",
+        "id": "项目结构"
+      },
+      {
+        "level": 2,
+        "text": "配置",
+        "id": "配置"
+      },
+      {
+        "level": 3,
+        "text": "基础配置",
+        "id": "基础配置"
+      },
+      {
+        "level": 3,
+        "text": "路径别名",
+        "id": "路径别名"
+      },
+      {
+        "level": 3,
+        "text": "环境变量",
+        "id": "环境变量"
+      },
+      {
+        "level": 1,
+        "text": ".env",
+        "id": "env"
+      },
+      {
+        "level": 1,
+        "text": ".env.development",
+        "id": "envdevelopment"
+      },
+      {
+        "level": 1,
+        "text": ".env.production",
+        "id": "envproduction"
+      },
+      {
+        "level": 3,
+        "text": "代理配置",
+        "id": "代理配置"
+      },
+      {
+        "level": 2,
+        "text": "静态资源处理",
+        "id": "静态资源处理"
+      },
+      {
+        "level": 3,
+        "text": "导入静态资源",
+        "id": "导入静态资源"
+      },
+      {
+        "level": 3,
+        "text": "public 目录",
+        "id": "public-目录"
+      },
+      {
+        "level": 3,
+        "text": "CSS 处理",
+        "id": "css-处理"
+      },
+      {
+        "level": 2,
+        "text": "插件系统",
+        "id": "插件系统"
+      },
+      {
+        "level": 3,
+        "text": "官方插件",
+        "id": "官方插件"
+      },
+      {
+        "level": 1,
+        "text": "Vue",
+        "id": "vue"
+      },
+      {
+        "level": 1,
+        "text": "React",
+        "id": "react"
+      },
+      {
+        "level": 1,
+        "text": "Legacy 浏览器支持",
+        "id": "legacy-浏览器支持"
+      },
+      {
+        "level": 3,
+        "text": "使用插件",
+        "id": "使用插件"
+      },
+      {
+        "level": 3,
+        "text": "自定义插件",
+        "id": "自定义插件"
+      },
+      {
+        "level": 2,
+        "text": "性能优化",
+        "id": "性能优化"
+      },
+      {
+        "level": 3,
+        "text": "1. 依赖预构建优化",
+        "id": "1-依赖预构建优化"
+      },
+      {
+        "level": 3,
+        "text": "2. 代码分割",
+        "id": "2-代码分割"
+      },
+      {
+        "level": 3,
+        "text": "3. 压缩配置",
+        "id": "3-压缩配置"
+      },
+      {
+        "level": 3,
+        "text": "4. 图片优化",
+        "id": "4-图片优化"
+      },
+      {
+        "level": 2,
+        "text": "与 Webpack 对比",
+        "id": "与-webpack-对比"
+      },
+      {
+        "level": 2,
+        "text": "实战案例",
+        "id": "实战案例"
+      },
+      {
+        "level": 3,
+        "text": "Vue 3 + Vite 项目",
+        "id": "vue-3--vite-项目"
+      },
+      {
+        "level": 3,
+        "text": "React + Vite 项目",
+        "id": "react--vite-项目"
+      },
+      {
+        "level": 2,
+        "text": "常见问题",
+        "id": "常见问题"
+      },
+      {
+        "level": 3,
+        "text": "1. 依赖预构建失败",
+        "id": "1-依赖预构建失败"
+      },
+      {
+        "level": 1,
+        "text": "清除缓存",
+        "id": "清除缓存"
+      },
+      {
+        "level": 3,
+        "text": "2. HMR 不工作",
+        "id": "2-hmr-不工作"
+      },
+      {
+        "level": 3,
+        "text": "3. 生产环境白屏",
+        "id": "3-生产环境白屏"
+      },
+      {
+        "level": 2,
+        "text": "总结",
+        "id": "总结"
+      }
+    ]
+  },
+  "vue-basics": {
+    "metadata": {
+      "title": "Vue 3 响应式原理深度解析",
+      "description": "深入理解 Vue 3 的响应式系统实现原理",
+      "createdAt": "2024-01-15",
+      "updatedAt": "2024-01-20",
+      "tags": [
+        "vue",
+        "vue3",
+        "响应式",
+        "proxy"
+      ],
+      "category": "前端",
+      "featured": true
+    },
+    "content": "<h1 id=\"vue-3-响应式原理深度解析\"><a href=\"#vue-3-响应式原理深度解析\">Vue 3 响应式原理深度解析</a></h1>\n<p>Vue 3 的响应式系统是其核心特性之一，它基于 ES6 的 Proxy 实现，相比 Vue 2 的 <code>Object.defineProperty</code> 有了质的提升。</p>\n<h2 id=\"什么是响应式\"><a href=\"#什么是响应式\">什么是响应式</a></h2>\n<p>响应式是指当数据发生变化时，视图能够自动更新。这是现代前端框架的核心特性。</p>\n<h3 id=\"响应式的优势\"><a href=\"#响应式的优势\">响应式的优势</a></h3>\n<ul>\n<li><strong>自动追踪依赖</strong>：无需手动管理依赖关系</li>\n<li><strong>高效更新</strong>：只更新受影响的部分</li>\n<li><strong>开发体验好</strong>：像操作普通对象一样操作数据</li>\n</ul>\n<h2 id=\"proxy-vs-objectdefineproperty\"><a href=\"#proxy-vs-objectdefineproperty\">Proxy vs Object.defineProperty</a></h2>\n<p>Vue 3 使用 Proxy 替代了 Vue 2 的 <code>Object.defineProperty</code>，带来了以下优势：</p>\n<h3 id=\"proxy-的优势\"><a href=\"#proxy-的优势\">Proxy 的优势</a></h3>\n<ol>\n<li><strong>可以监听整个对象</strong>，而不是单个属性</li>\n<li><strong>可以监听数组的变化</strong>，无需特殊处理</li>\n<li><strong>可以监听属性的新增和删除</strong></li>\n<li><strong>性能更好</strong>，懒代理策略</li>\n</ol>\n<h3 id=\"代码示例\"><a href=\"#代码示例\">代码示例</a></h3>\n<pre><code class=\"language-javascript\">// Vue 3 响应式实现简化版\nfunction reactive(target) {\n  return new Proxy(target, {\n    get(target, key, receiver) {\n      // 追踪依赖\n      track(target, key);\n      const result = Reflect.get(target, key, receiver);\n      // 如果是对象，递归代理\n      if (typeof result === 'object' &#x26;&#x26; result !== null) {\n        return reactive(result);\n      }\n      return result;\n    },\n    set(target, key, value, receiver) {\n      const oldValue = target[key];\n      const result = Reflect.set(target, key, value, receiver);\n      // 触发更新\n      if (oldValue !== value) {\n        trigger(target, key);\n      }\n      return result;\n    }\n  });\n}\n</code></pre>\n<h2 id=\"依赖收集与触发更新\"><a href=\"#依赖收集与触发更新\">依赖收集与触发更新</a></h2>\n<p>Vue 3 的响应式系统通过 <code>effect</code> 函数来收集依赖和触发更新。</p>\n<h3 id=\"依赖收集\"><a href=\"#依赖收集\">依赖收集</a></h3>\n<pre><code class=\"language-javascript\">let activeEffect = null;\n\nfunction effect(fn) {\n  activeEffect = fn;\n  fn();\n  activeEffect = null;\n}\n\nfunction track(target, key) {\n  if (activeEffect) {\n    // 将 activeEffect 添加到依赖集合\n    let depsMap = targetMap.get(target);\n    if (!depsMap) {\n      targetMap.set(target, (depsMap = new Map()));\n    }\n    let dep = depsMap.get(key);\n    if (!dep) {\n      depsMap.set(key, (dep = new Set()));\n    }\n    dep.add(activeEffect);\n  }\n}\n</code></pre>\n<h3 id=\"触发更新\"><a href=\"#触发更新\">触发更新</a></h3>\n<pre><code class=\"language-javascript\">function trigger(target, key) {\n  const depsMap = targetMap.get(target);\n  if (!depsMap) return;\n  \n  const dep = depsMap.get(key);\n  if (dep) {\n    dep.forEach(effect => effect());\n  }\n}\n</code></pre>\n<h2 id=\"ref-vs-reactive\"><a href=\"#ref-vs-reactive\">ref vs reactive</a></h2>\n<p>Vue 3 提供了两种创建响应式数据的方式：<code>ref</code> 和 <code>reactive</code>。</p>\n<h3 id=\"reactive\"><a href=\"#reactive\">reactive</a></h3>\n<ul>\n<li>用于对象类型数据</li>\n<li>返回对象的响应式代理</li>\n<li>直接访问属性即可</li>\n</ul>\n<pre><code class=\"language-javascript\">const state = reactive({\n  count: 0,\n  message: 'Hello'\n});\n\nstate.count++; // 直接修改\n</code></pre>\n<h3 id=\"ref\"><a href=\"#ref\">ref</a></h3>\n<ul>\n<li>用于基本类型数据</li>\n<li>返回一个包含 <code>.value</code> 属性的对象</li>\n<li>在模板中自动解包</li>\n</ul>\n<pre><code class=\"language-javascript\">const count = ref(0);\n\ncount.value++; // 需要通过 .value 访问\n</code></pre>\n<h2 id=\"性能优化\"><a href=\"#性能优化\">性能优化</a></h2>\n<p>Vue 3 的响应式系统在性能上做了很多优化：</p>\n<h3 id=\"懒代理\"><a href=\"#懒代理\">懒代理</a></h3>\n<p>只有在访问嵌套对象时才会创建代理，避免不必要的开销。</p>\n<h3 id=\"依赖缓存\"><a href=\"#依赖缓存\">依赖缓存</a></h3>\n<p>使用 WeakMap 存储依赖关系，避免内存泄漏。</p>\n<h3 id=\"批量更新\"><a href=\"#批量更新\">批量更新</a></h3>\n<p>多个状态变更会合并为一次更新，减少 DOM 操作。</p>\n<h2 id=\"总结\"><a href=\"#总结\">总结</a></h2>\n<p>Vue 3 的响应式系统是一个精心设计的系统，它：</p>\n<ul>\n<li>使用 Proxy 提供更强大的拦截能力</li>\n<li>通过依赖收集实现精确更新</li>\n<li>提供 ref 和 reactive 两种 API 满足不同需求</li>\n<li>在性能上做了大量优化</li>\n</ul>\n<p>理解响应式原理对于深入使用 Vue 3 至关重要。</p>",
+    "toc": [
+      {
+        "level": 1,
+        "text": "Vue 3 响应式原理深度解析",
+        "id": "vue-3-响应式原理深度解析"
+      },
+      {
+        "level": 2,
+        "text": "什么是响应式",
+        "id": "什么是响应式"
+      },
+      {
+        "level": 3,
+        "text": "响应式的优势",
+        "id": "响应式的优势"
+      },
+      {
+        "level": 2,
+        "text": "Proxy vs Object.defineProperty",
+        "id": "proxy-vs-objectdefineproperty"
+      },
+      {
+        "level": 3,
+        "text": "Proxy 的优势",
+        "id": "proxy-的优势"
+      },
+      {
+        "level": 3,
+        "text": "代码示例",
+        "id": "代码示例"
+      },
+      {
+        "level": 2,
+        "text": "依赖收集与触发更新",
+        "id": "依赖收集与触发更新"
+      },
+      {
+        "level": 3,
+        "text": "依赖收集",
+        "id": "依赖收集"
+      },
+      {
+        "level": 3,
+        "text": "触发更新",
+        "id": "触发更新"
+      },
+      {
+        "level": 2,
+        "text": "ref vs reactive",
+        "id": "ref-vs-reactive"
+      },
+      {
+        "level": 3,
+        "text": "reactive",
+        "id": "reactive"
+      },
+      {
+        "level": 3,
+        "text": "ref",
+        "id": "ref"
+      },
+      {
+        "level": 2,
+        "text": "性能优化",
+        "id": "性能优化"
+      },
+      {
+        "level": 3,
+        "text": "懒代理",
+        "id": "懒代理"
+      },
+      {
+        "level": 3,
+        "text": "依赖缓存",
+        "id": "依赖缓存"
+      },
+      {
+        "level": 3,
+        "text": "批量更新",
+        "id": "批量更新"
+      },
+      {
+        "level": 2,
+        "text": "总结",
+        "id": "总结"
+      }
+    ]
+  }
+}

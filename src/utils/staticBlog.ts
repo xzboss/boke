@@ -6,7 +6,7 @@ import path from 'path';
 import { parseMarkdown, type ParsedPost } from './markdown';
 import { categories, type Category } from '@/config/categories';
 
-const BLOG_CONTENT_DIR = path.join(process.cwd(), 'content/blog');
+const BLOG_CONTENT_DIR = path.join(process.cwd(), 'src/content/blog');
 
 /**
  * 获取所有文章的 slug（叶子节点）

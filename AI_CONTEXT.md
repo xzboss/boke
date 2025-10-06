@@ -53,17 +53,17 @@ boke/
 │   │   └── app.ts            # 应用状态 (Zustand)
 │   ├── config/               # 配置文件
 │   │   └── categories.ts     # 博客分类配置
+│   ├── content/              # 内容文件
+│   │   └── blog/             # 博客 Markdown 文件
+│   │       ├── vue-basics.md     # Vue 3 响应式原理
+│   │       ├── react-hooks.md    # React Hooks 完全指南
+│   │       ├── javascript.md     # JavaScript 异步编程
+│   │       ├── typescript.md     # TypeScript 类型系统
+│   │       └── vite.md           # Vite 构建工具
 │   └── utils/                # 工具函数
 │       ├── tools.ts          # 工具函数集合 (cn, colorUtils)
 │       ├── markdown.ts       # Markdown 处理（解析、TOC 生成、ID 去重）
 │       └── staticBlog.ts     # 静态博客工具（SSG 专用）
-├── content/                   # 内容文件（项目根目录）
-│   └── blog/                 # 博客 Markdown 文件
-│       ├── vue-basics.md     # Vue 3 响应式原理
-│       ├── react-hooks.md    # React Hooks 完全指南
-│       ├── javascript.md     # JavaScript 异步编程
-│       ├── typescript.md     # TypeScript 类型系统
-│       └── vite.md           # Vite 构建工具
 ├── public/                   # 静态资源
 │   ├── *.svg                # SVG 图标文件
 │   └── ...
@@ -274,7 +274,7 @@ boke/
 ### 系统组成
 - **分类系统**: 基于 TypeScript 配置的层级分类结构 (`config/categories.ts`)
 - **标签系统**: MD 文件前置元数据中的标签字段
-- **内容管理**: MD 文件存储在 `content/blog/` 目录
+- **内容管理**: MD 文件存储在 `src/content/blog/` 目录
 - **元数据格式**: 包含 title, description, createdAt, updatedAt, tags, category, featured
 
 ## 分类配置
@@ -405,7 +405,7 @@ export const colorUtils = {
 
 #### `getStaticPostBySlug(slug: string): Promise<ParsedPost | null>`
 - 根据 slug 读取并解析 Markdown 文件
-- 文件路径：`content/blog/${slug}.md`
+- 文件路径：`src/content/blog/${slug}.md`
 - 调用 `parseMarkdown` 完成解析
 - **仅在构建时调用**，不在运行时使用
 
