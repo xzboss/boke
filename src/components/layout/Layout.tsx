@@ -1,11 +1,13 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Header from "./Header";
 import { useAppStore, colorSchemePresets } from "@/store/app";
+import Footer from "./Footer";
 
 interface LayoutProps {
   children: React.ReactNode;
+  showFooter?: boolean;
 }
 
 /**
@@ -13,7 +15,7 @@ interface LayoutProps {
  * 包含头部、主体内容
  * 负责全局主题初始化
  */
-export default function Layout({ children }: LayoutProps) {
+export default function Layout({ children, showFooter = false }: LayoutProps) {
   const { theme, mounted, colorScheme, setMounted, setColorScheme } =
     useAppStore();
 
@@ -38,9 +40,10 @@ export default function Layout({ children }: LayoutProps) {
   }, [mounted, colorScheme, setColorScheme]);
 
   return (
-    <div className="h-full">
+    <div>
       <Header />
-      <main className="h-full pt-16 overflow-auto">{children}</main>
+      <main className="pt-17">{children}</main>
+      {showFooter && <Footer />}
     </div>
   );
 }

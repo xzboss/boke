@@ -32,7 +32,9 @@ export default function BlogPageClient({ allPosts }: BlogPageClientProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   /** 当前选中的子分类ID */
-  const [selectedSubCategory, setSelectedSubCategory] = useState<string | null>(null);
+  const [selectedSubCategory, setSelectedSubCategory] = useState<string | null>(
+    null
+  );
   /** 当前选中的分类ID */
   const [currentCategory, setCurrentCategory] = useState<string | null>(null);
   /** 左侧边栏是否展开 */
@@ -49,7 +51,7 @@ export default function BlogPageClient({ allPosts }: BlogPageClientProps) {
     const findHotLeaf = (cats: typeof categories): string | null => {
       for (const cat of cats) {
         // 如果是叶子节点（没有子节点）且包含 hot 标签
-        if (cat.children.length === 0 && cat.tags.includes('hot')) {
+        if (cat.children.length === 0 && cat.tags.includes("hot")) {
           return cat.id;
         }
         // 递归查找子节点
@@ -69,7 +71,7 @@ export default function BlogPageClient({ allPosts }: BlogPageClientProps) {
    */
   useEffect(() => {
     const article = searchParams.get("article");
-    
+
     if (article) {
       // 有 URL 参数，使用 URL 参数
       setSelectedSubCategory(article);
@@ -86,7 +88,7 @@ export default function BlogPageClient({ allPosts }: BlogPageClientProps) {
         cat.children?.some((child) => child.id === firstHotArticle)
       );
       setCurrentCategory(parentCategory?.id || null);
-      
+
       // 更新 URL（不刷新页面）
       router.replace(`/blog?article=${firstHotArticle}`, { scroll: false });
     }
@@ -130,7 +132,7 @@ export default function BlogPageClient({ allPosts }: BlogPageClientProps) {
 
   return (
     <Layout>
-      <div className="h-full flex">
+      <div className="h-[calc(99vh-68px)] flex overflow-hidden">
         {/* 左侧分类导航 - 可收起 */}
         <div
           className="blog-sidebar-left relative h-full transition-all duration-300"
@@ -220,13 +222,10 @@ export default function BlogPageClient({ allPosts }: BlogPageClientProps) {
           style={{ width: isRightSidebarOpen ? "280px" : "0" }}
         >
           <div className="h-full overflow-hidden">
-            <div
-              className="h-full custom-scrollbar"
-              style={{ width: "280px" }}
-            >
-              <Catalog 
-                key={selectedSubCategory} 
-                catalog={currentPost?.catalog || []} 
+            <div className="h-full custom-scrollbar" style={{ width: "280px" }}>
+              <Catalog
+                key={selectedSubCategory}
+                catalog={currentPost?.catalog || []}
               />
             </div>
           </div>
@@ -277,4 +276,3 @@ export default function BlogPageClient({ allPosts }: BlogPageClientProps) {
     </Layout>
   );
 }
-
