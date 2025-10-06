@@ -8,7 +8,7 @@ import Icon from "@/components/Icon";
 import { useState, useEffect, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { categories } from "@/config/categories";
-import type { TocItem } from "@/utils/markdown";
+import type { CatalogItem } from "@/utils/markdown";
 import type { ParsedPost } from "@/utils/markdown";
 import "./page.scss";
 
@@ -16,7 +16,7 @@ import "./page.scss";
 interface PostData {
   title: string;
   content: string;
-  toc: TocItem[];
+  catalog: CatalogItem[];
 }
 
 interface BlogPageClientProps {
@@ -105,7 +105,7 @@ export default function BlogPageClient({ allPosts }: BlogPageClientProps) {
       setCurrentPost({
         title: post.metadata.title,
         content: post.content,
-        toc: post.toc,
+        catalog: post.catalog,
       });
     } else {
       console.error(`Post not found: ${selectedSubCategory}`);
@@ -224,7 +224,7 @@ export default function BlogPageClient({ allPosts }: BlogPageClientProps) {
               className="h-full custom-scrollbar"
               style={{ width: "280px" }}
             >
-              <Catalog toc={currentPost?.toc || []} />
+              <Catalog catalog={currentPost?.catalog || []} />
             </div>
           </div>
 

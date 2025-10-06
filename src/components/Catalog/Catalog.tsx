@@ -3,7 +3,7 @@
 import { useEffect, useState, useRef } from 'react'
 import Button from '../Button'
 import Icon from '../Icon'
-import type { TocItem } from '@/utils/markdown'
+import type { CatalogItem } from '@/utils/markdown'
 import './catalog.scss'
 
 /**
@@ -11,7 +11,7 @@ import './catalog.scss'
  */
 interface CatalogProps {
   /** 目录数据 */
-  toc: TocItem[]
+  catalog: CatalogItem[]
   /** 自定义类名 */
   className?: string
   /** 是否显示全部展开/收起按钮 */
@@ -23,7 +23,7 @@ interface CatalogProps {
  * 显示文章的标题层级结构，支持点击跳转和自动高亮当前标题
  * 左侧有进度指示器，根据当前标题位置跳跃式显示
  */
-export function Catalog({ toc, className, showExpandAll = true }: CatalogProps) {
+export function Catalog({ catalog, className, showExpandAll = true }: CatalogProps) {
   /** 当前激活的标题索引 */
   const [activeIndex, setActiveIndex] = useState<number>(0)
   /** 是否全部展开 */
@@ -43,13 +43,13 @@ export function Catalog({ toc, className, showExpandAll = true }: CatalogProps) 
    * 初始化展开状态
    */
   useEffect(() => {
-    if (toc && toc.length > 0) {
+    if (catalog && catalog.length > 0) {
       // 默认展开所有
-      const allIds = new Set(toc.map(item => item.id))
+      const allIds = new Set(catalog.map(item => item.id))
       setExpandedIds(allIds)
       setIsAllExpanded(true)
     }
-  }, [toc])
+  }, [catalog])
 
   /**
    * 当 activeIndex 改变时，自动滚动目录让激活项保持在视野中间
@@ -85,7 +85,7 @@ export function Catalog({ toc, className, showExpandAll = true }: CatalogProps) 
    * 监听页面滚动，自动高亮当前可见的标题
    */
   useEffect(() => {
-    if (!toc || toc.length === 0) return
+    if (!catalog || catalog.length === 0) return
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -96,7 +96,7 @@ export function Catalog({ toc, className, showExpandAll = true }: CatalogProps) 
 
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            const index = toc.findIndex(item => item.id === entry.target.id)
+            const index = catalog.findIndex(item => item.id === entry.target.id)
             if (index !== -1) {
               setActiveIndex(index)
             }
@@ -110,7 +110,7 @@ export function Catalog({ toc, className, showExpandAll = true }: CatalogProps) 
     )
 
     // 监听所有标题元素
-    toc.forEach((item) => {
+    catalog.forEach((item) => {
       const element = document.getElementById(item.id)
       if (element) {
         observer.observe(element)
@@ -120,7 +120,7 @@ export function Catalog({ toc, className, showExpandAll = true }: CatalogProps) 
     return () => {
       observer.disconnect()
     }
-  }, [toc])
+  }, [catalog])
 
   /**
    * 处理标题点击，跳转到对应标题并高亮
@@ -167,7 +167,7 @@ export function Catalog({ toc, className, showExpandAll = true }: CatalogProps) 
     setExpandedIds(newExpanded)
     
     // 更新全部展开状态
-    setIsAllExpanded(newExpanded.size === toc.length)
+    setIsAllExpanded(newExpanded.size === catalog.length)
   }
 
   /**
@@ -178,7 +178,7 @@ export function Catalog({ toc, className, showExpandAll = true }: CatalogProps) 
       setExpandedIds(new Set())
       setIsAllExpanded(false)
     } else {
-      const allIds = new Set(toc.map(item => item.id))
+      const allIds = new Set(catalog.map(item => item.id))
       setExpandedIds(allIds)
       setIsAllExpanded(true)
     }
@@ -187,10 +187,10 @@ export function Catalog({ toc, className, showExpandAll = true }: CatalogProps) 
   /**
    * 判断某个标题是否有子标题
    */
-  const hasChildren = (item: TocItem, index: number) => {
+  const hasChildren = (item: CatalogItem, index: number) => {
     // 检查后面是否有更深层级的标题
-    for (let i = index + 1; i < toc.length; i++) {
-      const nextItem = toc[i]
+    for (let i = index + 1; i < catalog.length; i++) {
+      const nextItem = catalog[i]
       // 如果下一个标题层级更深，说明当前标题有子标题
       if (nextItem.level > item.level) {
         return true
@@ -207,10 +207,10 @@ export function Catalog({ toc, className, showExpandAll = true }: CatalogProps) 
    * 获取可见的目录项（根据展开状态）
    */
   const getVisibleItems = () => {
-    const visible: TocItem[] = []
-    let lastVisibleAtLevel: { [level: number]: TocItem } = {}
+    const visible: CatalogItem[] = []
+    let lastVisibleAtLevel: { [level: number]: CatalogItem } = {}
     
-    toc.forEach((item) => {
+    catalog.forEach((item) => {
       // 一级标题始终显示
       if (item.level === 1) {
         visible.push(item)
@@ -242,7 +242,7 @@ export function Catalog({ toc, className, showExpandAll = true }: CatalogProps) 
 
   const visibleItems = getVisibleItems()
 
-  if (!toc || toc.length === 0) {
+  if (!catalog || catalog.length === 0) {
     return (
       <div className="catalog-container">
         <div className="catalog-header">
@@ -306,7 +306,7 @@ export function Catalog({ toc, className, showExpandAll = true }: CatalogProps) 
 
         {/* 目录项 */}
         {visibleItems.map((item) => {
-          const actualIndex = toc.indexOf(item)
+          const actualIndex = catalog.indexOf(item)
           const isActive = actualIndex === activeIndex
           const isExpanded = expandedIds.has(item.id)
           const itemHasChildren = hasChildren(item, actualIndex)

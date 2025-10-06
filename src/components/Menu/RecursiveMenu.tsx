@@ -37,13 +37,13 @@ export default function RecursiveMenu({
   data,
   currentSubCategory,
   onSubCategorySelect,
-  showExpandAll = false,
+  showExpandAll = true, // 默认显示全部展开/收起按钮
   className = "",
 }: RecursiveMenuProps) {
   /** 已展开的菜单项ID集合 */
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
   /** 是否全部展开状态 */
-  const [isAllExpanded, setIsAllExpanded] = useState(false);
+  const [isAllExpanded, setIsAllExpanded] = useState(true); // 默认全展开
 
   /**
    * 获取所有有子节点的项的ID
@@ -65,53 +65,13 @@ export default function RecursiveMenu({
   };
 
   /**
-   * 查找某个节点的所有祖先节点ID
-   * @param itemId 目标节点ID
-   * @param items 菜单项列表
-   * @returns 祖先节点ID数组（从父节点到根节点）
-   */
-  const findAncestors = (itemId: string, items: MenuItem[]): string[] => {
-    const ancestors: string[] = [];
-
-    const findParent = (id: string, list: MenuItem[]): MenuItem | null => {
-      for (const item of list) {
-        if (item.id === id) return item;
-        if (item.children) {
-          const found = findParent(id, item.children);
-          if (found) return found;
-        }
-      }
-      return null;
-    };
-
-    let current = findParent(itemId, items);
-    while (current && current.parentId) {
-      ancestors.push(current.parentId);
-      current = findParent(current.parentId, items);
-    }
-
-    return ancestors;
-  };
-
-  /**
-   * 根据当前选中的子分类自动展开父分类
-   * 当用户选中某个叶子节点时，自动展开其所有父节点
+   * 初始化时默认全部展开
    */
   useEffect(() => {
-    if (currentSubCategory) {
-      const ancestors = findAncestors(currentSubCategory, data);
-      const newExpanded = new Set([
-        currentSubCategory,
-        ...ancestors,
-      ]);
-      setExpandedItems(newExpanded);
-      
-      // 检查是否全部展开
-      const allParentIds = getAllParentIds(data);
-      const isAll = allParentIds.every((id) => newExpanded.has(id));
-      setIsAllExpanded(isAll);
-    }
-  }, [currentSubCategory, data]);
+    const allParentIds = getAllParentIds(data);
+    setExpandedItems(new Set(allParentIds));
+    setIsAllExpanded(true);
+  }, [data]); // 只依赖 data，不依赖 currentSubCategory
 
   /**
    * 检查是否全部展开

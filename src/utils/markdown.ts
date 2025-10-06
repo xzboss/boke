@@ -35,13 +35,13 @@ export interface ParsedPost {
   /** HTML 内容 */
   content: string;
   /** 目录结构 */
-  toc: TocItem[];
+  catalog: CatalogItem[];
 }
 
 /**
  * 目录项
  */
-export interface TocItem {
+export interface CatalogItem {
   /** 标题层级 (1-6) */
   level: number;
   /** 标题文本 */
@@ -83,13 +83,13 @@ function generateUniqueId(text: string, usedIds: Set<string>): string {
 /**
  * 将 Markdown 转换为 HTML
  * @param markdown Markdown 文本
- * @param toc 目录项数组（用于同步 ID）
+ * @param catalog 目录项数组（用于同步 ID）
  * @returns HTML 字符串
  */
-export async function markdownToHtml(markdown: string, toc: TocItem[]): Promise<string> {
+export async function markdownToHtml(markdown: string, catalog: CatalogItem[]): Promise<string> {
   // 创建标题文本到 ID 的映射
   const headingIdMap = new Map<string, string>();
-  toc.forEach(item => {
+  catalog.forEach(item => {
     headingIdMap.set(item.text, item.id);
   });
 
@@ -135,8 +135,8 @@ export async function markdownToHtml(markdown: string, toc: TocItem[]): Promise<
  * @param markdown Markdown 文本
  * @returns 目录项数组
  */
-export function extractToc(markdown: string): TocItem[] {
-  const toc: TocItem[] = [];
+export function extractCatalog(markdown: string): CatalogItem[] {
+  const catalog: CatalogItem[] = [];
   const lines = markdown.split('\n');
   const idCounts = new Map<string, number>(); // 记录每个 ID 出现的次数
 
@@ -160,11 +160,11 @@ export function extractToc(markdown: string): TocItem[] {
       }
       idCounts.set(baseId, count + 1);
 
-      toc.push({ level, text, id });
+      catalog.push({ level, text, id });
     }
   }
 
-  return toc;
+  return catalog;
 }
 
 /**
@@ -177,15 +177,15 @@ export async function parseMarkdown(fileContent: string): Promise<ParsedPost> {
   const metadata = data as PostMetadata;
 
   // 先提取目录（生成唯一的 ID）
-  const toc = extractToc(content);
+  const catalog = extractCatalog(content);
 
-  // 使用 TOC 中的 ID 转换 Markdown 为 HTML
-  const htmlContent = await markdownToHtml(content, toc);
+  // 使用 Catalog 中的 ID 转换 Markdown 为 HTML
+  const htmlContent = await markdownToHtml(content, catalog);
 
   return {
     metadata,
     content: htmlContent,
-    toc,
+    catalog,
   };
 }
 
