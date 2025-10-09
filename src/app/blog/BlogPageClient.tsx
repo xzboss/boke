@@ -213,7 +213,7 @@ export default function BlogPageClient({ allPosts }: BlogPageClientProps) {
           ) : (
             <div className="flex items-center justify-center h-full">
               <p className="text-gray-500 dark:text-gray-400">
-                请从左侧选择一篇文章
+                请从左侧选择一条测试用例
               </p>
             </div>
           )}

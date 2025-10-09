@@ -60,7 +60,7 @@ export default function Header() {
         {/* 右侧导航菜单和操作区域 */}
         <div className="flex items-center gap-2">
           <Button type="text" size="sm" href="/blog">
-            博客
+            测试
           </Button>
 
           <Button type="text" size="sm" href="https://github.com">

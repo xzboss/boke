@@ -11,7 +11,7 @@ export interface Category {
 export const categories: Category[] = [
   {
     id: "frontend",
-    name: "前端",
+    name: "UI测试",
     path: "/blog/frontend",
     level: 1,
     parentId: null,
@@ -19,7 +19,7 @@ export const categories: Category[] = [
     children: [
       {
         id: "vue",
-        name: "Vue",
+        name: "Vue测试",
         path: "/blog/frontend/vue",
         level: 2,
         parentId: "frontend",
@@ -27,7 +27,7 @@ export const categories: Category[] = [
         children: [
           {
             id: "vue-basics",
-            name: "Vue 3 响应式原理",
+            name: "测试用例1",
             path: "/blog/frontend/vue/basics",
             level: 3,
             parentId: "vue",
@@ -36,7 +36,7 @@ export const categories: Category[] = [
           },
           {
             id: "vue-router-guide",
-            name: "Vue Router 实战指南",
+            name: "测试用例2",
             path: "/blog/frontend/vue/router",
             level: 3,
             parentId: "vue",
@@ -47,7 +47,7 @@ export const categories: Category[] = [
       },
       {
         id: "react",
-        name: "React",
+        name: "React测试",
         path: "/blog/frontend/react",
         level: 2,
         parentId: "frontend",
@@ -55,7 +55,7 @@ export const categories: Category[] = [
         children: [
           {
             id: "react-hooks",
-            name: "React Hooks 完全指南",
+            name: "测试用例3",
             path: "/blog/frontend/react/hooks",
             level: 3,
             parentId: "react",
@@ -64,7 +64,7 @@ export const categories: Category[] = [
           },
           {
             id: "react-performance",
-            name: "React 性能优化实践",
+            name: "测试用例4",
             path: "/blog/frontend/react/performance",
             level: 3,
             parentId: "react",
@@ -75,7 +75,7 @@ export const categories: Category[] = [
       },
       {
         id: "vite",
-        name: "Vite 构建工具",
+        name: "自动化测试工具",
         path: "/blog/frontend/vite",
         level: 2,
         parentId: "frontend",
@@ -84,7 +84,7 @@ export const categories: Category[] = [
       },
       {
         id: "javascript",
-        name: "JavaScript 异步编程",
+        name: "测试用例5",
         path: "/blog/frontend/javascript",
         level: 2,
         parentId: "frontend",
@@ -93,7 +93,7 @@ export const categories: Category[] = [
       },
       {
         id: "typescript",
-        name: "TypeScript 类型系统",
+        name: "测试用例6",
         path: "/blog/frontend/typescript",
         level: 2,
         parentId: "frontend",
@@ -102,7 +102,7 @@ export const categories: Category[] = [
       },
       {
         id: "css",
-        name: "CSS",
+        name: "测试类型",
         path: "/blog/frontend/css",
         level: 2,
         parentId: "frontend",
@@ -110,7 +110,7 @@ export const categories: Category[] = [
         children: [
           {
             id: "css-layout",
-            name: "现代 CSS 布局完全指南",
+            name: "测试用例7",
             path: "/blog/frontend/css/layout",
             level: 3,
             parentId: "css",
@@ -123,7 +123,7 @@ export const categories: Category[] = [
   },
   {
     id: "backend",
-    name: "后端",
+    name: "接口测试",
     path: "/blog/backend",
     level: 1,
     parentId: null,
@@ -131,7 +131,7 @@ export const categories: Category[] = [
     children: [
       {
         id: "nodejs",
-        name: "Node.js",
+        name: "Node.js测试",
         path: "/blog/backend/nodejs",
         level: 2,
         parentId: "backend",
@@ -139,7 +139,7 @@ export const categories: Category[] = [
         children: [
           {
             id: "nodejs-stream",
-            name: "Node.js Stream 流式处理",
+            name: "测试用例8",
             path: "/blog/backend/nodejs/stream",
             level: 3,
             parentId: "nodejs",

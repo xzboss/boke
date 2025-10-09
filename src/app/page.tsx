@@ -7,23 +7,23 @@ export default function Home() {
         {/* Hero Section */}
         <section className="text-center mb-16">
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 mb-6">
-            欢迎来到我的博客
+            欢迎来到我的测试站
           </h1>
           <p className="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-            分享技术见解、生活感悟和学习心得的地方
+            分享测试方法、质量保证和自动化测试的地方
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a
               href="/blog"
               className="flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors"
             >
-              开始阅读
+              开始测试
             </a>
             <a
               href="/docs"
               className="flex items-center justify-center px-8 py-3 border border-gray-300 text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 transition-colors"
             >
-              查看文档
+              查看测试文档
             </a>
           </div>
         </section>
@@ -47,9 +47,9 @@ export default function Home() {
               </svg>
             </div>
             <h3 className="text-xl font-semibold text-gray-900 mb-2">
-              技术文章
+              测试用例
             </h3>
-            <p className="text-gray-600">深入浅出的技术教程和实践经验分享</p>
+            <p className="text-gray-600">深入浅出的测试用例设计和实践经验分享</p>
           </div>
 
           <div className="text-center p-6">
@@ -69,9 +69,9 @@ export default function Home() {
               </svg>
             </div>
             <h3 className="text-xl font-semibold text-gray-900 mb-2">
-              创意想法
+              测试思路
             </h3>
-            <p className="text-gray-600">记录灵感瞬间和创新思维的碰撞</p>
+            <p className="text-gray-600">记录测试灵感和创新测试方法的碰撞</p>
           </div>
 
           <div className="text-center p-6">
@@ -91,9 +91,9 @@ export default function Home() {
               </svg>
             </div>
             <h3 className="text-xl font-semibold text-gray-900 mb-2">
-              生活感悟
+              测试心得
             </h3>
-            <p className="text-gray-600">分享生活中的美好瞬间和人生感悟</p>
+            <p className="text-gray-600">分享测试工作中的美好瞬间和人生感悟</p>
           </div>
         </section>
       </div>
