@@ -5,7 +5,6 @@ createdAt: "2024-01-15"
 updatedAt: "2024-01-20"
 tags: ["测试", "测试用例", "测试方法", "自动化"]
 category: "UI测试"
-featured: true
 ---
 
 # 测试用例6 - 移动端APP测试

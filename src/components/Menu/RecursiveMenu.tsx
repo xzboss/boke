@@ -1,28 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter, usePathname } from "next/navigation";
 import Button from "../Button";
 import Icon from "../Icon";
-
-interface MenuItem {
-  id: string;
-  name: string;
-  path: string;
-  level: number;
-  parentId: string | null;
-  tags: string[];
-  children: MenuItem[];
-}
+import type { Category } from "@/config/categories";
 
 interface RecursiveMenuProps {
   /** 菜单数据源 */
-  data: MenuItem[];
-  /** 当前选中的分类ID */
-  currentCategory?: string;
-  /** 当前选中的子分类ID */
-  currentSubCategory?: string;
-  /** 子分类选择回调 */
-  onSubCategorySelect: (subCategoryId: string) => void;
+  data: Category[];
   /** 是否显示全部展开/收起按钮 */
   showExpandAll?: boolean;
   /** 自定义样式类名 */
@@ -31,28 +17,28 @@ interface RecursiveMenuProps {
 
 /**
  * 递归菜单组件
- * 支持无限层级的菜单结构
+ * 支持无限层级的菜单结构，menu类型展开收起，article类型导航
  */
 export default function RecursiveMenu({
   data,
-  currentSubCategory,
-  onSubCategorySelect,
-  showExpandAll = true, // 默认显示全部展开/收起按钮
+  showExpandAll = true,
   className = "",
 }: RecursiveMenuProps) {
+  const router = useRouter();
+  const pathname = usePathname();
   /** 已展开的菜单项ID集合 */
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
   /** 是否全部展开状态 */
-  const [isAllExpanded, setIsAllExpanded] = useState(true); // 默认全展开
+  const [isAllExpanded, setIsAllExpanded] = useState(true);
 
   /**
    * 获取所有有子节点的项的ID
    * @param items 菜单项列表
    * @returns 所有父节点的ID数组
    */
-  const getAllParentIds = (items: MenuItem[]): string[] => {
+  const getAllParentIds = (items: Category[]): string[] => {
     const parentIds: string[] = [];
-    const traverse = (list: MenuItem[]) => {
+    const traverse = (list: Category[]) => {
       for (const item of list) {
         if (item.children && item.children.length > 0) {
           parentIds.push(item.id);
@@ -71,7 +57,7 @@ export default function RecursiveMenu({
     const allParentIds = getAllParentIds(data);
     setExpandedItems(new Set(allParentIds));
     setIsAllExpanded(true);
-  }, [data]); // 只依赖 data，不依赖 currentSubCategory
+  }, [data]);
 
   /**
    * 检查是否全部展开
@@ -100,7 +86,6 @@ export default function RecursiveMenu({
 
   /**
    * 切换全部展开/收起
-   * 如果当前是全部展开状态，则收起所有；否则展开所有
    */
   const toggleAllExpand = () => {
     if (isAllExpanded) {
@@ -117,14 +102,26 @@ export default function RecursiveMenu({
    * 处理菜单项点击事件
    * @param item 被点击的菜单项
    */
-  const handleItemClick = (item: MenuItem) => {
-    if (item.children && item.children.length > 0) {
-      // 有子节点：切换展开/收起状态
-      toggleItem(item.id);
-    } else {
-      // 叶子节点：触发选择回调
-      onSubCategorySelect(item.id);
+  const handleItemClick = (item: Category) => {
+    if (item.type === 'menu') {
+      // menu类型：切换展开/收起状态
+      if (item.children && item.children.length > 0) {
+        toggleItem(item.id);
+      }
+    } else if (item.type === 'article') {
+      // article类型：导航到对应页面
+      router.push(`/blog/${item.id}`);
     }
+  };
+
+  /**
+   * 检查是否为当前选中的文章
+   */
+  const isCurrentArticle = (item: Category): boolean => {
+    if (item.type === 'article') {
+      return pathname === `/blog/${item.id}`;
+    }
+    return false;
   };
 
   /**
@@ -132,10 +129,10 @@ export default function RecursiveMenu({
    * @param item 菜单项数据
    * @param depth 当前层级深度（用于缩进计算）
    */
-  const renderMenuItem = (item: MenuItem, depth: number = 0) => {
+  const renderMenuItem = (item: Category, depth: number = 0) => {
     const hasChildren = item.children && item.children.length > 0;
     const isExpanded = expandedItems.has(item.id);
-    const isSelected = currentSubCategory === item.id;
+    const isSelected = isCurrentArticle(item);
 
     return (
       <div key={item.id}>

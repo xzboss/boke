@@ -3,6 +3,9 @@
 ## 项目全局提示词
 1. 此项目是一个博客系统，但是生成的假数据都不能和博客有关，相关字眼可以用英文或者拼音代替，但是AI_CONTENT文件照常用正常的中文去写
 2. 每次生成内容不总结，不解释
+3. 不允许出现:dark相关类名
+4. 任何关于点击或锚点的按钮（除特殊说明外）一律用公共Button组件
+5. 色调，深色浅色模式项目中已经做了处理，之后生成代码中（除特殊说明外）一律不产生额外处理主题色的逻辑
 
 ## 项目概述
 这是一个基于 Next.js 15 的现代化博客项目，名为 "boke"。
@@ -46,7 +49,6 @@ boke/
 │   │   │   └── index.ts      # 菜单组件导出
 │   │   ├── Catalog/          # 目录组件
 │   │   │   ├── Catalog.tsx   # 文章目录组件（TOC）
-│   │   │   ├── catalog.scss  # 目录样式（进度条）
 │   │   │   └── index.ts      # 目录组件导出
 │   │   └── layout/           # 布局组件
 │   │       ├── Layout.tsx    # 主布局组件
@@ -279,7 +281,7 @@ boke/
 - **分类系统**: 基于 TypeScript 配置的层级分类结构 (`config/categories.ts`)
 - **标签系统**: MD 文件前置元数据中的标签字段
 - **内容管理**: MD 文件存储在 `src/content/blog/` 目录
-- **元数据格式**: 包含 title, description, createdAt, updatedAt, tags, category, featured
+- **元数据格式**: 包含 title, description, createdAt, updatedAt, tags, category
 
 ## 分类配置
 - **配置文件**: `/src/config/categories.ts` - TypeScript 配置文件

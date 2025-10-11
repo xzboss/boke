@@ -34,3 +34,15 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```
+- DOM转矢量pdf
+- trace调用树组件
+- 模型选择框
+- 基于echarts实现的定制（双axisline）甘特图
+- 多目录组件兼容（此博客）
+    - 不传容器默认采用锚点形式跳转
+    - 传容器采用js控制容器滚动位置（即可以实现一个页面多个容器，多个目录且目录样式可以都不同）
+    - 选中子项后，祖先元素展开收起后指示条的位置
+- jsonschme
+- 提示词输入框友好提示
+```
