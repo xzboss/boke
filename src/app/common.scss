@@ -1,0 +1,8 @@
+/* 全局通用样式 */
+
+/* 文本省略号样式 */
+.text-ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

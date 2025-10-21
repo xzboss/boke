@@ -1,0 +1,33 @@
+/**
+ * 博客页面样式
+ * 侧边栏收起/展开按钮的 hover 效果
+ */
+
+/* 左侧边栏 */
+.blog-sidebar-left {
+  /* 收起按钮默认隐藏 */
+  .collapse-btn {
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  /* 鼠标悬停时显示收起按钮 */
+  &:hover .collapse-btn {
+    opacity: 1;
+  }
+}
+
+/* 右侧边栏 */
+.blog-sidebar-right {
+  /* 收起按钮默认隐藏 */
+  .collapse-btn {
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  /* 鼠标悬停时显示收起按钮 */
+  &:hover .collapse-btn {
+    opacity: 1;
+  }
+}
+
