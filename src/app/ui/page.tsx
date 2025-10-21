@@ -3,6 +3,7 @@
 import { Layout } from "@/components/layout";
 import Button from "@/components/Button";
 import Icon from "@/components/Icon";
+import { Empty } from "@/components/Empty";
 
 export default function UIPlaygroundPage() {
   return (
@@ -126,6 +127,23 @@ export default function UIPlaygroundPage() {
               <p className="text-sm text-gray-600">
                 使用方式：&lt;Icon type=&quot;icon-name&quot; /&gt;
               </p>
+            </div>
+          </section>
+
+          {/* Empty Component */}
+          <section className="mb-16">
+            <h2 className="text-2xl font-semibold text-gray-900 mb-8">
+              Empty 空状态
+            </h2>
+
+            <div className="mb-8">
+              <h3 className="text-lg font-medium text-gray-800 mb-4">
+                基础空状态
+              </h3>
+              <div className="border rounded-lg p-4 mb-4">
+                <Empty className="text-106px" />
+              </div>
+              <p className="text-sm text-gray-600">使用方式：&lt;Empty /&gt;</p>
             </div>
           </section>
         </div>

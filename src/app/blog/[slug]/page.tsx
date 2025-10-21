@@ -1,6 +1,6 @@
 import { blog as blogInstance } from "@/lib/blog";
 import { notFound } from "next/navigation";
-import { Empty } from "@/components/empty";
+import { Empty } from "@/components/Empty";
 
 interface BlogArticlePageProps {
   params: { slug: string };
