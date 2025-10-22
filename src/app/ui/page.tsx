@@ -145,6 +145,21 @@ export default function UIPlaygroundPage() {
               </div>
               <p className="text-sm text-gray-600">使用方式：&lt;Empty /&gt;</p>
             </div>
+
+            {/* Error Pages */}
+            <div className="mb-8">
+              <h3 className="text-lg font-medium text-gray-800 mb-4">
+                错误页面
+              </h3>
+              <div className="flex gap-4">
+                <Button type="default" href="/404">
+                  查看404页面
+                </Button>
+                <Button type="default" href="/403">
+                  查看403页面
+                </Button>
+              </div>
+            </div>
           </section>
         </div>
         <div>ri</div>
