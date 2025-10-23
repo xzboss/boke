@@ -1,6 +1,6 @@
 "use client";
 
-import { Layout } from "@/components/layout";
+import { Layout } from "@/components/Layout";
 import { RecursiveMenu } from "@/components/Menu";
 import { Catalog } from "@/components/Catalog";
 import { SidebarToggle } from "@/components/SidebarToggle";

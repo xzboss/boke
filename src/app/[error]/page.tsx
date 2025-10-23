@@ -1,4 +1,4 @@
-import { Layout } from "@/components/layout";
+import { Layout } from "@/components/Layout";
 import { ErrorPage404, ErrorPage403 } from "@/components/ErrorPage";
 
 interface ErrorPageProps {
