@@ -244,7 +244,7 @@ class Blog implements BlogInterface {
   /**
    * 根据slug获取文章
    */
-  getBlogBySlug(slug: string) {
+  getBlogBySlug(slug: string): BlogItem | null {
     return this.slug2Blog.get(slug) || null;
   }
 }

@@ -1,6 +1,7 @@
 import { blog as blogInstance } from "@/lib/blog";
 import { notFound } from "next/navigation";
 import { Empty } from "@/components/Empty";
+import { MdHtmlViewer } from "@/components/MdHtmlViewer";
 
 interface BlogArticlePageProps {
   params: { slug: string };
@@ -49,10 +50,7 @@ export default async function BlogArticlePage({
           </div>
         )}
       </header>
-      <div
-        className="prose prose-lg max-w-none"
-        dangerouslySetInnerHTML={{ __html: post.content }}
-      />
+      <MdHtmlViewer htmlContent={post.content} />
     </article>
   );
 }
