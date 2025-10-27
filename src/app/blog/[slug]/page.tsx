@@ -17,6 +17,7 @@ export default async function BlogArticlePage({
 
   // 在服务端获取文章数据
   const post = blogInstance.getBlogBySlug(slug);
+  console.log(post);
 
   if (!post) {
     return <Empty />;

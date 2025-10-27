@@ -3,7 +3,6 @@ import { remark } from "remark";
 import remarkGfm from "remark-gfm";
 import remarkRehype from "remark-rehype";
 import rehypeSlug from "rehype-slug";
-import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import rehypeStringify from "rehype-stringify";
 import type { CatalogNode } from "@/types/catalog";
 import type { BlogItem } from "@/types/blog";
@@ -23,12 +22,6 @@ export const markdownToHtml = async (mdStr: string): Promise<string> => {
       .use(remarkGfm) // 支持 GitHub 风格 Markdown
       .use(remarkRehype) // 转换为 HTML AST
       .use(rehypeSlug) // 自动为标题添加 ID
-      .use(rehypeAutolinkHeadings, {
-        behavior: "wrap", // 将标题内容包装在链接中
-        properties: {
-          className: ["heading-anchor"],
-        },
-      }) // 为标题添加锚点链接
       .use(rehypeStringify) // 转换为 HTML 字符串
       .process(mdStr);
 
