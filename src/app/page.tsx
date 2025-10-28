@@ -1,4 +1,4 @@
-import { Layout } from "@/components/Layout";
+import { Layout } from '@/components/Layout';
 
 export default function Home() {
   return (
@@ -6,12 +6,8 @@ export default function Home() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         {/* Hero Section */}
         <section className="text-center mb-16">
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 mb-6">
-            欢迎来到我的测试站
-          </h1>
-          <p className="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-            分享测试方法、质量保证和自动化测试的地方
-          </p>
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 mb-6">欢迎来到我的测试站</h1>
+          <p className="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto mb-8">分享测试方法、质量保证和自动化测试的地方</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a
               href="/blog"
@@ -32,12 +28,7 @@ export default function Home() {
         <section className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div className="text-center p-6">
             <div className="w-16 h-16 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-4">
-              <svg
-                className="w-8 h-8 text-blue-600"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
+              <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -46,20 +37,13 @@ export default function Home() {
                 />
               </svg>
             </div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">
-              测试用例
-            </h3>
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">测试用例</h3>
             <p className="text-gray-600">深入浅出的测试用例设计和实践经验分享</p>
           </div>
 
           <div className="text-center p-6">
             <div className="w-16 h-16 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-4">
-              <svg
-                className="w-8 h-8 text-green-600"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
+              <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -68,20 +52,13 @@ export default function Home() {
                 />
               </svg>
             </div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">
-              测试思路
-            </h3>
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">测试思路</h3>
             <p className="text-gray-600">记录测试灵感和创新测试方法的碰撞</p>
           </div>
 
           <div className="text-center p-6">
             <div className="w-16 h-16 bg-purple-100 rounded-lg flex items-center justify-center mx-auto mb-4">
-              <svg
-                className="w-8 h-8 text-purple-600"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
+              <svg className="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -90,9 +67,7 @@ export default function Home() {
                 />
               </svg>
             </div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">
-              测试心得
-            </h3>
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">测试心得</h3>
             <p className="text-gray-600">分享测试工作中的美好瞬间和人生感悟</p>
           </div>
         </section>

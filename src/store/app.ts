@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { colorUtils } from '@/lib/utils/tools';
+import { getLocalStorage } from '@/lib/utils/localStorage';
 
 /**
  * 色调预设配置
@@ -38,11 +39,16 @@ export const useAppStore = create<AppState>()(
   persist(
     (set, get) => ({
       // 初始状态
-      colorScheme: 'black',
-      theme: 'light',
+      colorScheme: 'white',
+      theme: 'dark',
       mounted: false,
+      ...(getLocalStorage('x_app_options') as Partial<AppState>),
 
-      // 色调操作
+      /**
+       * 设置色调
+       * @param scheme 色调
+       * @returns void
+       */
       setColorScheme: (scheme: ColorSchemeKey) => {
         set({ colorScheme: scheme });
         // 更新 CSS 变量（为了兼容性保留）
@@ -61,10 +67,14 @@ export const useAppStore = create<AppState>()(
         }
       },
 
-      // 主题切换（黑夜/白天）
-      toggleTheme: () => {
+      /**
+       * 切换主题（黑夜/白天）
+       * @param _theme 主题
+       * @returns void
+       */
+      toggleTheme: (_theme?: Theme) => {
         const { theme } = get();
-        const newTheme: Theme = theme === 'dark' ? 'light' : 'dark';
+        const newTheme: Theme = _theme ?? theme === 'dark' ? 'light' : 'dark';
         set({ theme: newTheme });
 
         // 设置 DOM 的 dark class 和 colorScheme
@@ -82,12 +92,17 @@ export const useAppStore = create<AppState>()(
         }
       },
 
+      /**
+       * 设置是否已挂载
+       * @param mounted 是否已挂载
+       * @returns void
+       */
       setMounted: (mounted: boolean) => {
         set({ mounted });
       },
     }),
     {
-      name: 'app-store',
+      name: 'x_app_options',
       partialize: state => ({
         colorScheme: state.colorScheme,
         theme: state.theme,
@@ -113,15 +128,4 @@ export const getColorSchemeName = (key: ColorSchemeKey): string => {
     teal: '青色',
   };
   return names[key] || key;
-};
-
-/**
- * 获取可用色调列表
- */
-export const getAvailableColorSchemes = () => {
-  return Object.entries(colorSchemePresets).map(([key, color]) => ({
-    key: key as ColorSchemeKey,
-    name: getColorSchemeName(key as ColorSchemeKey),
-    color,
-  }));
 };

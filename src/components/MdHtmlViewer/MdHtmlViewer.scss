@@ -208,9 +208,8 @@
     background-color: var(--color-primary-50);
     border-radius: 0.5rem;
 
-    > code {
+    & > code {
       background-color: transparent;
-      color: var(--color-text);
       padding: 0;
     }
   }
@@ -289,7 +288,8 @@
     }
 
     // 特殊处理自动链接（如果有特殊的class的话）
-    &.url, &.email {
+    &.url,
+    &.email {
       word-break: break-all;
       font-family: var(--font-code);
       font-size: 0.9em;
@@ -316,92 +316,92 @@
     }
   }
 
-    // KaTeX 样式
-    .katex {
-      font-family: 'KaTeX_Main', 'Times New Roman', serif;
-      font-size: 1em;
-      line-height: 1.2;
-      color: var(--color-text);
+  // KaTeX 样式
+  .katex {
+    font-family: 'KaTeX_Main', 'Times New Roman', serif;
+    font-size: 1em;
+    line-height: 1.2;
+    color: var(--color-text);
 
-      .base {
-        position: relative;
-        white-space: nowrap;
-      }
-
-      .strut {
-        display: inline-block;
-      }
-
-      .textbf {
-        font-weight: bold;
-      }
-
-      .textit {
-        font-style: italic;
-      }
-
-      .textrm {
-        font-family: 'KaTeX_Main', 'Times New Roman', serif;
-      }
-
-      .textsf {
-        font-family: 'KaTeX_SansSerif', sans-serif;
-      }
-
-      .texttt {
-        font-family: 'KaTeX_Typewriter', 'Courier New', monospace;
-      }
-
-      .mathrm {
-        font-style: normal;
-      }
-
-      .mathit {
-        font-style: italic;
-      }
-
-      .mathfrak {
-        font-family: 'KaTeX_Fraktur', 'KaTeX_Main', 'Times New Roman', serif;
-      }
-
-      .mathcal {
-        font-family: 'KaTeX_Caligraphic', 'KaTeX_Main', 'Times New Roman', serif;
-      }
-
-      .mathbb {
-        font-family: 'KaTeX_AMS', 'KaTeX_Main', 'Times New Roman', serif;
-      }
-
-      .mathscr {
-        font-family: 'KaTeX_Script', 'KaTeX_Main', 'Times New Roman', serif;
-      }
-
-      .mathbf {
-        font-weight: bold;
-      }
-
-      .boldsymbol {
-        font-weight: bold;
-      }
-
-      .mathsf {
-        font-family: 'KaTeX_SansSerif', sans-serif;
-      }
-
-      .mathtt {
-        font-family: 'KaTeX_Typewriter', 'Courier New', monospace;
-      }
+    .base {
+      position: relative;
+      white-space: nowrap;
     }
 
-    .katex-display {
-      display: block;
-      margin: 1em auto;
-      text-align: center;
+    .strut {
+      display: inline-block;
+    }
 
-      > .katex {
-        display: block;
-        white-space: nowrap;
-        text-align: initial;
-      }
+    .textbf {
+      font-weight: bold;
+    }
+
+    .textit {
+      font-style: italic;
+    }
+
+    .textrm {
+      font-family: 'KaTeX_Main', 'Times New Roman', serif;
+    }
+
+    .textsf {
+      font-family: 'KaTeX_SansSerif', sans-serif;
+    }
+
+    .texttt {
+      font-family: 'KaTeX_Typewriter', 'Courier New', monospace;
+    }
+
+    .mathrm {
+      font-style: normal;
+    }
+
+    .mathit {
+      font-style: italic;
+    }
+
+    .mathfrak {
+      font-family: 'KaTeX_Fraktur', 'KaTeX_Main', 'Times New Roman', serif;
+    }
+
+    .mathcal {
+      font-family: 'KaTeX_Caligraphic', 'KaTeX_Main', 'Times New Roman', serif;
+    }
+
+    .mathbb {
+      font-family: 'KaTeX_AMS', 'KaTeX_Main', 'Times New Roman', serif;
+    }
+
+    .mathscr {
+      font-family: 'KaTeX_Script', 'KaTeX_Main', 'Times New Roman', serif;
+    }
+
+    .mathbf {
+      font-weight: bold;
+    }
+
+    .boldsymbol {
+      font-weight: bold;
+    }
+
+    .mathsf {
+      font-family: 'KaTeX_SansSerif', sans-serif;
+    }
+
+    .mathtt {
+      font-family: 'KaTeX_Typewriter', 'Courier New', monospace;
     }
   }
+
+  .katex-display {
+    display: block;
+    margin: 1em auto;
+    text-align: center;
+
+    > .katex {
+      display: block;
+      white-space: nowrap;
+      text-align: initial;
+    }
+  }
+}

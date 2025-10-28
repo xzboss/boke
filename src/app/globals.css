@@ -12,18 +12,19 @@ html {
 
 /* CSS 变量定义 - 默认紫色主题 */
 :root {
-  --color-background: #f9fafb;
-  --color-text: #111827;
+  /* 当前色,默认深色 */
+  --color-background: #111827;
+  --color-text: #f9fafb;
+  /* 浅色模式 */
   --color-background-light: #f9fafb;
   --color-text-light: #111827;
+  /* 深色模式 */
   --color-background-dark: #111827;
   --color-text-dark: #f9fafb;
 
   /* 字体定义 */
-  --font-text: "Optimistic Display", -apple-system, ui-sans-serif, system-ui,
-    sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
-    "Noto Color Emoji";
-  --font-code: "Geist Mono", "Monaco", "Menlo", "Ubuntu Mono", monospace;
+  --font-text: 'Optimistic Display', -apple-system, ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  --font-code: 'Geist Mono', 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
 }
 
 body {

@@ -26,9 +26,7 @@ export const markdownToHtml = async (mdStr: string): Promise<string> => {
       .use(remarkRehype, {
         allowDangerousHtml: true, // 允许HTML标签和内联样式
       }) // 转换为 HTML AST
-      .use(rehypeKatex, {
-        throwOnError: false, // 不抛出错误，让公式正常显示
-      }) // 处理数学公式为HTML
+      .use(rehypeKatex) // 处理数学公式为HTML
       .use(rehypeSlug) // 自动为标题添加 ID
       .use(rehypeStringify, {
         allowDangerousHtml: true, // 允许输出HTML标签

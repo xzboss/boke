@@ -3,7 +3,7 @@ import type { MenuNode } from "@/types/menu";
 import { MENU_NODE_TYPE } from "@/types/menu";
 import { loadRawBlogList } from "./loader";
 import { markdownToHtml, buildCatalog, buildMetadata } from "./processor";
-import { generateSlug, generateId } from "../utils/tools";
+import { generateSlug } from "../utils/tools";
 
 /**
  * 博客文章菜单数据结构
