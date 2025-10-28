@@ -53,25 +53,6 @@
     color: var(--color-primary);
   }
 
-  // 行内代码样式
-  code {
-    background-color: var(--color-primary-100);
-    border-radius: 0.25rem;
-    padding: 0.125rem 0.25rem;
-    font-family: var(--font-code);
-    font-size: 0.875em;
-    color: var(--color-primary);
-  }
-
-  // 代码块样式 (pre 中的 code，重置行内代码样式)
-  pre code {
-    background-color: transparent;
-    border-radius: 0;
-    padding: 0;
-    font-size: inherit;
-    color: inherit;
-  }
-
   // 列表样式
   ul,
   ol {
@@ -88,7 +69,7 @@
 
   ul {
     ::marker {
-      content: "●"; // 第一级用实心圆点
+      content: '●'; // 第一级用实心圆点
       color: var(--color-primary);
       font-size: 0.65em; // 统一缩小标记大小
     }
@@ -97,13 +78,13 @@
     ul {
       margin-left: 1.5rem;
       ::marker {
-        content: "○"; // 第二级用圆圈
+        content: '○'; // 第二级用圆圈
         font-size: 0.65em; // 统一缩小标记大小
       }
 
       ul {
         ::marker {
-          content: "□"; // 第三级用方块
+          content: '□'; // 第三级用方块
           font-size: 0.65em; // 统一缩小标记大小
         }
       }
@@ -132,7 +113,7 @@
       gap: 0.5rem;
       margin: 0.5rem 0;
 
-      input[type="checkbox"] {
+      input[type='checkbox'] {
         margin: 0;
         flex-shrink: 0;
         width: 16px;
@@ -148,7 +129,7 @@
           border-color: var(--color-primary);
 
           &::after {
-            content: "✔";
+            content: '✔';
             color: var(--color-background);
             position: absolute;
             top: 50%;
@@ -162,7 +143,7 @@
       }
 
       // 已完成任务的样式
-      input[type="checkbox"]:checked + * {
+      input[type='checkbox']:checked + * {
         text-decoration: line-through;
         opacity: 0.7;
       }
@@ -207,4 +188,220 @@
       font-size: 0.9em;
     }
   }
-}
+
+  // 行内代码样式
+  code {
+    background-color: var(--color-primary-100);
+    border-radius: 0.25rem;
+    padding: 0.125rem 0.25rem;
+    font-family: var(--font-code);
+    font-size: 0.875em;
+    color: var(--color-primary);
+  }
+
+  // 代码块样式 (pre 中的 code，重置行内代码样式)
+  pre {
+    width: 100%;
+    max-height: 300px;
+    overflow: auto;
+    padding: 1rem;
+    background-color: var(--color-primary-50);
+    border-radius: 0.5rem;
+
+    > code {
+      background-color: transparent;
+      color: var(--color-text);
+      padding: 0;
+    }
+  }
+
+  // 表格样式
+  table {
+    width: 100%;
+    margin: 1.5rem 0;
+    border-collapse: collapse;
+    border: 1px solid var(--color-primary-200);
+    border-radius: 0.5rem;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+    &:first-child {
+      margin-top: 0;
+    }
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    th,
+    td {
+      padding: 0.75rem 1rem;
+      text-align: left;
+      border-bottom: 1px solid var(--color-primary-200);
+      border-right: 1px solid var(--color-primary-200);
+
+      &:last-child {
+        border-right: none;
+      }
+    }
+
+    th {
+      background-color: var(--color-primary-50);
+      font-weight: 600;
+      color: var(--color-primary-800);
+      border-bottom: 2px solid var(--color-primary-300);
+    }
+
+    tr {
+      &:last-child {
+        td {
+          border-bottom: none;
+        }
+      }
+
+      // 交替行颜色
+      &:nth-child(even) {
+        background-color: var(--color-primary-50);
+      }
+
+      &:hover {
+        background-color: var(--color-primary-100);
+      }
+    }
+  }
+
+  // 链接样式
+  a {
+    color: var(--color-primary);
+    text-decoration: none;
+    transition: all 0.2s ease;
+    position: relative;
+
+    &:hover {
+      color: var(--color-primary-600);
+      text-decoration: underline;
+      text-decoration-thickness: 2px;
+      text-underline-offset: 2px;
+    }
+
+    &:visited {
+      color: var(--color-primary-700);
+    }
+
+    // 特殊处理自动链接（如果有特殊的class的话）
+    &.url, &.email {
+      word-break: break-all;
+      font-family: var(--font-code);
+      font-size: 0.9em;
+      background-color: var(--color-primary-50);
+      padding: 0.125rem 0.25rem;
+      border-radius: 0.25rem;
+      border: 1px solid var(--color-primary-200);
+    }
+  }
+
+  // 分割线样式
+  hr {
+    margin: 2rem 0;
+    border: none;
+    height: 2px;
+    background-color: var(--color-primary-400);
+
+    &:first-child {
+      margin-top: 0;
+    }
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+    // KaTeX 样式
+    .katex {
+      font-family: 'KaTeX_Main', 'Times New Roman', serif;
+      font-size: 1em;
+      line-height: 1.2;
+      color: var(--color-text);
+
+      .base {
+        position: relative;
+        white-space: nowrap;
+      }
+
+      .strut {
+        display: inline-block;
+      }
+
+      .textbf {
+        font-weight: bold;
+      }
+
+      .textit {
+        font-style: italic;
+      }
+
+      .textrm {
+        font-family: 'KaTeX_Main', 'Times New Roman', serif;
+      }
+
+      .textsf {
+        font-family: 'KaTeX_SansSerif', sans-serif;
+      }
+
+      .texttt {
+        font-family: 'KaTeX_Typewriter', 'Courier New', monospace;
+      }
+
+      .mathrm {
+        font-style: normal;
+      }
+
+      .mathit {
+        font-style: italic;
+      }
+
+      .mathfrak {
+        font-family: 'KaTeX_Fraktur', 'KaTeX_Main', 'Times New Roman', serif;
+      }
+
+      .mathcal {
+        font-family: 'KaTeX_Caligraphic', 'KaTeX_Main', 'Times New Roman', serif;
+      }
+
+      .mathbb {
+        font-family: 'KaTeX_AMS', 'KaTeX_Main', 'Times New Roman', serif;
+      }
+
+      .mathscr {
+        font-family: 'KaTeX_Script', 'KaTeX_Main', 'Times New Roman', serif;
+      }
+
+      .mathbf {
+        font-weight: bold;
+      }
+
+      .boldsymbol {
+        font-weight: bold;
+      }
+
+      .mathsf {
+        font-family: 'KaTeX_SansSerif', sans-serif;
+      }
+
+      .mathtt {
+        font-family: 'KaTeX_Typewriter', 'Courier New', monospace;
+      }
+    }
+
+    .katex-display {
+      display: block;
+      margin: 1em auto;
+      text-align: center;
+
+      > .katex {
+        display: block;
+        white-space: nowrap;
+        text-align: initial;
+      }
+    }
+  }

@@ -39,10 +39,6 @@ tags: ["vite", "工程化"]
 - ***粗斜体*** - 使用三个星号包围
 - ~~删除线文本~~ - 使用两个波浪线包围
 
-### 行内代码
-
-这是`行内代码`的示例，还有`function test() {}`这样的代码片段。
-
 ## 列表
 
 ### 无序列表
@@ -99,6 +95,10 @@ dasjandjas
 > 的
 
 ## 代码块
+
+### 行内代码
+
+这是`行内代码`的示例，还有`function test() {}`这样的代码片段。
 
 ### JavaScript 代码块
 
@@ -219,3 +219,13 @@ $$x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$$
 HTML 是 HyperText Markup Language 的缩写。
 
 *[HTML]: HyperText Markup Language
+
+
+| 行号 | 代码 |
+|------|------|
+| 1 | `public class HelloWorld {` |
+| 2 | `    public static void main(String[] args) {` |
+| 3 | `        System.out.println("Hello, World!");` |
+| 4 | `        int x = 10;` |
+| 5 | `    }` |
+| 6 | `}` |
