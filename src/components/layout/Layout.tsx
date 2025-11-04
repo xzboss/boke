@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import Header from "./Header";
-import { useAppStore, colorSchemePresets } from "@/store/app";
+import { useAppStore } from "@/store/app";
 import Footer from "./Footer";
 
 interface LayoutProps {
