@@ -7,6 +7,8 @@ import { useCatalogObserver } from "@/hooks/useCatalogObserver";
 import { cn } from "@/lib/utils/tools";
 import { CatalogNode } from "@/types/catalog";
 
+const ITEM_HEIGHT = 32;
+
 /**
  * 目录组件 Props
  */
@@ -133,7 +135,7 @@ function LeafCatalogItem({
         style={{ paddingLeft: `${12 + indentLevel * 16}px` }}
       >
         {/* 叶子节点额外缩进 */}
-        <div style={{ marginLeft: "20px" }}>
+        <div style={{ paddingLeft: "36px" }}>
           <Button
             type={isActive ? "default" : "text"}
             size="sm"
@@ -208,9 +210,9 @@ function CatalogItemRenderer({
  */
 export function Catalog({
   catalogTree,
-  className,
   showExpandAll = true,
   scrollContainer,
+  ...rest
 }: CatalogProps) {
   const {
     activeId,
@@ -221,11 +223,13 @@ export function Catalog({
     setActiveId,
     toggleExpand,
     toggleAllExpand,
-  } = useCatalogObserver(catalogTree, scrollContainer, { itemHeight: 32 });
+  } = useCatalogObserver(catalogTree, scrollContainer, {
+    itemHeight: ITEM_HEIGHT,
+  });
 
   if (!catalogTree || catalogTree.length === 0) {
     return (
-      <div className={cn("flex flex-col h-full", className)}>
+      <div {...rest} className={cn("flex flex-col h-full", rest?.className)}>
         <div className="flex-shrink-0 px-4 py-3 border-b border-black/10">
           <h3 className="text-sm font-semibold">目录</h3>
         </div>
@@ -237,7 +241,7 @@ export function Catalog({
   }
 
   return (
-    <div className={cn("flex flex-col h-full", className)}>
+    <div {...rest} className={cn("flex flex-col h-full", rest?.className)}>
       {/* 全部展开/收起按钮 */}
       {showExpandAll && (
         <div className="px-3 py-2">

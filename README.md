@@ -49,4 +49,10 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 - 多页签信息同步
     - 区分不需要同步和需要同步的信息，（通过页面带参决定这两个tab是否同步）
     - 兼容性，降级处理
+- 双分页滚动加载兼容
+ - 分页滚动加载
+ - 游标滚动加载
+ - 分页、游标双滚动加载
+ - 多列表滚动加载
+
 ```

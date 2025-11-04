@@ -1,6 +1,6 @@
 "use client";
 
-import { Layout } from "@/components/layout";
+import { Layout } from "@/components/Layout";
 import { RecursiveMenu } from "@/components/Menu";
 import { Catalog } from "@/components/Catalog";
 import { SidebarToggle } from "@/components/SidebarToggle";
@@ -67,6 +67,7 @@ export default function ClientLayout({ children, blogData }: BlogLayoutProps) {
 
         {/* 中间文章内容区域 */}
         <div
+          id="blog-container"
           className="flex-1 h-full overflow-y-auto px-8 py-8 custom-scrollbar transition-all duration-300"
           style={{ paddingRight: isRightSidebarOpen ? "280px" : "0" }}
         >
@@ -83,7 +84,7 @@ export default function ClientLayout({ children, blogData }: BlogLayoutProps) {
               <Catalog
                 catalogTree={catalogTree}
                 scrollContainer={
-                  document.querySelector(".flex-1") as HTMLElement
+                  document.querySelector("#blog-container") as HTMLElement
                 }
               />
             </div>

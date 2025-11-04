@@ -3,7 +3,7 @@ import type { MenuNode } from "@/types/menu";
 import { MENU_NODE_TYPE } from "@/types/menu";
 import { loadRawBlogList } from "./loader";
 import { markdownToHtml, buildCatalog, buildMetadata } from "./processor";
-import { generateSlug, generateId } from "../utils/tools";
+import { generateSlug } from "../utils/tools";
 
 /**
  * 博客文章菜单数据结构
@@ -244,11 +244,18 @@ class Blog implements BlogInterface {
   /**
    * 根据slug获取文章
    */
-  getBlogBySlug(slug: string) {
+  getBlogBySlug(slug: string): BlogItem | null {
     return this.slug2Blog.get(slug) || null;
   }
 }
 
 export const blog = new Blog();
+
+// 一些客户端组件可以直接用的静态数据
+export const staticBlogData = {
+  menuTree: blog.menuTree,
+  blogList: blog.blogList,
+  tagList: blog.tagList,
+};
 
 export default Blog;

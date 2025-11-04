@@ -1,15 +1,10 @@
-"use client";
+'use client';
 
-import { useMemo } from "react";
-import Button from "../Button";
-import Icon from "../Icon";
-import Select, { SelectOption } from "../Select";
-import {
-  useAppStore,
-  getColorSchemeName,
-  ColorSchemeKey,
-  colorSchemePresets,
-} from "@/store/app";
+import { useMemo, useRef } from 'react';
+import Button from '../Button';
+import Icon from '../Icon';
+import Select, { SelectRef } from '../Select';
+import { useAppStore } from '@/store/app';
 
 /**
  * 网站头部组件
@@ -17,38 +12,26 @@ import {
  * 固定在页面顶部
  */
 export default function Header() {
-  const { colorScheme, theme, setColorScheme, toggleTheme } =
-    useAppStore();
-
-  /** 可选的色调列表 */
-  const availableColorSchemes: SelectOption[] = useMemo(() => {
-    const schemes: ColorSchemeKey[] = ["purple", "black", "white", "blue"];
-    return schemes.map((key) => ({
-      value: key,
-      label: getColorSchemeName(key),
-    }));
-  }, []);
-
+  const { colorScheme, theme, colorSchemePresets, setColorScheme, toggleTheme } = useAppStore();
+  const selectRef = useRef<SelectRef>(null);
   /**
    * 切换主题（light/dark）
    * 如果当前是黑白色调，切换主题时自动切换为对应色调
    */
   const handleThemeChange = () => {
     // 黑白色调自动切换：黑色色调配深色主题，白色色调配浅色主题
-    if (colorScheme === "white" || colorScheme === "black") {
-      setColorScheme(theme === "dark" ? "black" : "white");
+    if (colorScheme === 'white' || colorScheme === 'black') {
+      setColorScheme(theme === 'dark' ? 'black' : 'white');
     }
     toggleTheme();
   };
-
-
 
   return (
     <header
       className="fixed top-0 left-0 right-0 w-full z-1000 px-4 py-2"
       style={{
-        backgroundColor: theme === "dark" ? "#111827" : "#f9fafb",
-        boxShadow: `0 -17px 20px ${colorSchemePresets[colorScheme]}`,
+        backgroundColor: theme === 'dark' ? '#111827' : '#f9fafb',
+        boxShadow: `0 -17px 20px ${colorSchemePresets[colorScheme]?.color}`,
       }}
     >
       <div className="flex items-center justify-between">
@@ -64,7 +47,7 @@ export default function Header() {
           </Button>
 
           <Button type="text" size="sm" href="https://github.com">
-            <Icon type="icon-github" style={{ fontSize: "16px" }} />
+            <Icon type="icon-github" style={{ fontSize: '16px' }} />
             GitHub
           </Button>
 
@@ -78,18 +61,33 @@ export default function Header() {
 
           {/* 主题颜色选择器 */}
           <Select
-            placeholder="色调"
-            options={availableColorSchemes}
+            ref={selectRef}
+            className="w-70px"
+            defaultValue={colorScheme}
+            options={Object.values(colorSchemePresets).map(preset => ({
+              ...preset,
+              render: option => {
+                return (
+                  <Button
+                    key={option.value}
+                    type="primary"
+                    color={option.value}
+                    className="w-15px h-15px rounded-full p-0 mx-auto"
+                    onClick={() => selectRef.current?.handleSelect(option.value)}
+                  />
+                );
+              },
+            }))}
             value={colorScheme}
-            onChange={(value) => setColorScheme(value as ColorSchemeKey)}
+            onChange={option => setColorScheme(option.value)}
           />
 
           {/* 深色模式切换按钮 */}
           <Button type="text" size="sm" onClick={handleThemeChange}>
-            {theme === "dark" ? (
-              <Icon type="icon-sun" style={{ fontSize: "20px" }} />
+            {theme === 'dark' ? (
+              <Icon type="icon-sun" style={{ fontSize: '20px' }} />
             ) : (
-              <Icon type="icon-moon" style={{ fontSize: "20px" }} />
+              <Icon type="icon-moon" style={{ fontSize: '20px' }} />
             )}
           </Button>
         </div>
@@ -97,4 +95,3 @@ export default function Header() {
     </header>
   );
 }
-

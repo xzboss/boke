@@ -1,21 +1,21 @@
-import { useEffect, useState, useRef, useMemo } from 'react';
-import type { CatalogItem } from '@/utils/markdown';
+import { useEffect, useState, useRef, useMemo } from "react";
+import type { CatalogNode } from "@/types/catalog";
 
 /**
  * 递归获取所有目录项ID（树形结构）
  */
-function getAllCatalogIds(catalog: CatalogItem[]): string[] {
+function getAllCatalogIds(catalog: CatalogNode[]): string[] {
   const ids: string[] = [];
-  
-  function traverse(items: CatalogItem[]) {
-    items.forEach(item => {
+
+  function traverse(items: CatalogNode[]) {
+    items.forEach((item) => {
       ids.push(item.id);
       if (item.children.length > 0) {
         traverse(item.children);
       }
     });
   }
-  
+
   traverse(catalog);
   return ids;
 }
@@ -23,18 +23,18 @@ function getAllCatalogIds(catalog: CatalogItem[]): string[] {
 /**
  * 递归获取有子节点的项目
  */
-function getItemsWithChildren(catalog: CatalogItem[]): CatalogItem[] {
-  const items: CatalogItem[] = [];
-  
-  function traverse(itemList: CatalogItem[]) {
-    itemList.forEach(item => {
+function getItemsWithChildren(catalog: CatalogNode[]): CatalogNode[] {
+  const items: CatalogNode[] = [];
+
+  function traverse(itemList: CatalogNode[]) {
+    itemList.forEach((item) => {
       if (item.children.length > 0) {
         items.push(item);
         traverse(item.children);
       }
     });
   }
-  
+
   traverse(catalog);
   return items;
 }
@@ -43,28 +43,32 @@ function getItemsWithChildren(catalog: CatalogItem[]): CatalogItem[] {
  * 查找指定ID的最顶级收起状态祖先元素
  * 如果没有收起的祖先，返回自己
  */
-function findTopCollapsedAncestor(catalog: CatalogItem[], targetId: string, expandedIds: Set<string>): string {
+function findTopCollapsedAncestor(
+  catalog: CatalogNode[],
+  targetId: string,
+  expandedIds: Set<string>
+): string {
   // 创建ID到节点的映射
-  const idToItemMap = new Map<string, CatalogItem>();
-  
-  function buildMap(items: CatalogItem[]) {
-    items.forEach(item => {
+  const idToItemMap = new Map<string, CatalogNode>();
+
+  function buildMap(items: CatalogNode[]) {
+    items.forEach((item) => {
       idToItemMap.set(item.id, item);
       if (item.children.length > 0) {
         buildMap(item.children);
       }
     });
   }
-  
+
   buildMap(catalog);
-  
+
   const targetItem = idToItemMap.get(targetId);
   if (!targetItem) return targetId;
-  
+
   // 向上查找最顶级的收起祖先
   let current = targetItem;
-  let topCollapsedAncestor: CatalogItem | null = null;
-  
+  let topCollapsedAncestor: CatalogNode | null = null;
+
   while (current.parent) {
     const parent = current.parent;
     // 如果父节点是收起状态，记录它（但继续向上查找更顶级的）
@@ -73,7 +77,7 @@ function findTopCollapsedAncestor(catalog: CatalogItem[], targetId: string, expa
     }
     current = parent;
   }
-  
+
   return topCollapsedAncestor?.id || targetId;
 }
 
@@ -81,21 +85,26 @@ function findTopCollapsedAncestor(catalog: CatalogItem[], targetId: string, expa
  * 计算当前选中项在可见列表中的位置（用于进度条）
  * 从第一个根节点开始查找，收起的节点不继续递归
  */
-function calculateProgressPosition(catalog: CatalogItem[], endId: string, expandedIds: Set<string>, itemHeight: number): { top: number; height: number } {
+function calculateProgressPosition(
+  catalog: CatalogNode[],
+  endId: string,
+  expandedIds: Set<string>,
+  itemHeight: number
+): { top: number; height: number } {
   let count = 0;
   let found = false;
-  
-  function traverse(items: CatalogItem[]): boolean {
+
+  function traverse(items: CatalogNode[]): boolean {
     for (const item of items) {
       if (found) return true;
-      
+
       if (item.id === endId) {
         found = true;
         return true;
       }
-      
+
       count++;
-      
+
       // 如果当前项展开且有子节点，继续递归
       if (expandedIds.has(item.id) && item.children.length > 0) {
         if (traverse(item.children)) {
@@ -105,12 +114,12 @@ function calculateProgressPosition(catalog: CatalogItem[], endId: string, expand
     }
     return false;
   }
-  
+
   traverse(catalog);
-  
+
   return {
     top: count * itemHeight,
-    height: itemHeight
+    height: itemHeight,
   };
 }
 
@@ -128,13 +137,18 @@ interface CatalogObserverOptions {
  * @param scrollContainer 可选的滚动容器
  * @param options 配置选项
  */
-export function useCatalogObserver(catalog: CatalogItem[], scrollContainer?: HTMLElement | null, options: CatalogObserverOptions = {}) {
+export function useCatalogObserver(
+  catalog: CatalogNode[],
+  scrollContainer?: HTMLElement | null,
+  options: CatalogObserverOptions = {}
+) {
+  /** 目录项高度 */
   const { itemHeight = 40 } = options;
   /** 当前激活的标题 ID */
   const [activeId, setActiveId] = useState<string | null>(null);
   /** 展开的项目ID集合 */
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
-  
+
   /** 标记是否为主动点击触发的滚动 */
   const isClickScrolling = useRef<boolean>(false);
   /** 滚动定时器 */
@@ -150,7 +164,10 @@ export function useCatalogObserver(catalog: CatalogItem[], scrollContainer?: HTM
   /**
    * 获取有子节点的项目（用于展开/收起逻辑）
    */
-  const itemsWithChildren = useMemo(() => getItemsWithChildren(catalog), [catalog]);
+  const itemsWithChildren = useMemo(
+    () => getItemsWithChildren(catalog),
+    [catalog]
+  );
 
   /**
    * 初始化展开状态 - 默认全部展开
@@ -158,7 +175,7 @@ export function useCatalogObserver(catalog: CatalogItem[], scrollContainer?: HTM
   useEffect(() => {
     if (catalog && catalog.length > 0) {
       const initialExpandedIds = new Set<string>();
-      itemsWithChildren.forEach(item => {
+      itemsWithChildren.forEach((item) => {
         initialExpandedIds.add(item.id);
       });
       setExpandedIds(initialExpandedIds);
@@ -169,7 +186,7 @@ export function useCatalogObserver(catalog: CatalogItem[], scrollContainer?: HTM
    * 检查是否全部展开
    */
   const isAllExpanded = useMemo(() => {
-    return itemsWithChildren.every(item => expandedIds.has(item.id));
+    return itemsWithChildren.every((item) => expandedIds.has(item.id));
   }, [itemsWithChildren, expandedIds]);
 
   /**
@@ -177,10 +194,10 @@ export function useCatalogObserver(catalog: CatalogItem[], scrollContainer?: HTM
    */
   const progressPosition = useMemo(() => {
     if (!activeId || !catalog.length) return { top: 0, height: itemHeight };
-    
+
     // 找到最顶级的收起祖先
     const endId = findTopCollapsedAncestor(catalog, activeId, expandedIds);
-    
+
     // 计算位置
     return calculateProgressPosition(catalog, endId, expandedIds, itemHeight);
   }, [activeId, catalog, expandedIds, itemHeight]);
@@ -231,7 +248,7 @@ export function useCatalogObserver(catalog: CatalogItem[], scrollContainer?: HTM
         },
         {
           root: scrollContainer,
-          rootMargin: '-50px 0px -80% 0px',
+          rootMargin: "-50px 0px -80% 0px",
           threshold: [0, 0.25, 0.5, 0.75, 1],
         }
       );
@@ -279,8 +296,8 @@ export function useCatalogObserver(catalog: CatalogItem[], scrollContainer?: HTM
       const element = document.getElementById(id);
       if (element) {
         element.scrollIntoView({
-          behavior: 'instant',
-          block: 'start',
+          behavior: "instant",
+          block: "start",
         });
       }
     }
@@ -296,7 +313,7 @@ export function useCatalogObserver(catalog: CatalogItem[], scrollContainer?: HTM
    * 切换展开/收起状态
    */
   const toggleExpand = (id: string) => {
-    setExpandedIds(prev => {
+    setExpandedIds((prev) => {
       const newSet = new Set(prev);
       if (newSet.has(id)) {
         newSet.delete(id);
@@ -315,7 +332,7 @@ export function useCatalogObserver(catalog: CatalogItem[], scrollContainer?: HTM
     if (shouldExpand) {
       // 展开所有
       const allItemsWithChildren = new Set<string>();
-      itemsWithChildren.forEach(item => {
+      itemsWithChildren.forEach((item) => {
         allItemsWithChildren.add(item.id);
       });
       setExpandedIds(allItemsWithChildren);
@@ -331,10 +348,10 @@ export function useCatalogObserver(catalog: CatalogItem[], scrollContainer?: HTM
     expandedIds,
     isAllExpanded,
     progressPosition,
-    
+
     // 引用
     catalogRef,
-    
+
     // 方法
     setActiveId: setActiveIdManually,
     toggleExpand,
