@@ -42,7 +42,9 @@ const Select = React.forwardRef<SelectRef, SelectProps>(
   ({ options, value, onChange, className, placeholder, defaultValue }, ref) => {
     const [isOpen, setIsOpen] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
-    const [currentOption, setCurrentOption] = useState<SelectOption | null>(null);
+    const [currentOption, setCurrentOption] = useState<SelectOption | null>(
+      options.find(opt => opt.value === defaultValue) || null
+    );
     const [currentValue, setCurrentValue] = useState<string | null>(defaultValue);
 
     const handleSelect = (optionValue: string) => {

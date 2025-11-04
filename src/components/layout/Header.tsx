@@ -63,6 +63,7 @@ export default function Header() {
           <Select
             ref={selectRef}
             className="w-70px"
+            defaultValue={colorScheme}
             options={Object.values(colorSchemePresets).map(preset => ({
               ...preset,
               render: option => {

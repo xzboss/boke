@@ -251,4 +251,11 @@ class Blog implements BlogInterface {
 
 export const blog = new Blog();
 
+// 一些客户端组件可以直接用的静态数据
+export const staticBlogData = {
+  menuTree: blog.menuTree,
+  blogList: blog.blogList,
+  tagList: blog.tagList,
+};
+
 export default Blog;
