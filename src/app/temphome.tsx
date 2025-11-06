@@ -1,18 +1,21 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
+
 interface TempHomeProps {
   blogList: any[];
 }
 
 function BlogCard({ article }: { article: any }) {
+  const router = useRouter();
   const handleClick = () => {
-    window.location.href = `/blog/${article.slug}`;
+    router.push(`/blog/${article.slug}`);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
-      window.location.href = `/blog/${article.slug}`;
+      router.push(`/blog/${article.slug}`);
     }
   };
 
@@ -25,9 +28,7 @@ function BlogCard({ article }: { article: any }) {
       role="button"
     >
       <h2 className="text-xl font-semibold mb-2">{article.metadata.title}</h2>
-      {article.metadata.description && (
-        <p className="mb-4">{article.metadata.description}</p>
-      )}
+      {article.metadata.description && <p className="mb-4">{article.metadata.description}</p>}
       <div className="flex flex-wrap gap-2 mb-4">
         {article.metadata.tags?.map((tag: string) => (
           <span key={tag} className="px-2 py-1 rounded-full text-sm">
