@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useRef } from 'react';
+import { useRef } from 'react';
 import Button from '../Button';
 import Icon from '../Icon';
 import Select, { SelectRef } from '../Select';
@@ -28,7 +28,7 @@ export default function Header() {
 
   return (
     <header
-      className="fixed top-0 left-0 right-0 w-full z-1000 px-4 py-2"
+      className="fixed top-0 left-0 right-0 w-full z-1000 py-2"
       style={{
         backgroundColor: theme === 'dark' ? '#111827' : '#f9fafb',
         boxShadow: `0 -17px 20px ${colorSchemePresets[colorScheme]?.color}`,
@@ -42,13 +42,12 @@ export default function Header() {
 
         {/* 右侧导航菜单和操作区域 */}
         <div className="flex items-center gap-2">
-          <Button type="text" size="sm" href="/blog">
-            测试
+          <Button type="text" size="sm" href="/">
+            DEMO:
           </Button>
 
-          <Button type="text" size="sm" href="https://github.com">
-            <Icon type="icon-github" style={{ fontSize: '16px' }} />
-            GitHub
+          <Button type="text" size="sm" href="/blog">
+            TODO:
           </Button>
 
           <Button type="text" size="sm" href="/ui">
@@ -57,6 +56,10 @@ export default function Header() {
 
           <Button type="text" size="sm" href="/about">
             关于
+          </Button>
+
+          <Button type="text" size="sm" href="https://github.com">
+            <Icon type="icon-github" style={{ fontSize: '16px' }} />
           </Button>
 
           {/* 主题颜色选择器 */}

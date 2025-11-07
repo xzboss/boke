@@ -1,5 +1,4 @@
 import { blog as blogInstance } from "@/lib/blog";
-import { notFound } from "next/navigation";
 import { Empty } from "@/components/Empty";
 import { MdHtmlViewer } from "@/components/MdHtmlViewer";
 
