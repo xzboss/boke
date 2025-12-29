@@ -1,43 +1,62 @@
-import type { BlogItem, RawBlogItem, Tags } from "@/types/blog";
-import type { MenuNode } from "@/types/menu";
-import { MENU_NODE_TYPE } from "@/types/menu";
-import { loadRawBlogList } from "./loader";
-import { markdownToHtml, buildCatalog, buildMetadata } from "./processor";
-import { generateSlug } from "../utils/tools";
+import type { BlogItem, RawBlogItem, Tags } from '@/types/blog';
+import type { MenuNode } from '@/types/menu';
+import { MENU_NODE_TYPE } from '@/types/menu';
+import { loadRawBlogList } from './loader';
+import { markdownToHtml, buildCatalog, buildMetadata } from './processor';
+import { generateSlug } from '../utils/tools';
+
+const { MENU, LEAF } = MENU_NODE_TYPE;
 
 /**
  * 博客文章菜单数据结构
  */
 export const menuTree: MenuNode[] = [
   {
-    id: "frontend",
-    name: "qianduan",
+    id: 'frontend',
+    name: 'qianduan',
     parentId: null,
     tags: [],
-    type: MENU_NODE_TYPE.MENU,
+    type: MENU,
     children: [
       {
-        id: "vue",
-        name: "Vue测试",
-        parentId: "frontend",
-        tags: ["vue", "vite", "vue-router"],
-        type: MENU_NODE_TYPE.MENU,
+        id: 'vue',
+        name: 'Vue测试',
+        parentId: 'frontend',
+        tags: ['vue', 'vite', 'vue-router'],
+        type: MENU,
         children: [],
+      },
+      {
+        id: 'JavaScript',
+        name: 'JavaScript',
+        parentId: 'vue',
+        tags: [],
+        type: MENU,
+        children: [
+          {
+            id: 'JavaScript高级程序设计',
+            name: 'JavaScript高级程序设计',
+            parentId: 'JavaScript',
+            tags: ['JavaScript高级程序设计'],
+            type: MENU,
+            children: [],
+          },
+        ],
       },
     ],
   },
   {
-    id: "backend",
-    name: "houduan",
+    id: 'backend',
+    name: 'houduan',
     parentId: null,
     tags: [],
     type: MENU_NODE_TYPE.MENU,
     children: [
       {
-        id: "nodejs",
-        name: "Node.js测试",
-        parentId: "backend",
-        tags: ["nodejs", "node", "测试"],
+        id: 'nodejs',
+        name: 'Node.js测试',
+        parentId: 'backend',
+        tags: ['nodejs', 'node', '测试'],
         type: MENU_NODE_TYPE.MENU,
         children: [],
       },
@@ -142,7 +161,7 @@ class Blog implements BlogInterface {
           catalogTree,
         });
       })
-    ).catch((error) => {
+    ).catch(error => {
       throw error;
     });
   }
@@ -151,9 +170,7 @@ class Blog implements BlogInterface {
    * 生成标签集合
    */
   generateTagSet() {
-    this.tagSet = new Set(
-      this.blogList?.flatMap((item) => item.metadata?.tags || [])
-    );
+    this.tagSet = new Set(this.blogList?.flatMap(item => item.metadata?.tags || []));
   }
 
   /**
@@ -167,8 +184,8 @@ class Blog implements BlogInterface {
    * 生成标签到博客的映射
    */
   generateTag2BlogMap() {
-    this.blogList.forEach((item) => {
-      item.metadata?.tags?.forEach((tag) => {
+    this.blogList.forEach(item => {
+      item.metadata?.tags?.forEach(tag => {
         if (!this.tag2BlogMap.has(tag)) {
           this.tag2BlogMap.set(tag, []);
         }
@@ -181,7 +198,7 @@ class Blog implements BlogInterface {
    * 生成slug到博客的映射
    */
   generateSlug2BlogMap() {
-    this.blogList.forEach((item) => {
+    this.blogList.forEach(item => {
       this.slug2Blog.set(item.slug, item);
     });
   }
@@ -192,7 +209,7 @@ class Blog implements BlogInterface {
    */
   fillMenuTree() {
     // 将博客列表转换为菜单项列表
-    const menuNodeList = this.blogList.map((item) => {
+    const menuNodeList = this.blogList.map(item => {
       const slug = generateSlug(item.metadata.title);
       return {
         id: slug,
@@ -207,8 +224,8 @@ class Blog implements BlogInterface {
 
     // 生成标签到博客菜单项的映射
     const tag2MenuNodeMap = new Map<Tags, MenuNode[]>();
-    menuNodeList.forEach((item) => {
-      item.metadata?.tags?.forEach((tag) => {
+    menuNodeList.forEach(item => {
+      item.metadata?.tags?.forEach(tag => {
         if (!tag2MenuNodeMap.has(tag)) {
           tag2MenuNodeMap.set(tag, [item]);
         } else {
@@ -228,9 +245,9 @@ class Blog implements BlogInterface {
         // 如果当前节点有标签，查找匹配的博客并添加到children中
         const tempSet = new Set<MenuNode>();
         if (node.tags && node.tags.length > 0) {
-          node.tags.forEach((tag) => {
+          node.tags.forEach(tag => {
             const blogs = tag2MenuNodeMap.get(tag);
-            blogs?.forEach((item) => tempSet.add(item));
+            blogs?.forEach(item => tempSet.add(item));
           });
         }
         node.children.push(...(Array.from(tempSet) as MenuNode[]));

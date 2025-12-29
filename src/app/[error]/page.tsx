@@ -2,15 +2,15 @@ import { Layout } from "@/components/Layout";
 import { ErrorPage404, ErrorPage403 } from "@/components/ErrorPage";
 
 interface ErrorPageProps {
-  params: { error: string };
+  params: Promise<{ error: string }>;
 }
 
 /**
  * 通用错误页面
  * 根据路径参数渲染不同的错误页面
  */
-export default function ErrorPage({ params }: ErrorPageProps) {
-  const { error } = params;
+export default async function ErrorPage({ params }: ErrorPageProps) {
+  const { error } = await params;
 
   const renderErrorPage = () => {
     switch (error) {

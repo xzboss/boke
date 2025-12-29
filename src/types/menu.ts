@@ -14,7 +14,7 @@ export type MenuNodeType = (typeof MENU_NODE_TYPE)[keyof typeof MENU_NODE_TYPE];
  * 菜单项
  */
 export interface MenuNode {
-  /** 菜单项ID */
+  /** 菜单项ID | 文件名 */
   id: string;
   /** 菜单项名称 */
   name: string;
