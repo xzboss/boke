@@ -49,7 +49,7 @@ export default function ClientLayout({ children, blogData }: BlogLayoutProps) {
           <div className="h-full overflow-hidden">
             <div
               className="w-full h-full p-4 pt-0 custom-scrollbar"
-              style={{ width: "280px" }}
+              style={{ width: "260px" }}
             >
               <RecursiveMenu menuTree={menuTree} />
             </div>

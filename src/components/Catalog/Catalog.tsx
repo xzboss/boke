@@ -187,11 +187,6 @@ function CatalogItemRenderer({
  * 显示文章的标题层级结构，支持点击跳转和自动高亮当前标题
  * 左侧有进度指示器，根据当前标题位置跳跃式显示
  */
-/**
- * 目录导航组件
- * 显示文章的标题层级结构，支持点击跳转和自动高亮当前标题
- * 左侧有进度指示器，根据当前标题位置跳跃式显示
- */
 export function Catalog({ catalogTree, showExpandAll = true, scrollContainer, ...rest }: CatalogProps) {
   const {
     activeId,
