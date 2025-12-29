@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import React from "react";
-import Button from "../Button";
-import Icon from "../Icon";
-import { useCatalogObserver } from "@/hooks/useCatalogObserver";
-import { cn } from "@/lib/utils/tools";
-import { CatalogNode } from "@/types/catalog";
+import React from 'react';
+import Button from '../Button';
+import Icon from '../Icon';
+import { useCatalogObserver } from '@/hooks/useCatalogObserver';
+import { cn } from '@/lib/utils/tools';
+import { CatalogNode } from '@/types/catalog';
 
 const ITEM_HEIGHT = 32;
 
@@ -63,29 +63,26 @@ function ExpandableCatalogItem({
   return (
     <div className="catalog-item">
       {/* 当前项 */}
-      <div
-        className="flex items-center gap-1 pr-3"
-        style={{ paddingLeft: `${12 + indentLevel * 16}px` }}
-      >
+      <div className="flex items-center gap-1 pr-3" style={{ paddingLeft: `${12 + indentLevel * 16}px` }}>
         {/* 左侧展开/收起图标 */}
         <Button type="text" size="sm" onClick={() => onToggleExpand(item.id)}>
           <Icon
             type="icon-expand"
             style={{
-              fontSize: "12px",
-              transform: isExpanded ? "rotate(270deg)" : "rotate(180deg)",
-              transition: "transform 0.2s",
+              fontSize: '12px',
+              transform: isExpanded ? 'rotate(270deg)' : 'rotate(180deg)',
+              transition: 'transform 0.2s',
             }}
           />
         </Button>
 
         {/* 目录项按钮 */}
         <Button
-          type={isActive ? "default" : "text"}
+          type={isActive ? 'default' : 'text'}
           size="sm"
           href={`#${item.id}`}
           className="text-ellipsis"
-          onClick={(e) => {
+          onClick={e => {
             if (scrollContainer) {
               e.preventDefault();
             }
@@ -119,29 +116,21 @@ function ExpandableCatalogItem({
 /**
  * 叶子节点目录项组件（无子节点）
  */
-function LeafCatalogItem({
-  item,
-  activeId,
-  onItemClick,
-  scrollContainer,
-}: LeafCatalogItemProps) {
+function LeafCatalogItem({ item, activeId, onItemClick, scrollContainer }: LeafCatalogItemProps) {
   const isActive = activeId === item.id;
   const indentLevel = item.level - 1;
 
   return (
     <div className="catalog-item">
-      <div
-        className="flex items-center gap-1 pr-3"
-        style={{ paddingLeft: `${12 + indentLevel * 16}px` }}
-      >
+      <div className="flex items-center gap-1 pr-3" style={{ paddingLeft: `${12 + indentLevel * 16}px` }}>
         {/* 叶子节点额外缩进 */}
-        <div style={{ paddingLeft: "36px" }}>
+        <div style={{ paddingLeft: '36px' }}>
           <Button
-            type={isActive ? "default" : "text"}
+            type={isActive ? 'default' : 'text'}
             size="sm"
             href={`#${item.id}`}
             className="text-ellipsis"
-            onClick={(e) => {
+            onClick={e => {
               if (scrollContainer) {
                 e.preventDefault();
               }
@@ -188,12 +177,7 @@ function CatalogItemRenderer({
     );
   } else {
     return (
-      <LeafCatalogItem
-        item={item}
-        activeId={activeId}
-        onItemClick={onItemClick}
-        scrollContainer={scrollContainer}
-      />
+      <LeafCatalogItem item={item} activeId={activeId} onItemClick={onItemClick} scrollContainer={scrollContainer} />
     );
   }
 }
@@ -208,12 +192,7 @@ function CatalogItemRenderer({
  * 显示文章的标题层级结构，支持点击跳转和自动高亮当前标题
  * 左侧有进度指示器，根据当前标题位置跳跃式显示
  */
-export function Catalog({
-  catalogTree,
-  showExpandAll = true,
-  scrollContainer,
-  ...rest
-}: CatalogProps) {
+export function Catalog({ catalogTree, showExpandAll = true, scrollContainer, ...rest }: CatalogProps) {
   const {
     activeId,
     expandedIds,
@@ -229,7 +208,7 @@ export function Catalog({
 
   if (!catalogTree || catalogTree.length === 0) {
     return (
-      <div {...rest} className={cn("flex flex-col h-full", rest?.className)}>
+      <div {...rest} className={cn('flex flex-col h-full', rest?.className)}>
         <div className="flex-shrink-0 px-4 py-3 border-b border-black/10">
           <h3 className="text-sm font-semibold">目录</h3>
         </div>
@@ -241,26 +220,18 @@ export function Catalog({
   }
 
   return (
-    <div {...rest} className={cn("flex flex-col h-full", rest?.className)}>
+    <div {...rest} className={cn('flex flex-col h-full', rest?.className)}>
       {/* 全部展开/收起按钮 */}
       {showExpandAll && (
         <div className="px-3 py-2">
-          <Button
-            type="text"
-            size="sm"
-            onClick={toggleAllExpand}
-            className="w-full justify-center"
-          >
-            {isAllExpanded ? "全部收起" : "全部展开"}
+          <Button type="text" size="sm" onClick={toggleAllExpand} className="w-[20px] justify-center">
+            {isAllExpanded ? <Icon type="icon-quanbushouqi" /> : <Icon type="icon-quanbuzhankai" />}
           </Button>
         </div>
       )}
 
       {/* 目录列表 */}
-      <nav
-        ref={catalogRef}
-        className="flex-1 overflow-y-auto pb-2 relative custom-scrollbar"
-      >
+      <nav ref={catalogRef} className="flex-1 overflow-y-auto pb-2 relative custom-scrollbar">
         {/* 进度指示器 */}
         <div
           className="absolute left-0 w-0.75 rounded-r-sm z-0 transition-all duration-300 ease-out"
@@ -273,7 +244,7 @@ export function Catalog({
 
         {/* 目录项 - 直接渲染顶级节点，递归会处理子节点 */}
         <div className="relative z-1">
-          {catalogTree.map((item) => (
+          {catalogTree.map(item => (
             <CatalogItemRenderer
               key={item.id}
               item={item}

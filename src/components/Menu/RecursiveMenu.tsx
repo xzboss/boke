@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
-import { useRouter, usePathname } from "next/navigation";
-import Button from "../Button";
-import Icon from "../Icon";
-import type { MenuNode } from "@/types/menu";
-import { MENU_NODE_TYPE } from "@/types/menu";
+import { useState, useEffect } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
+import Button from '../Button';
+import Icon from '../Icon';
+import type { MenuNode } from '@/types/menu';
+import { MENU_NODE_TYPE } from '@/types/menu';
 
 interface RecursiveMenuProps {
   /** 菜单数据源 */
@@ -18,11 +18,7 @@ interface RecursiveMenuProps {
  * 递归菜单组件
  * 支持无限层级的菜单结构，menu类型展开收起，叶子节点类型导航
  */
-export default function RecursiveMenu({
-  menuTree,
-  showExpandAll = true,
-  ...rest
-}: RecursiveMenuProps) {
+export default function RecursiveMenu({ menuTree, showExpandAll = true, ...rest }: RecursiveMenuProps) {
   const router = useRouter();
   const pathname = decodeURIComponent(usePathname());
   // 已展开的菜单项ID集合
@@ -47,7 +43,7 @@ export default function RecursiveMenu({
     const menuIds: string[] = [];
     const traverse = (list: MenuNode[]) => {
       for (const item of list) {
-        if (item.type === "menu") {
+        if (item.type === 'menu') {
           menuIds.push(item.id);
         }
         if (item.children && item.children.length > 0) {
@@ -65,7 +61,7 @@ export default function RecursiveMenu({
    */
   const checkAllExpanded = (expanded: Set<string>) => {
     const allMenuIds = getAllMenuIds(menuTree);
-    const isAll = allMenuIds.every((id) => expanded.has(id));
+    const isAll = allMenuIds.every(id => expanded.has(id));
     setIsAllExpanded(isAll);
   };
 
@@ -134,7 +130,7 @@ export default function RecursiveMenu({
     return (
       <div key={item.id}>
         <Button
-          type={isSelected ? "default" : "text"}
+          type={isSelected ? 'default' : 'text'}
           size="sm"
           onClick={() => handleItemClick(item)}
           className="justify-between"
@@ -147,8 +143,8 @@ export default function RecursiveMenu({
             <Icon
               type="icon-expand"
               style={{
-                fontSize: "12px",
-                transform: isExpanded ? "rotate(270deg)" : "rotate(180deg)",
+                fontSize: '12px',
+                transform: isExpanded ? 'rotate(270deg)' : 'rotate(180deg)',
               }}
             />
           )}
@@ -156,9 +152,7 @@ export default function RecursiveMenu({
 
         {/* 子菜单 - 只有 menu 类型且展开时才显示 */}
         {item.type === MENU_NODE_TYPE.MENU && isExpanded && (
-          <div className="mt-1">
-            {item.children.map((child) => renderMenuItem(child, depth + 1))}
-          </div>
+          <div className="mt-1">{item.children.map(child => renderMenuItem(child, depth + 1))}</div>
         )}
       </div>
     );
@@ -168,20 +162,15 @@ export default function RecursiveMenu({
     <nav {...rest}>
       {/* 全部展开/收起按钮（可选） */}
       {showExpandAll && (
-        <div className="mb-2">
-          <Button
-            type="text"
-            size="sm"
-            onClick={toggleAllExpand}
-            className="w-full justify-center"
-          >
-            {isAllExpanded ? "全部收起" : "全部展开"}
+        <div className="py-8px pr-16px">
+          <Button type="text" size="sm" onClick={toggleAllExpand} className="w-[20px] justify-center">
+            {isAllExpanded ? <Icon type="icon-quanbushouqi" /> : <Icon type="icon-quanbuzhankai" />}
           </Button>
         </div>
       )}
 
       {/* 菜单项列表 */}
-      {menuTree.map((item) => renderMenuItem(item))}
+      {menuTree.map(item => renderMenuItem(item))}
     </nav>
   );
 }

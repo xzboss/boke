@@ -6,7 +6,7 @@ import { createFromIconfontCN } from "@ant-design/icons";
  * 基于 @ant-design/icons 的 createFromIconfontCN 创建
  */
 const Icon = createFromIconfontCN({
-  scriptUrl: "//at.alicdn.com/t/c/font_5034614_5m9mgvbawdn.js",
+  scriptUrl: "//at.alicdn.com/t/c/font_5034614_35jdo0ah1s5.js",
 });
 
 export default Icon;

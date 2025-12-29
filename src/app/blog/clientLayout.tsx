@@ -48,7 +48,7 @@ export default function ClientLayout({ children, blogData }: BlogLayoutProps) {
         >
           <div className="h-full overflow-hidden">
             <div
-              className="w-full h-full p-4 custom-scrollbar"
+              className="w-full h-full p-4 pt-0 custom-scrollbar"
               style={{ width: "280px" }}
             >
               <RecursiveMenu menuTree={menuTree} />
@@ -60,7 +60,7 @@ export default function ClientLayout({ children, blogData }: BlogLayoutProps) {
             isOpen={isLeftSidebarOpen}
             onToggle={setIsLeftSidebarOpen}
             direction="left"
-            expandedPosition={{ right: "0px", top: "20px" }}
+            expandedPosition={{ right: "-20px", top: "20px" }}
             collapsedPosition={{ left: 0, top: "20px" }}
           />
         </div>
