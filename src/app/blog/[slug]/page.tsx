@@ -13,7 +13,7 @@ export default async function BlogArticlePage({ params }: BlogArticlePageProps) 
   const { slug } = await params;
 
   // 在服务端获取文章数据
-  const post = blogInstance.getBlogBySlug(decodeURIComponent(slug));
+  const post = blogInstance.getBlogBySlug(slug);
 
   if (!post) {
     return <Empty />;

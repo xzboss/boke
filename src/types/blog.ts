@@ -7,7 +7,7 @@ export const BLOG_TYPE = {
 
 export type BlogType = (typeof BLOG_TYPE)[keyof typeof BLOG_TYPE];
 
-export type Tags = "vue" | "vite" | "vue-router" | "nodejs" | "node" | "测试";
+export type Tags = string
 
 /**
  * 原始博客 Markdown 文件信息

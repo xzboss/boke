@@ -34,7 +34,7 @@ export default function ClientLayout({ children, blogData }: BlogLayoutProps) {
   const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(true);
   /** 目录数据 - 默认空，在具体文章页面时会有数据 */
   const catalogTree: CatalogNode[] =
-    blogData.blogList.find((item) => item.slug === slug)?.catalogTree || [];
+    blogData.blogList.find((item) => item.slug === decodeURIComponent(slug as string))?.catalogTree || [];
   /** 菜单数据 - 使用传入的博客菜单树 */
   const menuTree: MenuNode[] = blogData.menuTree;
 

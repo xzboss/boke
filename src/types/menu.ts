@@ -18,8 +18,6 @@ export interface MenuNode {
   id: string;
   /** 菜单项名称 */
   name: string;
-  /** 父菜单项ID */
-  parentId: string | null;
   /** 类型*/
   type: MenuNodeType;
   /** 菜单项所包含的标签 */
@@ -29,5 +27,5 @@ export interface MenuNode {
   /** 指定博客路径 */
   path?: string;
   /** 子菜单项 */
-  children: MenuNode[];
+  children?: MenuNode[];
 }

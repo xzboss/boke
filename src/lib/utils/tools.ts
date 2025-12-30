@@ -1,5 +1,5 @@
-import { type ClassValue, clsx } from "clsx";
-import { twMerge } from "tailwind-merge";
+import { type ClassValue, clsx } from 'clsx';
+import { twMerge } from 'tailwind-merge';
 
 /**
  * 类名合并工具
@@ -27,7 +27,7 @@ export const colorUtils = {
 
   /** 将 RGB 转换为十六进制 */
   rgbToHex: (r: number, g: number, b: number) => {
-    return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+    return '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
   },
 
   /** 调整颜色亮度 */
@@ -66,11 +66,12 @@ export const colorUtils = {
  * @returns URL友好字符串
  */
 export const generateSlug = (title: string) => {
-  return title
-    .toLowerCase()
-    .trim()
-    .replace(/\s+/g, "-")
-    .replace(/[^\w\u4e00-\u9fa5-]/g, "");
+  // return title
+  //   .toLowerCase()
+  //   .trim()
+  //   .replace(/\s+/g, "-")
+  //   .replace(/[^\w\u4e00-\u9fa5\uff5e~-]/g, "");
+  return title.trim();
 };
 
 /**
