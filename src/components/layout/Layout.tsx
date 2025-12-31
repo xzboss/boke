@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { useEffect } from "react";
-import Header from "./Header";
-import { useAppStore } from "@/store/app";
-import Footer from "./Footer";
+import { useEffect } from 'react';
+import Header from './Header';
+import { useAppStore } from '@/store/app';
+import Footer from './Footer';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -16,18 +16,18 @@ interface LayoutProps {
  * 负责全局主题初始化
  */
 export default function Layout({ children, showFooter = false }: LayoutProps) {
-  const { theme, mounted, colorScheme, setMounted, setColorScheme } =
-    useAppStore();
+  const { theme, mounted, colorScheme, setMounted, setColorScheme } = useAppStore();
 
   /**
    * 初始化主题和 mounted 状态
    */
   useEffect(() => {
+    if (typeof window === 'undefined') return;
     // 同步 DOM 的 dark class
-    if (theme === "dark") {
-      document.documentElement.classList.add("dark");
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
     } else {
-      document.documentElement.classList.remove("dark");
+      document.documentElement.classList.remove('dark');
     }
 
     setMounted(true);

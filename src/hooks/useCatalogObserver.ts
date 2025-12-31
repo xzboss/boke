@@ -1,5 +1,5 @@
-import { useEffect, useState, useRef, useMemo } from "react";
-import type { CatalogNode } from "@/types/catalog";
+import { useEffect, useState, useRef, useMemo } from 'react';
+import type { CatalogNode } from '@/types/catalog';
 
 /**
  * 递归获取所有目录项ID（树形结构）
@@ -8,7 +8,7 @@ function getAllCatalogIds(catalog: CatalogNode[]): string[] {
   const ids: string[] = [];
 
   function traverse(items: CatalogNode[]) {
-    items.forEach((item) => {
+    items.forEach(item => {
       ids.push(item.id);
       if (item.children.length > 0) {
         traverse(item.children);
@@ -27,7 +27,7 @@ function getItemsWithChildren(catalog: CatalogNode[]): CatalogNode[] {
   const items: CatalogNode[] = [];
 
   function traverse(itemList: CatalogNode[]) {
-    itemList.forEach((item) => {
+    itemList.forEach(item => {
       if (item.children.length > 0) {
         items.push(item);
         traverse(item.children);
@@ -43,16 +43,12 @@ function getItemsWithChildren(catalog: CatalogNode[]): CatalogNode[] {
  * 查找指定ID的最顶级收起状态祖先元素
  * 如果没有收起的祖先，返回自己
  */
-function findTopCollapsedAncestor(
-  catalog: CatalogNode[],
-  targetId: string,
-  expandedIds: Set<string>
-): string {
+function findTopCollapsedAncestor(catalog: CatalogNode[], targetId: string, expandedIds: Set<string>): string {
   // 创建ID到节点的映射
   const idToItemMap = new Map<string, CatalogNode>();
 
   function buildMap(items: CatalogNode[]) {
-    items.forEach((item) => {
+    items.forEach(item => {
       idToItemMap.set(item.id, item);
       if (item.children.length > 0) {
         buildMap(item.children);
@@ -164,10 +160,7 @@ export function useCatalogObserver(
   /**
    * 获取有子节点的项目（用于展开/收起逻辑）
    */
-  const itemsWithChildren = useMemo(
-    () => getItemsWithChildren(catalog),
-    [catalog]
-  );
+  const itemsWithChildren = useMemo(() => getItemsWithChildren(catalog), [catalog]);
 
   /**
    * 初始化展开状态 - 默认全部展开
@@ -175,7 +168,7 @@ export function useCatalogObserver(
   useEffect(() => {
     if (catalog && catalog.length > 0) {
       const initialExpandedIds = new Set<string>();
-      itemsWithChildren.forEach((item) => {
+      itemsWithChildren.forEach(item => {
         initialExpandedIds.add(item.id);
       });
       setExpandedIds(initialExpandedIds);
@@ -186,7 +179,7 @@ export function useCatalogObserver(
    * 检查是否全部展开
    */
   const isAllExpanded = useMemo(() => {
-    return itemsWithChildren.every((item) => expandedIds.has(item.id));
+    return itemsWithChildren.every(item => expandedIds.has(item.id));
   }, [itemsWithChildren, expandedIds]);
 
   /**
@@ -219,7 +212,7 @@ export function useCatalogObserver(
       }
 
       const observer = new IntersectionObserver(
-        (entries) => {
+        entries => {
           // 如果是点击触发的滚动，不更新高亮状态
           if (isClickScrolling.current) {
             return;
@@ -248,14 +241,14 @@ export function useCatalogObserver(
         },
         {
           root: scrollContainer,
-          rootMargin: "-50px 0px -80% 0px",
+          rootMargin: '-50px 0px -80% 0px',
           threshold: [0, 0.25, 0.5, 0.75, 1],
         }
       );
 
       // 监听所有标题元素
-      allIds.forEach((id) => {
-        const element = document.getElementById(id);
+      allIds.forEach(id => {
+        const element = typeof window !== 'undefined' ? document.getElementById(id) : null;
         if (element) {
           observer.observe(element);
         }
@@ -293,11 +286,11 @@ export function useCatalogObserver(
 
     // 滚动到目标元素
     if (scrollContainer) {
-      const element = document.getElementById(id);
+      const element = typeof window !== 'undefined' ? document.getElementById(id) : null;
       if (element) {
         element.scrollIntoView({
-          behavior: "instant",
-          block: "start",
+          behavior: 'instant',
+          block: 'start',
         });
       }
     }
@@ -313,7 +306,7 @@ export function useCatalogObserver(
    * 切换展开/收起状态
    */
   const toggleExpand = (id: string) => {
-    setExpandedIds((prev) => {
+    setExpandedIds(prev => {
       const newSet = new Set(prev);
       if (newSet.has(id)) {
         newSet.delete(id);
@@ -332,7 +325,7 @@ export function useCatalogObserver(
     if (shouldExpand) {
       // 展开所有
       const allItemsWithChildren = new Set<string>();
-      itemsWithChildren.forEach((item) => {
+      itemsWithChildren.forEach(item => {
         allItemsWithChildren.add(item.id);
       });
       setExpandedIds(allItemsWithChildren);

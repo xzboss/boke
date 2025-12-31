@@ -1,16 +1,16 @@
-"use client";
+'use client';
 
-import { Layout } from "@/components/Layout";
-import { RecursiveMenu } from "@/components/Menu";
-import { Catalog } from "@/components/Catalog";
-import { SidebarToggle } from "@/components/SidebarToggle";
-import { useState } from "react";
-import type { CatalogNode } from "@/types/catalog";
-import type { MenuNode } from "@/types/menu";
-import "./page.scss";
-import type { BlogItem } from "@/types/blog";
-import type { Tags } from "@/types/blog";
-import { useParams } from "next/navigation";
+import { Layout } from '@/components/Layout';
+import { RecursiveMenu } from '@/components/Menu';
+import { Catalog } from '@/components/Catalog';
+import { SidebarToggle } from '@/components/SidebarToggle';
+import { useState } from 'react';
+import type { CatalogNode } from '@/types/catalog';
+import type { MenuNode } from '@/types/menu';
+import './page.scss';
+import type { BlogItem } from '@/types/blog';
+import type { Tags } from '@/types/blog';
+import { useParams } from 'next/navigation';
 
 interface BlogLayoutProps {
   children: React.ReactNode;
@@ -34,7 +34,7 @@ export default function ClientLayout({ children, blogData }: BlogLayoutProps) {
   const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(true);
   /** 目录数据 - 默认空，在具体文章页面时会有数据 */
   const catalogTree: CatalogNode[] =
-    blogData.blogList.find((item) => item.slug === decodeURIComponent(slug as string))?.catalogTree || [];
+    blogData.blogList.find(item => item.slug === decodeURIComponent(slug as string))?.catalogTree || [];
   /** 菜单数据 - 使用传入的博客菜单树 */
   const menuTree: MenuNode[] = blogData.menuTree;
 
@@ -44,13 +44,10 @@ export default function ClientLayout({ children, blogData }: BlogLayoutProps) {
         {/* 左侧分类导航 - 可收起 */}
         <div
           className="blog-sidebar-left relative h-full transition-all duration-300"
-          style={{ width: isLeftSidebarOpen ? "280px" : "0" }}
+          style={{ width: isLeftSidebarOpen ? '280px' : '0' }}
         >
           <div className="h-full overflow-hidden">
-            <div
-              className="w-full h-full p-4 pt-0 custom-scrollbar"
-              style={{ width: "260px" }}
-            >
+            <div className="w-full h-full p-4 pt-0 custom-scrollbar" style={{ width: '260px' }}>
               <RecursiveMenu menuTree={menuTree} />
             </div>
           </div>
@@ -60,8 +57,8 @@ export default function ClientLayout({ children, blogData }: BlogLayoutProps) {
             isOpen={isLeftSidebarOpen}
             onToggle={setIsLeftSidebarOpen}
             direction="left"
-            expandedPosition={{ right: "-20px", top: "20px" }}
-            collapsedPosition={{ left: 0, top: "20px" }}
+            expandedPosition={{ right: '-20px', top: '20px' }}
+            collapsedPosition={{ left: 0, top: '20px' }}
           />
         </div>
 
@@ -69,7 +66,7 @@ export default function ClientLayout({ children, blogData }: BlogLayoutProps) {
         <div
           id="blog-container"
           className="flex-1 h-full overflow-y-auto px-8 py-8 custom-scrollbar transition-all duration-300"
-          style={{ paddingRight: isRightSidebarOpen ? "280px" : "0" }}
+          style={{ paddingRight: isRightSidebarOpen ? '280px' : '0' }}
         >
           {children}
         </div>
@@ -77,14 +74,14 @@ export default function ClientLayout({ children, blogData }: BlogLayoutProps) {
         {/* 右侧目录导航 - 可收起 */}
         <div
           className="absolute right-0 top-0 bottom-0 blog-sidebar-right h-full transition-all duration-300"
-          style={{ width: isRightSidebarOpen ? "280px" : "0" }}
+          style={{ width: isRightSidebarOpen ? '280px' : '0' }}
         >
           <div className="h-full overflow-hidden">
-            <div className="h-full custom-scrollbar" style={{ width: "280px" }}>
+            <div className="h-full custom-scrollbar" style={{ width: '280px' }}>
               <Catalog
                 catalogTree={catalogTree}
                 scrollContainer={
-                  document.querySelector("#blog-container") as HTMLElement
+                  typeof window !== 'undefined' ? (document.querySelector('#blog-container') as HTMLElement) : null
                 }
               />
             </div>
@@ -95,8 +92,8 @@ export default function ClientLayout({ children, blogData }: BlogLayoutProps) {
             isOpen={isRightSidebarOpen}
             onToggle={setIsRightSidebarOpen}
             direction="right"
-            expandedPosition={{ left: "-20px", top: "20px" }}
-            collapsedPosition={{ right: "0", top: "20px" }}
+            expandedPosition={{ left: '-20px', top: '20px' }}
+            collapsedPosition={{ right: '0', top: '20px' }}
           />
         </div>
       </div>
