@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 /**
  * 网站底部组件
  * 包含品牌信息、导航链接、社交链接
@@ -28,24 +30,24 @@ export default function Footer() {
             <h3 className="text-sm font-semibold mb-4">导航</h3>
             <ul className="space-y-3">
               <li>
-                <a href="/" className="text-sm opacity-60 hover:opacity-100">
+                <Link href="/" className="text-sm opacity-60 hover:opacity-100">
                   首页
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/blog" className="text-sm opacity-60 hover:opacity-100">
+                <Link href="/blog" className="text-sm opacity-60 hover:opacity-100">
                   博客
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/ui" className="text-sm opacity-60 hover:opacity-100">
+                <Link href="/ui" className="text-sm opacity-60 hover:opacity-100">
                   演练场
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/about" className="text-sm opacity-60 hover:opacity-100">
+                <Link href="/about" className="text-sm opacity-60 hover:opacity-100">
                   关于
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -55,22 +57,22 @@ export default function Footer() {
             <h3 className="text-sm font-semibold mb-4">关注我们</h3>
             <ul className="space-y-3">
               <li>
-                <a
+                <Link
                   href="https://github.com"
                   className="text-sm opacity-60 hover:opacity-100"
                 >
                   GitHub
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="text-sm opacity-60 hover:opacity-100">
+                <Link href="#" className="text-sm opacity-60 hover:opacity-100">
                   Twitter
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="text-sm opacity-60 hover:opacity-100">
+                <Link href="#" className="text-sm opacity-60 hover:opacity-100">
                   微信公众号
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
