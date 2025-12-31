@@ -1,9 +1,0 @@
-{
-  "framework": "nextjs",
-  "functions": {
-    "src/app/**/*.js": {
-      "maxDuration": 10
-    }
-  },
-  "buildCommand": "npm run build"
-}
