@@ -73,6 +73,18 @@ export const menuTree: MenuNode[] = [
               },
             ],
           },
+          {
+            id: 'JavaScript 散碎',
+            name: 'JavaScript 散碎',
+            path: '/blog/JavaScript 散碎',
+            type: LEAF,
+          },
+          {
+            id: 'JavaScript 重写',
+            name: 'JavaScript 重写',
+            path: '/blog/JavaScript 重写',
+            type: LEAF,
+          },
         ],
       },
     ],

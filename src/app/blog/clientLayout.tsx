@@ -44,10 +44,10 @@ export default function ClientLayout({ children, blogData }: BlogLayoutProps) {
         {/* 左侧分类导航 - 可收起 */}
         <div
           className="blog-sidebar-left relative h-full transition-all duration-300"
-          style={{ width: isLeftSidebarOpen ? '280px' : '0' }}
+          style={{ width: isLeftSidebarOpen ? '320px' : '0' }}
         >
           <div className="h-full overflow-hidden">
-            <div className="w-full h-full p-4 pt-0 custom-scrollbar" style={{ width: '260px' }}>
+            <div className="w-full h-full p-4 pt-0 custom-scrollbar" style={{ width: '300px' }}>
               <RecursiveMenu menuTree={menuTree} />
             </div>
           </div>
