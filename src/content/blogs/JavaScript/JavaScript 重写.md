@@ -1,7 +1,7 @@
 ---
 title: JavaScript 重写
 description: ...
-createdAt: '2026-01-04 18:05:40'
+createdAt: '2024-02-04 01:09:06'
 updatedAt: '2026-01-04 18:05:40'
 tags:
   - JavaScript

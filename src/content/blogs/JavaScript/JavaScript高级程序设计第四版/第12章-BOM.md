@@ -1,7 +1,7 @@
 ---
 title: 第12章-BOM
 description: ...
-createdAt: '2026-01-04 18:05:40'
+createdAt: '2023-10-04 13:15:40'
 updatedAt: '2026-01-04 18:05:40'
 tags:
   - JavaScript
