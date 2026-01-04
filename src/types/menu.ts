@@ -1,4 +1,4 @@
-import type { BlogItem } from "./blog";
+import type { BlogItem, BlogType } from "./blog";
 import type { Tags } from "./blog";
 /**
  * 菜单类型
@@ -28,4 +28,6 @@ export interface MenuNode {
   path?: string;
   /** 子菜单项 */
   children?: MenuNode[];
+  /** 博客文件扩展名 */
+  extension?: BlogType;
 }

@@ -1,5 +1,6 @@
 import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import crypto from 'crypto';
 
 /**
  * 类名合并工具
@@ -66,12 +67,7 @@ export const colorUtils = {
  * @returns URL友好字符串
  */
 export const generateSlug = (title: string) => {
-  // return title
-  //   .toLowerCase()
-  //   .trim()
-  //   .replace(/\s+/g, "-")
-  //   .replace(/[^\w\u4e00-\u9fa5\uff5e~-]/g, "");
-  return title.trim();
+  return crypto.createHash('sha256').update(title).digest('hex').slice(0, 8);
 };
 
 /**
