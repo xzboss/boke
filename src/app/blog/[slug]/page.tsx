@@ -55,7 +55,7 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ sl
 
   return (
     <article className="max-w-4xl mx-auto">
-      <header className="mb-8">
+      {/* <header className="mb-8">
         <h1 className="text-3xl font-bold mb-4">{post.metadata.title}</h1>
         {post.metadata.description && <p className="text-lg text-gray-600 mb-4">{post.metadata.description}</p>}
         <div className="flex gap-2 text-sm text-gray-500">
@@ -74,7 +74,7 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ sl
             ))}
           </div>
         )}
-      </header>
+      </header> */}
       <MdHtmlViewer htmlContent={post.content} />
     </article>
   );
