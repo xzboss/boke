@@ -1,10 +1,14 @@
 import fs from 'fs';
 import path from 'path';
+import crypto from 'crypto';
+import matter from 'gray-matter';
 import type { BlogType, RawBlogItem } from '@/types/blog';
 import { BLOG_TYPE } from '@/types/blog';
 import type { MenuNode } from '@/types/menu';
 import { MENU_NODE_TYPE } from '@/types/menu';
-import { generateSlug } from '../utils/tools';
+import { generateSlug, calculateHash } from '../utils/tools';
+import dayjs from 'dayjs';
+import { DATE_FORMAT } from '@/constants';
 
 const BLOG_CONTENT_DIR = path.join(process.cwd(), 'src/content/blogs');
 const { MENU, LEAF } = MENU_NODE_TYPE;
@@ -121,4 +125,101 @@ export async function loadRawBlogList(): Promise<{ rawBlogList: RawBlogItem[]; m
   }
 
   return { rawBlogList, menuTree };
+}
+
+/**
+ * 维护元数据
+ */
+export async function maintainMetadata(): Promise<void> {
+  const hashFilePath = path.join(BLOG_CONTENT_DIR, '..', 'hash.json');
+
+  // 读取现有的 hash 数据
+  let hashData: Record<string, any> = {};
+  try {
+    if (fs.existsSync(hashFilePath)) {
+      const hashContent = fs.readFileSync(hashFilePath, 'utf-8');
+      hashData = JSON.parse(hashContent);
+    }
+  } catch (error) {
+    console.warn('读取 hash.json 文件失败:', error);
+  }
+
+  // 递归扫描所有博客文件并维护元数据
+  async function scanAndMaintain(dirPath: string): Promise<void> {
+    try {
+      const entries = fs.readdirSync(dirPath, { withFileTypes: true });
+
+      for (const entry of entries) {
+        const fullPath = path.join(dirPath, entry.name);
+
+        if (entry.isDirectory()) {
+          // 递归处理子目录
+          await scanAndMaintain(fullPath);
+        } else if (entry.isFile() && Object.values(BLOG_TYPE).some(type => entry.name.endsWith(`.${type}`))) {
+          // 处理博客文件
+          const fileContent = fs.readFileSync(fullPath, 'utf-8');
+          const parsed = matter(fileContent);
+
+          // 计算内容的 hash（不包含元数据）
+          const contentHash = calculateHash(parsed.content);
+          const slug = generateSlug(parsed.data.title || entry.name.replace(/\.[^/.]+$/, ''));
+
+          const now = dayjs().format(DATE_FORMAT);
+
+          if (!hashData[slug]) {
+            // 新文件，添加元数据到文件开头
+            const newMetadata = {
+              title: parsed.data.title || parsed.data.title,
+              description: parsed.data.description || '',
+              createdAt: now,
+              updatedAt: now,
+              tags: parsed.data.tags || []
+            };
+
+            const newContent = matter.stringify(parsed.content, newMetadata);
+            fs.writeFileSync(fullPath, newContent, 'utf-8');
+
+            // 更新 hash 数据
+            hashData[slug] = {
+              hash: contentHash,
+              title: newMetadata.title,
+              description: newMetadata.description,
+              createdAt: newMetadata.createdAt,
+              updatedAt: newMetadata.updatedAt,
+              tags: newMetadata.tags
+            };
+
+            console.log(`新增文件元数据: ${entry.name}`);
+          } else if (hashData[slug].hash !== contentHash) {
+            // 内容有变化，更新 updatedAt
+            const existingMetadata = parsed.data;
+            existingMetadata.updatedAt = now;
+
+            const updatedContent = matter.stringify(parsed.content, existingMetadata);
+            fs.writeFileSync(fullPath, updatedContent, 'utf-8');
+
+            // 更新 hash 数据
+            hashData[slug].hash = contentHash;
+            hashData[slug].updatedAt = now;
+
+            console.log(`更新文件元数据: ${entry.name}`);
+          }
+          // 如果 hash 相同，不进行操作
+        }
+      }
+    } catch (error) {
+      console.error(`扫描目录 ${dirPath} 时发生错误:`, error);
+    }
+  }
+
+  // 扫描并维护元数据
+  await scanAndMaintain(BLOG_CONTENT_DIR);
+
+  // 保存更新后的 hash 数据
+  try {
+    fs.writeFileSync(hashFilePath, JSON.stringify(hashData, null, 2), 'utf-8');
+    console.log('hash.json 已更新');
+  } catch (error) {
+    console.error('保存 hash.json 文件失败:', error);
+  }
 }

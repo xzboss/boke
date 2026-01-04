@@ -1,102 +1,11 @@
 import type { BlogItem, RawBlogItem, Tags } from '@/types/blog';
 import type { MenuNode } from '@/types/menu';
 import { MENU_NODE_TYPE } from '@/types/menu';
-import { loadRawBlogList } from './loader';
+import { loadRawBlogList, maintainMetadata } from './loader';
 import { markdownToHtml, buildCatalog, buildMetadata } from './processor';
 import { generateSlug } from '../utils/tools';
 
 const { MENU, LEAF } = MENU_NODE_TYPE;
-
-/**
- * 博客文章菜单数据结构
- */
-// export const menuTree: MenuNode[] = [
-//   {
-//     id: '前端',
-//     name: '前端',
-//     tags: [],
-//     type: MENU,
-//     children: [
-//       {
-//         id: 'JavaScript',
-//         name: 'JavaScript',
-//         tags: [],
-//         type: MENU,
-//         children: [
-//           {
-//             id: 'JavaScript高级程序设计第四版',
-//             name: 'JavaScript高级程序设计第四版',
-//             tags: [],
-//             type: MENU,
-//             children: [
-//               {
-//                 id: '第1～8章-基础',
-//                 name: '第1～8章-基础',
-//                 path: '/blog/第1～8章-基础',
-//                 type: LEAF,
-//               },
-//               {
-//                 id: '第9章-代理与反射',
-//                 name: '第9章-代理与反射',
-//                 path: '/blog/第9章-代理与反射',
-//                 type: LEAF,
-//               },
-//               {
-//                 id: '第10章-函数',
-//                 name: '第10章-函数',
-//                 path: '/blog/第10章-函数',
-//                 type: LEAF,
-//               },
-//               {
-//                 id: '第11章-期约与异步函数',
-//                 name: '第11章-期约与异步函数',
-//                 path: '/blog/第11章-期约与异步函数',
-//                 type: LEAF,
-//               },
-//               {
-//                 id: '第12章-BOM',
-//                 name: '第12章-BOM',
-//                 path: '/blog/第12章-BOM',
-//                 type: LEAF,
-//               },
-//               {
-//                 id: '第13章-客户端检测',
-//                 name: '第13章-客户端检测',
-//                 path: '/blog/第13章-客户端检测',
-//                 type: LEAF,
-//               },
-//               {
-//                 id: '第14~16章-DOM',
-//                 name: '第14~16章-DOM',
-//                 path: '/blog/第14~16章-DOM',
-//                 type: LEAF,
-//               },
-//             ],
-//           },
-//           {
-//             id: 'JavaScript 散碎',
-//             name: 'JavaScript 散碎',
-//             path: '/blog/JavaScript 散碎',
-//             type: LEAF,
-//           },
-//           {
-//             id: 'JavaScript 重写',
-//             name: 'JavaScript 重写',
-//             path: '/blog/JavaScript 重写',
-//             type: LEAF,
-//           },
-//         ],
-//       },
-//     ],
-//   },
-//   {
-//     id: '后端',
-//     name: '后端',
-//     tags: [],
-//     type: MENU,
-//     children: [],
-//   },
-// ];
 
 export interface BlogInterface {
   /** 原始博客 Markdown 列表 */
@@ -154,6 +63,8 @@ class Blog implements BlogInterface {
 
   async init() {
     try {
+      await maintainMetadata();
+
       await this.generateRawBlogList();
       await this.generateBlogList();
 

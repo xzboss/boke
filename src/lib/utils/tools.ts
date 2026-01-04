@@ -77,3 +77,13 @@ export const generateSlug = (title: string) => {
 export const generateId = () => {
   return crypto.randomUUID();
 };
+
+
+/**
+ * 计算 hash
+ * @param content 内容
+ * @returns hash
+ */
+export const calculateHash = (content: string) => {
+  return crypto.createHash('md5').update(content).digest('hex');
+};  

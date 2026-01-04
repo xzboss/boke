@@ -1,9 +1,11 @@
 ---
-title: 'JavaScript 重写'
-description: '...'
-createdAt: '2022-10-29 15:11'
-updatedAt: '2025-02-25 19:43'
-tags: ['JavaScript', '前端']
+title: JavaScript 重写
+description: ...
+createdAt: '2026-01-04 18:05:40'
+updatedAt: '2026-01-04 18:05:40'
+tags:
+  - JavaScript
+  - 前端
 ---
 
 > 包含一些原生的重写实现

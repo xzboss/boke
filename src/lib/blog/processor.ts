@@ -10,8 +10,7 @@ import dayjs from 'dayjs';
 import type { CatalogNode } from '@/types/catalog';
 import type { BlogItem } from '@/types/blog';
 import { generateSlug } from '../utils/tools';
-
-const DATE_FORMAT = 'YYYY-MM-DD HH:mm:ss';
+import { DATE_FORMAT } from '@/constants';
 
 /**
  * 通过md生成HTML，标题带锚点
