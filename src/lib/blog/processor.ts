@@ -109,7 +109,6 @@ export const buildMetadata = (fileContent: string): { metadata: BlogItem['metada
       title: data.title || '',
       description: data.description,
       createdAt: data.createdAt || new Date().toISOString(),
-      // TODO: 文章更新时间怎么处理
       updatedAt: data.updatedAt,
       tags: Array.from(new Set(Array.isArray(data.tags) ? data.tags : [])),
     };
