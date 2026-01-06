@@ -1,36 +1,64 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ----
 
-## Getting Started
+基于 Next.js 16 开发的现代化个人博客
 
-First, run the development server:
+## 🚀 快速开始
 
 ```bash
+# 安装依赖
+npm install
+
+# 启动开发服务器
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+
+# 构建生产版本
+npm run build
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## ✨ 功能特性
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- 📝 **Markdown 支持**：完整的 GFM + 数学公式 + 代码高亮
+- 📁 **目录结构**：支持嵌套分类，自动生成菜单树
+- 🔄 **自动元数据**：创建/更新时间自动维护，内容变更检测
+- 🎨 **主题系统**：支持亮色/暗色主题切换，并且支持多色调
+- ⚡ **静态生成**：SSG 部署，CDN 友好，性能卓越
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🏗️ 项目结构
 
-## Learn More
+```
+详细架构见AI_CONTEXT.md
+```
 
-To learn more about Next.js, take a look at the following resources:
+## 📦 技术栈
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **Framework**: Next.js 16 (App Router)
+- **Styling**: UnoCSS + Tailwind CSS
+- **Content**: Markdown + Gray Matter
+- **Math**: KaTeX
+- **Icons**: Ant Design Icons
+- **Deployment**: Vercel
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 🚀 部署
 
-## Deploy on Vercel
+### Vercel 部署
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. 连接 GitHub 仓库
+2. 自动检测 Next.js 项目
+3. 一键部署完成
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### 手动部署
+
+```bash
+# 构建
+npm run build
+
+# 启动生产服务器
+npm start
+```
+
+## 📝 写作规范
+
+1. 博客文件放置在 `src/content/blogs/` 目录
+2. 支持嵌套目录结构，自动生成导航菜单
+3. 使用标准 Markdown 语法
+4. 自动维护YAML元数据

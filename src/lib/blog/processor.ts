@@ -36,6 +36,47 @@ function rehypeImageReferrer() {
 }
 
 /**
+ * rehype 插件：自定义标题 ID 生成
+ */
+function rehypeCustomSlug() {
+  return (tree: any) => {
+    const idCounter = new Map<string, number>();
+
+    function visit(node: any) {
+      if (node.type === 'element' && /^h[1-6]$/.test(node.tagName)) {
+        // 获取标题文本
+        let titleText = '';
+        function extractText(n: any) {
+          if (n.type === 'text') {
+            titleText += n.value;
+          } else if (n.children) {
+            n.children.forEach(extractText);
+          }
+        }
+        extractText(node);
+
+        // 使用 generateSlug 生成 ID
+        const baseId = generateSlug(titleText);
+        const count = idCounter.get(baseId) || 0;
+        const id = count === 0 ? baseId : `${baseId}-${count}`;
+        idCounter.set(baseId, count + 1);
+
+        // 设置 ID 属性
+        node.properties = node.properties || {};
+        node.properties.id = id;
+      }
+
+      // 递归处理子节点
+      if (node.children) {
+        node.children.forEach(visit);
+      }
+    }
+
+    visit(tree);
+  };
+}
+
+/**
  * 通过md生成HTML，标题带锚点
  * @param mdStr md文本（不带元信息的Markdown文本）
  * @returns HTML字符串
@@ -49,7 +90,7 @@ export const markdownToHtml = async (mdStr: string): Promise<string> => {
         allowDangerousHtml: true, // 允许HTML标签和内联样式
       }) // 转换为 HTML AST
       .use(rehypeKatex) // 处理数学公式为HTML
-      .use(rehypeSlug) // 自动为标题添加 ID
+      .use(rehypeCustomSlug) // 自定义标题 ID 生成
       .use(rehypeImageReferrer) // 为 img 标签添加 referrerPolicy
       .use(rehypeStringify, {
         allowDangerousHtml: true, // 允许输出HTML标签

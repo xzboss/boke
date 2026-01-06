@@ -162,14 +162,17 @@ export async function maintainMetadata(): Promise<void> {
 
           // 计算内容的 hash（不包含元数据）
           const contentHash = calculateHash(parsed.content);
-          const slug = generateSlug(parsed.data.title || entry.name.replace(/\.[^/.]+$/, ''));
+
+          // 使用元数据中的 title，如果没有则使用文件名
+          const title = parsed.data.title || entry.name.replace(/\.[^/.]+$/, '');
+          const slug = generateSlug(title);
 
           const now = dayjs().format(DATE_FORMAT);
 
           if (!hashData[slug]) {
             // 新文件，添加元数据到文件开头
             const newMetadata = {
-              title: parsed.data.title || parsed.data.title,
+              title: title,
               description: parsed.data.description || '',
               createdAt: now,
               updatedAt: now,
