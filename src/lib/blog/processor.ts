@@ -13,6 +13,29 @@ import { generateSlug } from '../utils/tools';
 import { DATE_FORMAT } from '@/constants';
 
 /**
+ * rehype 插件：为 img 标签添加 referrerPolicy 属性
+ */
+function rehypeImageReferrer() {
+  return (tree: any) => {
+    function visit(node: any) {
+      if (node.type === 'element' && node.tagName === 'img') {
+        // 添加 referrerPolicy 属性， 防止第三方防盗链
+        node.properties = node.properties || {};
+        node.properties.referrerPolicy = 'no-referrer';
+        node.properties.width = '100%';
+      }
+
+      // 递归处理子节点
+      if (node.children) {
+        node.children.forEach(visit);
+      }
+    }
+
+    visit(tree);
+  };
+}
+
+/**
  * 通过md生成HTML，标题带锚点
  * @param mdStr md文本（不带元信息的Markdown文本）
  * @returns HTML字符串
@@ -27,6 +50,7 @@ export const markdownToHtml = async (mdStr: string): Promise<string> => {
       }) // 转换为 HTML AST
       .use(rehypeKatex) // 处理数学公式为HTML
       .use(rehypeSlug) // 自动为标题添加 ID
+      .use(rehypeImageReferrer) // 为 img 标签添加 referrerPolicy
       .use(rehypeStringify, {
         allowDangerousHtml: true, // 允许输出HTML标签
       }) // 转换为 HTML 字符串
