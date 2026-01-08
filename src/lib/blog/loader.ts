@@ -169,31 +169,29 @@ export async function maintainMetadata(): Promise<void> {
 
           const now = dayjs().format(DATE_FORMAT);
 
-          if (!hashData[slug]) {
-            // 新文件，添加元数据到文件开头
-            const newMetadata = {
-              title: title,
-              description: parsed.data.description || '',
-              createdAt: now,
-              updatedAt: now,
-              tags: parsed.data.tags || []
-            };
+          // 新文件，添加元数据到文件开头
+          const newMetadata = {
+            title: title,
+            description: parsed.data.description || '',
+            createdAt: parsed.data.createdAt || now,
+            updatedAt: parsed.data.updatedAt || now,
+            tags: parsed.data.tags || [],
+          };
 
-            const newContent = matter.stringify(parsed.content, newMetadata);
-            fs.writeFileSync(fullPath, newContent, 'utf-8');
+          const newContent = matter.stringify(parsed.content, newMetadata);
+          fs.writeFileSync(fullPath, newContent, 'utf-8');
 
-            // 更新 hash 数据
-            hashData[slug] = {
-              hash: contentHash,
-              title: newMetadata.title,
-              description: newMetadata.description,
-              createdAt: newMetadata.createdAt,
-              updatedAt: newMetadata.updatedAt,
-              tags: newMetadata.tags
-            };
+          // 更新 hash 数据
+          hashData[slug] = {
+            hash: contentHash,
+            title: newMetadata.title,
+            description: newMetadata.description,
+            createdAt: newMetadata.createdAt,
+            updatedAt: newMetadata.updatedAt,
+            tags: newMetadata.tags,
+          };
 
-            console.log(`新增文件元数据: ${entry.name}`);
-          } else if (hashData[slug].hash !== contentHash) {
+          if (hashData[slug].hash !== contentHash) {
             // 内容有变化，更新 updatedAt
             const existingMetadata = parsed.data;
             existingMetadata.updatedAt = now;
@@ -204,10 +202,7 @@ export async function maintainMetadata(): Promise<void> {
             // 更新 hash 数据
             hashData[slug].hash = contentHash;
             hashData[slug].updatedAt = now;
-
-            console.log(`更新文件元数据: ${entry.name}`);
           }
-          // 如果 hash 相同，不进行操作
         }
       }
     } catch (error) {

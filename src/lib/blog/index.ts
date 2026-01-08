@@ -1,11 +1,8 @@
 import type { BlogItem, RawBlogItem, Tags } from '@/types/blog';
 import type { MenuNode } from '@/types/menu';
-import { MENU_NODE_TYPE } from '@/types/menu';
 import { loadRawBlogList, maintainMetadata } from './loader';
 import { markdownToHtml, buildCatalog, buildMetadata } from './processor';
 import { generateSlug } from '../utils/tools';
-
-const { MENU, LEAF } = MENU_NODE_TYPE;
 
 export interface BlogInterface {
   /** 原始博客 Markdown 列表 */
